@@ -1,76 +1,142 @@
 # Review 1: IT Helpdesk & Asset Support Management System
 
-**Course:** Database Management Systems (DBMS) Laboratory / Project  
+**Course:** Database Management Systems (DBMS)  
 **Project Title:** IT Helpdesk & Asset Support Management System  
-**Database Name:** `it_helpdesk` (MySQL)  
+**Database:** MySQL (`it_helpdesk`)  
+**Application Type:** Terminal-Based (Python 3 + `mysql-connector-python`)  
 
 ---
 
 ## 1. Problem Identification
-In modern organizations and educational institutions, IT infrastructure comprises diverse hardware assets (laptops, monitors, networking gear) and software systems. Managing day-to-day employee technical issues through ad-hoc communication (emails, chat messages, or verbal requests) leads to:
-- Lost or untracked issue requests.
-- Lack of accountability and delay in incident resolution.
-- Inability to track asset allocation, warranty expirations, and repair/maintenance costs.
-- Absence of historical audit trails for ticket lifecycles and service performance.
+Modern enterprises and educational institutions utilize diverse IT assets (laptops, workstations, network switches, peripherals) and software tools. Managing support requests and hardware maintenance through fragmented channels (emails, spreadsheets, verbal complaints) causes:
+- Lost, delayed, or untracked helpdesk tickets.
+- Lack of accountability in technician assignments and ticket resolution.
+- Unmonitored asset allocation, missed warranty expiries, and untracked repair costs.
+- Absence of historical audit trails for ticket status lifecycles.
 
-An integrated relational database system is required to centralize IT ticketing, streamline staff assignments, track status transitions, and manage asset lifecycles.
+A centralized, relational database management system is required to standardize ticketing, automate assignment workflows, log status progressions, and maintain hardware asset lifecycles.
 
 ---
 
 ## 2. Scope
-The scope of the project encompasses:
-- **Ticketing & Incident Management:** Raising, categorizing, prioritizing, assigning, and resolving helpdesk tickets, with subtype support for specific incidents and service requests.
-- **Asset & Inventory Tracking:** Cataloging IT hardware/assets, tracking assigned users, associated warranties, and maintenance records.
-- **Support Operations & History:** Managing support staff profiles, recording ticket assignments, logging status transitions over time, and storing resolution summaries.
+- **Ticketing Operations:** Creation, categorization, prioritization, assignment, status tracking, and resolution of user requests.
+- **Ticket Subtyping:** Support for specialized **Incidents** (unplanned outages/failures) and **Service Requests** (access provisioning, hardware/software requests).
+- **Asset & Warranty Management:** Cataloging hardware equipment, tracking assigned users, managing manufacturer warranty validity, and logging maintenance/repair expenses.
+- **Relational Integrity & Audit Logging:** Tracking ticket state changes over time (`status_histories`) and maintaining technician assignment history.
 
 ---
 
 ## 3. Objectives
-1. **Centralized IT Ticketing:** Provide structured ticket creation with defined categories, priority levels, and automatic timestamping.
-2. **End-to-End Lifecycle Tracking:** Maintain a complete audit log of ticket status transitions (`Open` &rarr; `In Progress` &rarr; `Resolved` &rarr; `Closed`).
-3. **Asset & Maintenance Management:** Link hardware assets to users, track warranty lifecycles, and record maintenance expenses.
-4. **Data Integrity & Relational Constraints:** Enforce primary keys, foreign keys, unique constraints, and check constraints to prevent orphan data or invalid states.
-5. **Interactive Management Interface:** Provide a CLI application for demonstration and database interaction.
+1. Provide a centralized database for raising and managing IT support tickets with predefined categories and priorities.
+2. Maintain an audit log of status progressions (`Open` &rarr; `In Progress` &rarr; `Pending` &rarr; `Resolved` &rarr; `Closed` &rarr; `Cancelled`).
+3. Link physical assets with designated users, warranties, and maintenance records.
+4. Enforce strict data integrity using Primary Keys, Foreign Keys (`CASCADE` / `RESTRICT` / `SET NULL`), `UNIQUE`, `NOT NULL`, and `CHECK` constraints.
+5. Provide a modular, interactive terminal-based Python interface for demonstration and testing.
 
 ---
 
 ## 4. Users & Stakeholders
-1. **End-Users / Employees:** Raise tickets for technical faults or service requests, and track allocated assets.
-2. **IT Support Staff / Technicians:** View assigned queues, investigate issues, update ticket progress, and record resolutions.
-3. **IT Helpdesk Administrators / Managers:** Monitor overall system performance, reassign tickets, register new assets, and track maintenance costs.
+1. **End-Users (Employees / Students):** Raise IT tickets, track issue progress, and view allocated assets.
+2. **IT Support Staff (Technicians / Engineers):** Pick up assigned tickets, investigate faults, update ticket status, and record resolutions.
+3. **IT Helpdesk Administrators / Managers:** Oversee ticket queues, assign technicians, register new hardware assets, and review maintenance costs.
 
 ---
 
 ## 5. Functional Requirements
-- **FR1: Asset Registration & Allocation:** Register hardware assets with unique asset tags, serial numbers, categories, warranties, and optional user assignment.
-- **FR2: Ticket Generation:** Allow users to log tickets with category, priority, description, and optional classification into Incidents or Service Requests.
-- **FR3: Assignment Workflow:** Assign pending tickets to specialized support staff members.
-- **FR4: Status Progression & Audit Logging:** Record every status change (`status_histories`) along with timestamps.
-- **FR5: Ticket Resolution:** Log resolution notes, timestamp resolution time, and update ticket state.
-- **FR6: Asset Maintenance Logging:** Record repair history, maintenance dates, descriptions, and costs for assets.
-- **FR7: Reporting & Querying:** View tabular lists of active tickets, assigned technicians, asset inventory, and warranties.
+- **FR1 (Ticket Management):** Create tickets with title, description, category, priority, and classification into Incident or Service Request.
+- **FR2 (Ticket Assignment):** Assign pending tickets to specialized support staff and automatically update status to `In Progress`.
+- **FR3 (Status Lifecycle Tracking):** Update ticket status with automatic recording in `status_histories`.
+- **FR4 (Ticket Resolution):** Record resolution descriptions and timestamps while preventing duplicate resolution entries.
+- **FR5 (Asset Inventory):** Register hardware assets with unique asset tags, serial numbers, categories, warranties, and assigned users.
+- **FR6 (Maintenance Logging):** Record maintenance dates, descriptions, and costs for assets.
+- **FR7 (Relational Queries):** Retrieve tabular views of tickets, ticket details with audit trails, asset allocation, and maintenance records.
 
 ---
 
-## 6. Initial Relational Schema
+## 6. Initial Relational Schema (14 Tables)
 
-The database consists of **14 normalized relational tables**:
+### User & Organization Entities
+1. **`departments`**
+   - **Primary Key:** `department_id` (INT AUTO_INCREMENT)
+   - **Attributes:** `name` (VARCHAR(100) NOT NULL UNIQUE), `location` (VARCHAR(100) NOT NULL)
+   - **Foreign Keys:** None
 
-1. **`departments`** (`department_id` [PK], `name` [UQ], `location`)
-2. **`users`** (`user_id` [PK], `name`, `email` [UQ], `department_id` [FK &rarr; `departments`])
-3. **`categories`** (`category_id` [PK], `name` [UQ], `description`)
-4. **`priorities`** (`priority_id` [PK], `name` [UQ], `level` [CHK 1-5])
-5. **`support_staff`** (`staff_id` [PK], `name`, `email` [UQ], `specialization`)
-6. **`warranties`** (`warranty_id` [PK], `start_date`, `end_date`, `provider`, [CHK end_date &ge; start_date])
-7. **`assets`** (`asset_id` [PK], `asset_tag` [UQ], `name`, `serial_no` [UQ], `user_id` [FK &rarr; `users`], `category_id` [FK &rarr; `categories`], `warranty_id` [FK &rarr; `warranties`])
-8. **`tickets`** (`ticket_id` [PK], `ticket_no` [UQ], `user_id` [FK &rarr; `users`], `category_id` [FK &rarr; `categories`], `priority_id` [FK &rarr; `priorities`], `title`, `description`, `status` [CHK], `created_at`)
-9. **`incidents`** (`ticket_id` [PK, FK &rarr; `tickets`], `incident_type`)
-10. **`service_requests`** (`ticket_id` [PK, FK &rarr; `tickets`], `request_type`)
-11. **`assignments`** (`assignment_id` [PK], `ticket_id` [FK &rarr; `tickets`], `staff_id` [FK &rarr; `support_staff`], `assigned_at`)
-12. **`status_histories`** (`history_id` [PK], `ticket_id` [FK &rarr; `tickets`], `old_status`, `new_status`, `changed_at`)
-13. **`resolutions`** (`resolution_id` [PK], `ticket_id` [UQ, FK &rarr; `tickets`], `description`, `resolved_at`)
-14. **`maintenance`** (`maintenance_id` [PK], `asset_id` [FK &rarr; `assets`], `maintenance_date`, `description`, `cost` [CHK &ge; 0])
+2. **`users`**
+   - **Primary Key:** `user_id` (INT AUTO_INCREMENT)
+   - **Attributes:** `name` (VARCHAR(100) NOT NULL), `email` (VARCHAR(150) NOT NULL UNIQUE)
+   - **Foreign Keys:** `department_id` &rarr; `departments(department_id)` [ON DELETE RESTRICT ON UPDATE CASCADE]
+
+### Support & Classification Entities
+3. **`categories`**
+   - **Primary Key:** `category_id` (INT AUTO_INCREMENT)
+   - **Attributes:** `name` (VARCHAR(100) NOT NULL UNIQUE), `description` (TEXT)
+   - **Foreign Keys:** None
+
+4. **`priorities`**
+   - **Primary Key:** `priority_id` (INT AUTO_INCREMENT)
+   - **Attributes:** `name` (VARCHAR(50) NOT NULL UNIQUE), `level` (INT NOT NULL, CHECK `level BETWEEN 1 AND 5`)
+   - **Foreign Keys:** None
+
+5. **`support_staff`**
+   - **Primary Key:** `staff_id` (INT AUTO_INCREMENT)
+   - **Attributes:** `name` (VARCHAR(100) NOT NULL), `email` (VARCHAR(150) NOT NULL UNIQUE), `specialization` (VARCHAR(100) NOT NULL)
+   - **Foreign Keys:** None
+
+### Asset & Maintenance Entities
+6. **`warranties`**
+   - **Primary Key:** `warranty_id` (INT AUTO_INCREMENT)
+   - **Attributes:** `start_date` (DATE NOT NULL), `end_date` (DATE NOT NULL), `provider` (VARCHAR(100) NOT NULL), CHECK `end_date >= start_date`
+   - **Foreign Keys:** None
+
+7. **`assets`**
+   - **Primary Key:** `asset_id` (INT AUTO_INCREMENT)
+   - **Attributes:** `asset_tag` (VARCHAR(50) NOT NULL UNIQUE), `name` (VARCHAR(100) NOT NULL), `serial_no` (VARCHAR(100) NOT NULL UNIQUE)
+   - **Foreign Keys:** 
+     - `user_id` &rarr; `users(user_id)` [ON DELETE SET NULL ON UPDATE CASCADE]
+     - `category_id` &rarr; `categories(category_id)` [ON DELETE RESTRICT ON UPDATE CASCADE]
+     - `warranty_id` &rarr; `warranties(warranty_id)` [ON DELETE SET NULL ON UPDATE CASCADE]
+
+8. **`maintenance`**
+   - **Primary Key:** `maintenance_id` (INT AUTO_INCREMENT)
+   - **Attributes:** `maintenance_date` (DATE NOT NULL), `description` (TEXT NOT NULL), `cost` (DECIMAL(10,2) NOT NULL DEFAULT 0.00, CHECK `cost >= 0`)
+   - **Foreign Keys:** `asset_id` &rarr; `assets(asset_id)` [ON DELETE CASCADE ON UPDATE CASCADE]
+
+### Ticket & Lifecycle Entities (Ticket-Centered Design)
+9. **`tickets`**
+   - **Primary Key:** `ticket_id` (INT AUTO_INCREMENT)
+   - **Attributes:** `ticket_no` (VARCHAR(50) NOT NULL UNIQUE), `title` (VARCHAR(200) NOT NULL), `description` (TEXT NOT NULL), `status` (VARCHAR(50) DEFAULT 'Open', CHECK `status IN ('Open', 'In Progress', 'Pending', 'Resolved', 'Closed', 'Cancelled')`), `created_at` (TIMESTAMP DEFAULT CURRENT_TIMESTAMP)
+   - **Foreign Keys:** 
+     - `user_id` &rarr; `users(user_id)` [ON DELETE RESTRICT ON UPDATE CASCADE]
+     - `category_id` &rarr; `categories(category_id)` [ON DELETE RESTRICT ON UPDATE CASCADE]
+     - `priority_id` &rarr; `priorities(priority_id)` [ON DELETE RESTRICT ON UPDATE CASCADE]
+
+10. **`incidents`** (Subtype of Ticket)
+    - **Primary Key:** `ticket_id` (INT)
+    - **Attributes:** `incident_type` (VARCHAR(100) NOT NULL)
+    - **Foreign Keys:** `ticket_id` &rarr; `tickets(ticket_id)` [ON DELETE CASCADE ON UPDATE CASCADE]
+
+11. **`service_requests`** (Subtype of Ticket)
+    - **Primary Key:** `ticket_id` (INT)
+    - **Attributes:** `request_type` (VARCHAR(100) NOT NULL)
+    - **Foreign Keys:** `ticket_id` &rarr; `tickets(ticket_id)` [ON DELETE CASCADE ON UPDATE CASCADE]
+
+12. **`assignments`**
+    - **Primary Key:** `assignment_id` (INT AUTO_INCREMENT)
+    - **Attributes:** `assigned_at` (TIMESTAMP DEFAULT CURRENT_TIMESTAMP)
+    - **Foreign Keys:** 
+      - `ticket_id` &rarr; `tickets(ticket_id)` [ON DELETE CASCADE ON UPDATE CASCADE]
+      - `staff_id` &rarr; `support_staff(staff_id)` [ON DELETE RESTRICT ON UPDATE CASCADE]
+
+13. **`status_histories`**
+    - **Primary Key:** `history_id` (INT AUTO_INCREMENT)
+    - **Attributes:** `old_status` (VARCHAR(50) NULL), `new_status` (VARCHAR(50) NOT NULL), `changed_at` (TIMESTAMP DEFAULT CURRENT_TIMESTAMP)
+    - **Foreign Keys:** `ticket_id` &rarr; `tickets(ticket_id)` [ON DELETE CASCADE ON UPDATE CASCADE]
+
+14. **`resolutions`**
+    - **Primary Key:** `resolution_id` (INT AUTO_INCREMENT)
+    - **Attributes:** `description` (TEXT NOT NULL), `resolved_at` (TIMESTAMP DEFAULT CURRENT_TIMESTAMP)
+    - **Foreign Keys:** `ticket_id` (UNIQUE) &rarr; `tickets(ticket_id)` [ON DELETE CASCADE ON UPDATE CASCADE]
 
 ---
 
-*Refer to [er_diagram.html](er_diagram.html) for visual ER entity-relationship layout and cardinality mappings.*
+*For visual ER diagram relationships and cardinality mappings, refer to [er_diagram.html](er_diagram.html).*

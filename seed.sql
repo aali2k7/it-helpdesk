@@ -81,11 +81,11 @@ INSERT INTO assets (asset_id, asset_tag, name, serial_no, user_id, category_id, 
 
 -- 8. TICKETS (5 records)
 INSERT INTO tickets (ticket_id, ticket_no, user_id, category_id, priority_id, title, description, status, created_at) VALUES
-(1, 'TCK-2026-001', 1, 1, 3, 'Laptop display flickering constantly', 'Dell Latitude screen flickers whenever plugged into external dock.', 'In Progress', '2026-08-20 09:30:00'),
-(2, 'TCK-2026-002', 2, 4, 2, 'VPN access setup for remote working', 'Need VPN credentials and MFA setup on mobile device for remote week.', 'Resolved', '2026-08-21 11:15:00'),
-(3, 'TCK-2026-003', 3, 3, 4, 'Finance accounting portal connection timed out', 'Unable to reach SAP Finance server from Floor 2 network.', 'In Progress', '2026-08-22 14:00:00'),
-(4, 'TCK-2026-004', 4, 2, 1, 'Install Figma desktop client', 'Require Figma desktop application license and installation for marketing assets.', 'Open', '2026-08-22 16:30:00'),
-(5, 'TCK-2026-005', 5, 5, 2, 'Request second monitor for software engineering', 'Requesting an additional 27-inch monitor for backend dev workflow.', 'Open', '2026-08-23 08:45:00');
+(1, 'TKT-001', 1, 1, 3, 'Laptop display flickering constantly', 'Dell Latitude screen flickers whenever plugged into external dock.', 'In Progress', '2026-08-20 09:30:00'),
+(2, 'TKT-002', 2, 4, 2, 'VPN access setup for remote working', 'Need VPN credentials and MFA setup on mobile device for remote week.', 'Resolved', '2026-08-21 11:15:00'),
+(3, 'TKT-003', 3, 3, 4, 'Finance accounting portal connection timed out', 'Unable to reach SAP Finance server from Floor 2 network.', 'In Progress', '2026-08-22 14:00:00'),
+(4, 'TKT-004', 4, 2, 1, 'Install Figma desktop client', 'Require Figma desktop application license and installation for marketing assets.', 'Open', '2026-08-22 16:30:00'),
+(5, 'TKT-005', 5, 5, 2, 'Request second monitor for software engineering', 'Requesting an additional 27-inch monitor for backend dev workflow.', 'Open', '2026-08-23 08:45:00');
 
 -- 9. INCIDENTS (3 records - Subtypes of Tickets 1, 3, and 4)
 INSERT INTO incidents (ticket_id, incident_type) VALUES
