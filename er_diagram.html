@@ -1,0 +1,535 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IT Helpdesk & Asset Support - ER Diagram</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: #f5f7fa;
+    font-family: Inter, Arial, sans-serif;
+    color: #172033;
+}
+
+header {
+    text-align: center;
+    padding: 28px;
+    background: #111827;
+    color: white;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 28px;
+}
+
+header p {
+    margin: 8px 0 0;
+    color: #cbd5e1;
+}
+
+.canvas {
+    width: 1500px;
+    height: 950px;
+    margin: 25px auto;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 10px 35px rgba(0,0,0,.08);
+    position: relative;
+    overflow: hidden;
+}
+
+/* ENTITY BOX */
+
+.entity {
+    position: absolute;
+    width: 210px;
+    background: white;
+    border: 2px solid #334155;
+    border-radius: 10px;
+    overflow: hidden;
+    z-index: 2;
+}
+
+.entity-header {
+    background: #e8edf3;
+    padding: 10px 12px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 15px;
+    border-bottom: 2px solid #334155;
+}
+
+.attributes {
+    padding: 10px 14px 12px;
+    line-height: 1.75;
+    font-size: 13px;
+}
+
+.pk {
+    font-weight: 700;
+}
+
+.fk {
+    color: #475569;
+}
+
+/* RELATIONSHIP LINES */
+
+svg {
+    position: absolute;
+    inset: 0;
+    width: 1500px;
+    height: 950px;
+    z-index: 1;
+}
+
+.line {
+    stroke: #64748b;
+    stroke-width: 2;
+    fill: none;
+}
+
+.label {
+    font-size: 12px;
+    font-weight: 600;
+    fill: #475569;
+}
+
+.card {
+    font-size: 12px;
+    font-weight: 700;
+    fill: #dc2626;
+}
+
+/* SPECIAL TICKET */
+
+.ticket {
+    border-color: #1e3a5f;
+}
+
+.ticket .entity-header {
+    background: #dbeafe;
+    border-color: #1e3a5f;
+}
+
+.subtype {
+    border-style: dashed;
+}
+
+.subtype .entity-header {
+    background: #f8fafc;
+}
+
+/* POSITIONS */
+
+.department {
+    left: 50px;
+    top: 70px;
+}
+
+.user {
+    left: 340px;
+    top: 70px;
+}
+
+.asset {
+    left: 1080px;
+    top: 70px;
+}
+
+.category {
+    left: 1080px;
+    top: 300px;
+}
+
+.warranty {
+    left: 1080px;
+    top: 500px;
+}
+
+.ticket {
+    left: 600px;
+    top: 330px;
+}
+
+.incident {
+    left: 350px;
+    top: 330px;
+}
+
+.service {
+    left: 350px;
+    top: 535px;
+}
+
+.priority {
+    left: 600px;
+    top: 70px;
+}
+
+.staff {
+    left: 850px;
+    top: 700px;
+}
+
+.assignment {
+    left: 600px;
+    top: 700px;
+}
+
+.status {
+    left: 80px;
+    top: 700px;
+}
+
+.resolution {
+    left: 350px;
+    top: 760px;
+}
+
+.maintenance {
+    left: 1080px;
+    top: 700px;
+}
+
+/* FOOTER */
+
+.legend {
+    position: absolute;
+    bottom: 18px;
+    left: 40px;
+    font-size: 12px;
+    color: #64748b;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>IT Helpdesk & Asset Support Management System</h1>
+    <p>Conceptual ER Diagram — Review 1</p>
+</header>
+
+<div class="canvas">
+
+<svg viewBox="0 0 1500 950">
+
+<!-- ================================================= -->
+<!-- BASIC USER / ASSET RELATIONSHIPS -->
+<!-- ================================================= -->
+
+<!-- Department -> User -->
+<path class="line" d="M260 130 H340"/>
+<text class="label" x="280" y="120">has</text>
+<text class="card" x="265" y="120">1</text>
+<text class="card" x="325" y="120">N</text>
+
+
+<!-- User -> Ticket -->
+<path class="line" d="M550 150 V330 H600"/>
+<text class="label" x="560" y="300">raises</text>
+<text class="card" x="560" y="170">1</text>
+<text class="card" x="575" y="320">N</text>
+
+
+<!-- User -> Asset -->
+<path class="line" d="M550 120 H1080"/>
+<text class="label" x="790" y="110">assigned</text>
+<text class="card" x="560" y="110">1</text>
+<text class="card" x="1050" y="110">N</text>
+
+
+<!-- Asset -> Category -->
+<path class="line" d="M1185 220 V300"/>
+<text class="label" x="1195" y="265">belongs to</text>
+<text class="card" x="1195" y="235">N</text>
+<text class="card" x="1195" y="290">1</text>
+
+
+<!-- Asset -> Warranty -->
+<path class="line" d="M1240 220 V500"/>
+<text class="label" x="1250" y="370">covered by</text>
+<text class="card" x="1250" y="235">1</text>
+<text class="card" x="1250" y="490">0..1</text>
+
+
+<!-- Asset -> Maintenance -->
+<path class="line" d="M1290 220 V700"/>
+<text class="label" x="1300" y="570">maintenance</text>
+<text class="card" x="1300" y="235">1</text>
+<text class="card" x="1300" y="690">N</text>
+
+
+<!-- ================================================= -->
+<!-- TICKET CORE -->
+<!-- ================================================= -->
+
+<!-- Priority -> Ticket -->
+<path class="line" d="M680 180 V330"/>
+<text class="label" x="690" y="260">has priority</text>
+<text class="card" x="690" y="195">1</text>
+<text class="card" x="690" y="320">N</text>
+
+
+<!-- Category -> Ticket -->
+<path class="line" d="M1080 360 H810"/>
+<text class="label" x="900" y="350">categorizes</text>
+<text class="card" x="1060" y="350">1</text>
+<text class="card" x="820" y="350">N</text>
+
+
+<!-- Ticket -> Incident -->
+<path class="line" d="M600 390 H560"/>
+<text class="label" x="555" y="380">type</text>
+<text class="card" x="575" y="380">1</text>
+<text class="card" x="565" y="405">0..1</text>
+
+
+<!-- Ticket -> Service Request -->
+<path class="line" d="M600 430 H560"/>
+<text class="label" x="545" y="450">type</text>
+<text class="card" x="575" y="450">1</text>
+<text class="card" x="565" y="475">0..1</text>
+
+
+<!-- ================================================= -->
+<!-- TICKET LIFECYCLE -->
+<!-- ================================================= -->
+
+<!-- Ticket -> Assignment -->
+<path class="line" d="M705 500 V700"/>
+<text class="label" x="715" y="610">assigned through</text>
+<text class="card" x="715" y="520">1</text>
+<text class="card" x="715" y="690">N</text>
+
+
+<!-- Staff -> Assignment -->
+<path class="line" d="M850 760 H810"/>
+<text class="label" x="820" y="750">handles</text>
+<text class="card" x="835" y="750">1</text>
+<text class="card" x="815" y="775">N</text>
+
+
+<!-- Ticket -> Status History -->
+<path class="line" d="M600 470 H500 V700 H290"/>
+<text class="label" x="360" y="690">status tracked</text>
+<text class="card" x="585" y="460">1</text>
+<text class="card" x="305" y="690">N</text>
+
+
+<!-- Ticket -> Resolution -->
+<path class="line" d="M650 500 V760 H560"/>
+<text class="label" x="660" y="650">resolved by</text>
+<text class="card" x="660" y="520">1</text>
+<text class="card" x="570" y="750">0..1</text>
+
+</svg>
+
+
+<!-- ================================================= -->
+<!-- ENTITIES -->
+<!-- ================================================= -->
+
+<!-- Department -->
+
+<div class="entity department">
+    <div class="entity-header">DEPARTMENT</div>
+    <div class="attributes">
+        <div class="pk">PK department_id</div>
+        <div>name</div>
+        <div>location</div>
+    </div>
+</div>
+
+
+<!-- User -->
+
+<div class="entity user">
+    <div class="entity-header">USER</div>
+    <div class="attributes">
+        <div class="pk">PK user_id</div>
+        <div>name</div>
+        <div>email</div>
+        <div class="fk">department_id (FK)</div>
+    </div>
+</div>
+
+
+<!-- Asset -->
+
+<div class="entity asset">
+    <div class="entity-header">ASSET</div>
+    <div class="attributes">
+        <div class="pk">PK asset_id</div>
+        <div>asset_tag (UNIQUE)</div>
+        <div>name</div>
+        <div>serial_no</div>
+        <div class="fk">user_id (FK)</div>
+    </div>
+</div>
+
+
+<!-- Category -->
+
+<div class="entity category">
+    <div class="entity-header">CATEGORY</div>
+    <div class="attributes">
+        <div class="pk">PK category_id</div>
+        <div>name</div>
+        <div>description</div>
+    </div>
+</div>
+
+
+<!-- Warranty -->
+
+<div class="entity warranty">
+    <div class="entity-header">WARRANTY</div>
+    <div class="attributes">
+        <div class="pk">PK warranty_id</div>
+        <div>start_date</div>
+        <div>end_date</div>
+        <div>provider</div>
+    </div>
+</div>
+
+
+<!-- Priority -->
+
+<div class="entity priority">
+    <div class="entity-header">PRIORITY</div>
+    <div class="attributes">
+        <div class="pk">PK priority_id</div>
+        <div>name</div>
+        <div>level</div>
+    </div>
+</div>
+
+
+<!-- Ticket -->
+
+<div class="entity ticket">
+    <div class="entity-header">TICKET</div>
+    <div class="attributes">
+        <div class="pk">PK ticket_id</div>
+        <div>ticket_no (UNIQUE)</div>
+        <div class="fk">user_id (FK)</div>
+        <div class="fk">category_id (FK)</div>
+        <div class="fk">priority_id (FK)</div>
+        <div>title</div>
+        <div>description</div>
+        <div>status</div>
+        <div>created_at</div>
+    </div>
+</div>
+
+
+<!-- Incident -->
+
+<div class="entity subtype incident">
+    <div class="entity-header">INCIDENT</div>
+    <div class="attributes">
+        <div class="fk">ticket_id (FK)</div>
+        <div>incident_type</div>
+    </div>
+</div>
+
+
+<!-- Service Request -->
+
+<div class="entity subtype service">
+    <div class="entity-header">SERVICE REQUEST</div>
+    <div class="attributes">
+        <div class="fk">ticket_id (FK)</div>
+        <div>request_type</div>
+    </div>
+</div>
+
+
+<!-- Assignment -->
+
+<div class="entity assignment">
+    <div class="entity-header">ASSIGNMENT</div>
+    <div class="attributes">
+        <div class="pk">PK assignment_id</div>
+        <div class="fk">ticket_id (FK)</div>
+        <div class="fk">staff_id (FK)</div>
+        <div>assigned_at</div>
+    </div>
+</div>
+
+
+<!-- Support Staff -->
+
+<div class="entity staff">
+    <div class="entity-header">SUPPORT STAFF</div>
+    <div class="attributes">
+        <div class="pk">PK staff_id</div>
+        <div>name</div>
+        <div>email</div>
+        <div>specialization</div>
+    </div>
+</div>
+
+
+<!-- Status History -->
+
+<div class="entity status">
+    <div class="entity-header">STATUS HISTORY</div>
+    <div class="attributes">
+        <div class="pk">PK history_id</div>
+        <div class="fk">ticket_id (FK)</div>
+        <div>old_status</div>
+        <div>new_status</div>
+        <div>changed_at</div>
+    </div>
+</div>
+
+
+<!-- Resolution -->
+
+<div class="entity resolution">
+    <div class="entity-header">RESOLUTION</div>
+    <div class="attributes">
+        <div class="pk">PK resolution_id</div>
+        <div class="fk">ticket_id (FK)</div>
+        <div>description</div>
+        <div>resolved_at</div>
+    </div>
+</div>
+
+
+<!-- Maintenance -->
+
+<div class="entity maintenance">
+    <div class="entity-header">MAINTENANCE</div>
+    <div class="attributes">
+        <div class="pk">PK maintenance_id</div>
+        <div class="fk">asset_id (FK)</div>
+        <div>maintenance_date</div>
+        <div>description</div>
+        <div>cost</div>
+    </div>
+</div>
+
+
+<div class="legend">
+    <strong>Notation:</strong>
+    PK = Primary Key &nbsp; | &nbsp;
+    FK = Foreign Key &nbsp; | &nbsp;
+    1:N = One-to-Many &nbsp; | &nbsp;
+    0..1 = Optional
+</div>
+
+</div>
+
+</body>
+</html>
