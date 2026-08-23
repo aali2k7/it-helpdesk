@@ -220,7 +220,7 @@ def create_ticket(conn):
         # Log initial status history
         cursor.execute(
             "INSERT INTO status_histories (ticket_id, old_status, new_status) VALUES (%s, %s, %s)",
-            (new_ticket_id, "None", "Open")
+            (new_ticket_id, None, "Open")
         )
 
         conn.commit()

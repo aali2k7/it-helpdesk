@@ -138,7 +138,7 @@ CREATE TABLE assignments (
 CREATE TABLE status_histories (
     history_id INT AUTO_INCREMENT PRIMARY KEY,
     ticket_id INT NOT NULL,
-    old_status VARCHAR(50) NOT NULL,
+    old_status VARCHAR(50) NULL,
     new_status VARCHAR(50) NOT NULL,
     changed_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_status_histories_ticket
