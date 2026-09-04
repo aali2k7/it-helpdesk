@@ -76,7 +76,7 @@
                   var(--bg-canvas);
     }
 
-    /* Elegant, Minimal Presentation Masthead (Not a generic web navbar) */
+    /* Elegant, Minimal Presentation Masthead */
     .deck-header {
       height: 42px;
       padding: 0 44px;
@@ -117,7 +117,30 @@
     .header-controls {
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: 12px;
+    }
+
+    .btn-header-action {
+      background: transparent;
+      border: 1px solid var(--border-medium);
+      color: var(--text-secondary);
+      border-radius: var(--radius-sm);
+      height: 26px;
+      padding: 0 9px;
+      font-size: 11px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-header-action:hover {
+      background: #ffffff;
+      color: var(--accent-navy);
+      border-color: var(--accent-blue);
+      box-shadow: var(--shadow-subtle);
     }
 
     .slide-counter {
@@ -150,15 +173,57 @@
       margin: 0 auto;
       opacity: 0;
       pointer-events: none;
-      transform: translateY(6px) scale(0.996);
-      transition: opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1),
-                  transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+      transform: translateY(8px) scale(0.995);
+      transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .slide.active {
       opacity: 1;
       pointer-events: auto;
       transform: translateY(0) scale(1);
+    }
+
+    /* ==========================================================================
+       SLIDE ENTRY ANIMATIONS (Triggered each time a slide becomes active)
+       ========================================================================== */
+    @keyframes slideEntrySequence {
+      0% {
+        opacity: 0;
+        transform: translateY(10px) scale(0.995);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .slide.active .anim-eyebrow {
+      animation: slideEntrySequence 0.32s cubic-bezier(0.16, 1, 0.3, 1) both 0.04s;
+    }
+
+    .slide.active .anim-title {
+      animation: slideEntrySequence 0.36s cubic-bezier(0.16, 1, 0.3, 1) both 0.10s;
+    }
+
+    .slide.active .anim-desc {
+      animation: slideEntrySequence 0.38s cubic-bezier(0.16, 1, 0.3, 1) both 0.16s;
+    }
+
+    .slide.active .anim-stagger-1 {
+      animation: slideEntrySequence 0.38s cubic-bezier(0.16, 1, 0.3, 1) both 0.22s;
+    }
+
+    .slide.active .anim-stagger-2 {
+      animation: slideEntrySequence 0.38s cubic-bezier(0.16, 1, 0.3, 1) both 0.28s;
+    }
+
+    .slide.active .anim-stagger-3 {
+      animation: slideEntrySequence 0.38s cubic-bezier(0.16, 1, 0.3, 1) both 0.34s;
+    }
+
+    .slide.active .anim-stagger-4 {
+      animation: slideEntrySequence 0.38s cubic-bezier(0.16, 1, 0.3, 1) both 0.40s;
     }
 
     /* Subtle Presentation Footer */
@@ -215,6 +280,35 @@
     .dot.active {
       width: 32px;
       background: var(--accent-blue);
+    }
+
+    .footer-center-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn-kbd-help {
+      background: #ffffff;
+      border: 1px solid var(--border-medium);
+      color: var(--text-secondary);
+      border-radius: 20px;
+      height: 24px;
+      padding: 0 10px;
+      font-size: 11px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      box-shadow: 0 1px 1px rgba(0,0,0,0.03);
+      transition: all 0.18s ease;
+    }
+
+    .btn-kbd-help:hover {
+      border-color: var(--accent-blue);
+      color: var(--accent-navy);
+      background: var(--accent-blue-soft);
     }
 
     .keyboard-hint {
@@ -289,7 +383,7 @@
     }
 
     /* ==========================================================================
-       PRESENTATION TYPOGRAPHY (Optimized for Distance / Projectors)
+       PRESENTATION TYPOGRAPHY
        ========================================================================== */
     .slide-header {
       margin-bottom: 18px;
@@ -328,11 +422,6 @@
       border-radius: var(--radius-md);
       box-shadow: var(--shadow-card);
       transition: border-color 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    .card:hover {
-      border-color: var(--border-medium);
-      box-shadow: var(--shadow-card-hover);
     }
 
     /* ==========================================================================
@@ -409,7 +498,7 @@
       padding: 12px 20px;
       border-radius: var(--radius-md);
       box-shadow: var(--shadow-subtle);
-      transition: all 0.2s ease;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
       flex: 1;
       min-width: 240px;
     }
@@ -417,6 +506,7 @@
     .tech-pill:hover {
       border-color: var(--accent-blue-border);
       box-shadow: var(--shadow-card);
+      transform: translateY(-2px);
     }
 
     .tech-pill-icon {
@@ -429,6 +519,11 @@
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
+      transition: transform 0.25s ease;
+    }
+
+    .tech-pill:hover .tech-pill-icon {
+      transform: scale(1.06);
     }
 
     .tech-pill-name {
@@ -444,7 +539,7 @@
     }
 
     /* ==========================================================================
-       SLIDE 2: THE PROBLEM (Vertically lowered & visually balanced for projector)
+       SLIDE 2: THE PROBLEM (Enhanced Interactive Hover State)
        ========================================================================== */
     .slide-problem-wrapper {
       display: flex;
@@ -477,12 +572,16 @@
       box-shadow: var(--shadow-card);
       min-height: 114px;
       justify-content: flex-start;
-      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+                  box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+                  border-color 0.25s ease;
+      cursor: default;
     }
 
     .problem-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
       border-color: #cbd5e1;
-      box-shadow: var(--shadow-card-hover);
     }
 
     .problem-card-top {
@@ -503,6 +602,14 @@
       align-items: center;
       justify-content: center;
       letter-spacing: 0.05em;
+      transition: all 0.22s ease;
+    }
+
+    .problem-card:hover .problem-num {
+      background: var(--accent-blue-soft);
+      color: var(--accent-blue);
+      border-color: var(--accent-blue-border);
+      font-weight: 800;
     }
 
     .problem-card h4 {
@@ -536,8 +643,28 @@
     }
 
     /* ==========================================================================
-       SLIDE 3: PROJECT OBJECTIVES
+       SLIDE 3: INTERACTIVE OBJECTIVE CARDS
        ========================================================================== */
+    .s3-interactive-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .interactive-guide-pill {
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--accent-navy);
+      background: rgba(239, 246, 255, 0.85);
+      border: 1px solid var(--accent-blue-border);
+      padding: 3px 10px;
+      border-radius: 20px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
     .s3-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -553,12 +680,36 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      min-height: 130px;
+      min-height: 132px;
+      cursor: pointer;
+      position: relative;
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+                  box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+                  border-color 0.22s ease,
+                  opacity 0.25s ease,
+                  filter 0.25s ease;
     }
 
     .s3-card:hover {
       border-color: var(--accent-blue-border);
       box-shadow: var(--shadow-card-hover);
+      transform: translateY(-2px);
+    }
+
+    .s3-grid.has-active-selection .s3-card:not(.selected) {
+      opacity: 0.45;
+      filter: grayscale(0.25);
+      transform: scale(0.99);
+    }
+
+    .s3-card.selected {
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 0 2px rgba(29, 78, 216, 0.2), 0 10px 22px rgba(15, 23, 42, 0.09);
+      transform: translateY(-3px) scale(1.015);
+      opacity: 1 !important;
+      filter: none !important;
+      background: #ffffff;
+      z-index: 10;
     }
 
     .s3-card.wide {
@@ -569,7 +720,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
 
     .s3-index {
@@ -581,13 +732,20 @@
       border-radius: 4px;
       border: 1px solid var(--accent-blue-border);
       letter-spacing: 0.04em;
+      transition: all 0.2s ease;
+    }
+
+    .s3-card.selected .s3-index {
+      background: var(--accent-navy);
+      color: #ffffff;
+      border-color: var(--accent-navy);
     }
 
     .s3-title {
       font-size: 14px;
       font-weight: 750;
       color: var(--text-primary);
-      margin-bottom: 5px;
+      margin-bottom: 4px;
       line-height: 1.32;
     }
 
@@ -595,6 +753,32 @@
       font-size: 12.5px;
       color: var(--text-secondary);
       line-height: 1.45;
+    }
+
+    /* Expandable additional explanation for selected objective */
+    .s3-detail {
+      max-height: 0;
+      opacity: 0;
+      overflow: hidden;
+      margin-top: 0;
+      font-size: 12px;
+      line-height: 1.4;
+      color: var(--accent-navy);
+      font-weight: 600;
+      border-top: 1px dashed transparent;
+      padding-top: 0;
+      transition: max-height 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+                  opacity 0.25s ease,
+                  margin-top 0.25s ease,
+                  padding-top 0.25s ease;
+    }
+
+    .s3-card.selected .s3-detail {
+      max-height: 70px;
+      opacity: 1;
+      margin-top: 8px;
+      padding-top: 7px;
+      border-top-color: var(--accent-blue-border);
     }
 
     /* ==========================================================================
@@ -678,6 +862,12 @@
       align-items: center;
       gap: 6px;
       box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+      transition: all 0.2s ease;
+    }
+
+    .entity-chip:hover {
+      border-color: var(--accent-navy);
+      transform: translateY(-1px);
     }
 
     .chip-dot {
@@ -730,6 +920,13 @@
       align-items: center;
       justify-content: space-between;
       box-shadow: var(--shadow-subtle);
+      transition: all 0.2s ease;
+    }
+
+    .relation-node:hover {
+      border-color: var(--accent-blue-border);
+      box-shadow: var(--shadow-card);
+      transform: translateY(-1px);
     }
 
     .relation-source {
@@ -749,7 +946,7 @@
     }
 
     /* ==========================================================================
-       SLIDE 5: COMPACT ENTITY RELATIONSHIP DIAGRAM (FITS WITHIN SCREEN)
+       SLIDE 5: INTERACTIVE ENTITY RELATIONSHIP DIAGRAM
        ========================================================================== */
     .s5-erd-board {
       background: #ffffff;
@@ -763,6 +960,31 @@
       position: relative;
     }
 
+    /* Dynamic SVG Link Overlay */
+    .erd-svg-overlay {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 15;
+    }
+
+    .erd-connector-path {
+      fill: none;
+      stroke: var(--accent-blue);
+      stroke-width: 2.2px;
+      stroke-linecap: round;
+      stroke-dasharray: 6 4;
+      animation: erdLineFlow 0.85s linear infinite;
+    }
+
+    @keyframes erdLineFlow {
+      to {
+        stroke-dashoffset: -20;
+      }
+    }
+
     .erd-table {
       background: #ffffff;
       border: 1px solid var(--border-medium);
@@ -771,11 +993,46 @@
       box-shadow: var(--shadow-subtle);
       display: flex;
       flex-direction: column;
+      cursor: pointer;
+      position: relative;
+      z-index: 2;
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+                  border-color 0.22s ease,
+                  box-shadow 0.25s ease,
+                  opacity 0.25s ease,
+                  filter 0.25s ease;
     }
 
     .erd-table:hover {
-      border-color: var(--accent-navy);
+      border-color: var(--accent-blue);
       box-shadow: var(--shadow-card);
+    }
+
+    /* Interactive States for ERD */
+    .s5-erd-board.has-erd-focus .erd-table:not(.is-selected):not(.is-related) {
+      opacity: 0.28;
+      filter: grayscale(0.5);
+      transform: scale(0.985);
+    }
+
+    .erd-table.is-selected {
+      border: 2px solid var(--accent-blue);
+      box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.2), 0 8px 20px rgba(15, 23, 42, 0.12);
+      transform: scale(1.02);
+      z-index: 20;
+      background: #ffffff;
+      opacity: 1 !important;
+      filter: none !important;
+    }
+
+    .erd-table.is-related {
+      border: 1.8px solid var(--accent-indigo);
+      box-shadow: 0 0 0 2px rgba(67, 56, 202, 0.16), 0 5px 14px rgba(15, 23, 42, 0.08);
+      transform: scale(1.01);
+      z-index: 18;
+      background: #ffffff;
+      opacity: 1 !important;
+      filter: none !important;
     }
 
     .erd-head {
@@ -785,6 +1042,21 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      transition: background 0.2s ease;
+    }
+
+    .erd-table.is-selected .erd-head {
+      background: var(--accent-navy);
+      color: #ffffff;
+    }
+
+    .erd-table.is-selected .erd-title {
+      color: #ffffff;
+    }
+
+    .erd-table.is-related .erd-head {
+      background: var(--accent-indigo-soft);
+      border-bottom-color: var(--accent-indigo-border);
     }
 
     .erd-title {
@@ -793,6 +1065,7 @@
       letter-spacing: 0.05em;
       color: var(--accent-navy);
       text-transform: uppercase;
+      transition: color 0.2s ease;
     }
 
     .erd-badge {
@@ -803,6 +1076,18 @@
       padding: 1px 5px;
       border-radius: 3px;
       border: 1px solid var(--border-subtle);
+    }
+
+    .erd-table.is-selected .erd-badge {
+      background: rgba(255, 255, 255, 0.2);
+      color: #ffffff;
+      border-color: rgba(255, 255, 255, 0.4);
+    }
+
+    .erd-table.is-related .erd-badge {
+      background: #ffffff;
+      color: var(--accent-indigo);
+      border-color: var(--accent-indigo-border);
     }
 
     .erd-body {
@@ -817,6 +1102,7 @@
       padding: 3px 9px;
       font-size: 11px;
       border-bottom: 1px solid #f8fafc;
+      transition: background 0.2s ease;
     }
 
     .erd-row:last-child {
@@ -828,9 +1114,19 @@
       font-weight: 650;
     }
 
+    .erd-table.is-selected .erd-row.pk {
+      background: #dbeafe;
+    }
+
     .erd-row.fk {
       background: #faf5ff;
       font-weight: 550;
+    }
+
+    .erd-table.is-related .erd-row.fk {
+      background: #ede9fe;
+      color: var(--accent-indigo);
+      font-weight: 700;
     }
 
     .col-name {
@@ -879,12 +1175,14 @@
       padding: 7px 14px;
       font-size: 11.5px;
       color: var(--text-secondary);
+      position: relative;
+      z-index: 20;
     }
 
     .legend-items {
       display: flex;
       align-items: center;
-      gap: 18px;
+      gap: 16px;
     }
 
     .legend-item {
@@ -894,13 +1192,37 @@
       font-weight: 600;
     }
 
+    .erd-status-display {
+      font-weight: 700;
+      color: var(--accent-navy);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-erd-reset {
+      font-size: 10px;
+      font-weight: 700;
+      color: #ffffff;
+      background: var(--accent-navy);
+      border: none;
+      padding: 2px 7px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: none;
+    }
+
+    .btn-erd-reset:hover {
+      background: var(--accent-blue);
+    }
+
     /* ==========================================================================
-       SLIDE 6: FROM DATABASE DESIGN TO IMPLEMENTATION
+       SLIDE 6: INTERACTIVE IMPLEMENTATION ARCHITECTURE
        ========================================================================== */
     .s6-container {
       display: flex;
       flex-direction: column;
-      gap: 13px;
+      gap: 12px;
     }
 
     .pipeline-bar {
@@ -920,10 +1242,21 @@
       align-items: center;
       gap: 11px;
       position: relative;
+      cursor: pointer;
+      transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
     }
 
     .pipeline-step:hover {
       border-color: var(--accent-blue-border);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-card-hover);
+    }
+
+    .pipeline-step.active {
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 0 2px rgba(29, 78, 216, 0.16), var(--shadow-card);
+      background: #ffffff;
+      transform: translateY(-2px);
     }
 
     .step-num {
@@ -939,6 +1272,13 @@
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
+      transition: all 0.2s ease;
+    }
+
+    .pipeline-step.active .step-num {
+      background: var(--accent-blue);
+      color: #ffffff;
+      border-color: var(--accent-blue);
     }
 
     .step-text {
@@ -953,34 +1293,80 @@
     }
 
     .step-sub {
-      font-size: 11.5px;
+      font-size: 11px;
       color: var(--text-secondary);
+    }
+
+    /* Implementation Interactive Explanation Callout */
+    .impl-exp-banner {
+      background: #ffffff;
+      border: 1px solid var(--accent-blue-border);
+      border-left: 4px solid var(--accent-blue);
+      border-radius: var(--radius-md);
+      padding: 11px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      box-shadow: var(--shadow-subtle);
+      transition: all 0.2s ease;
+    }
+
+    .impl-exp-content {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .impl-exp-badge {
+      font-size: 11px;
+      font-weight: 750;
+      color: var(--accent-navy);
+      background: var(--accent-blue-soft);
+      padding: 2.5px 8px;
+      border-radius: 4px;
+      border: 1px solid var(--accent-blue-border);
+      white-space: nowrap;
+    }
+
+    .impl-exp-text {
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .impl-exp-guide {
+      font-size: 11px;
+      color: var(--text-muted);
+      white-space: nowrap;
     }
 
     .modules-matrix {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
+      gap: 9px;
     }
 
     .module-item {
       background: #ffffff;
       border: 1px solid var(--border-subtle);
       border-radius: var(--radius-sm);
-      padding: 10px 13px;
+      padding: 9px 13px;
       display: flex;
       align-items: center;
       gap: 10px;
       box-shadow: var(--shadow-subtle);
+      transition: all 0.2s ease;
     }
 
     .module-item:hover {
       border-color: var(--accent-indigo-border);
+      transform: translateY(-1px);
     }
 
     .module-icon {
-      width: 24px;
-      height: 24px;
+      width: 22px;
+      height: 22px;
       border-radius: 5px;
       background: var(--accent-indigo-soft);
       color: var(--accent-indigo);
@@ -991,7 +1377,7 @@
     }
 
     .module-name {
-      font-size: 13px;
+      font-size: 12.5px;
       font-weight: 650;
       color: var(--text-primary);
     }
@@ -1000,22 +1386,22 @@
       background: #ffffff;
       border: 1px solid var(--accent-blue-border);
       border-radius: var(--radius-md);
-      padding: 13px 18px;
+      padding: 11px 16px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 18px;
+      gap: 16px;
       box-shadow: var(--shadow-subtle);
     }
 
     .impl-left {
       display: flex;
       flex-direction: column;
-      gap: 3px;
+      gap: 2px;
     }
 
     .impl-badge {
-      font-size: 11px;
+      font-size: 10.5px;
       font-weight: 750;
       text-transform: uppercase;
       letter-spacing: 0.07em;
@@ -1023,18 +1409,18 @@
     }
 
     .impl-text {
-      font-size: 13.5px;
+      font-size: 13px;
       color: var(--text-secondary);
-      line-height: 1.45;
+      line-height: 1.4;
     }
 
     .s6-quote {
       background: #ffffff;
       border: 1px solid var(--accent-indigo-border);
       border-left: 4px solid var(--accent-indigo);
-      padding: 12px 18px;
+      padding: 10px 16px;
       border-radius: var(--radius-sm);
-      font-size: 14.5px;
+      font-size: 13.5px;
       font-weight: 700;
       color: var(--accent-navy);
       text-align: center;
@@ -1043,11 +1429,100 @@
     }
 
     /* ==========================================================================
+       KEYBOARD CONTROLS MODAL OVERLAY
+       ========================================================================== */
+    .kbd-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.4);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.22s ease;
+    }
+
+    .kbd-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .kbd-modal-card {
+      background: #ffffff;
+      border: 1px solid var(--border-medium);
+      border-radius: var(--radius-lg);
+      box-shadow: 0 16px 36px rgba(15, 23, 42, 0.16);
+      width: 90%;
+      max-width: 420px;
+      padding: 20px 24px;
+      transform: scale(0.96) translateY(6px);
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .kbd-overlay.active .kbd-modal-card {
+      transform: scale(1) translateY(0);
+    }
+
+    .kbd-modal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 12px;
+      margin-bottom: 14px;
+    }
+
+    .kbd-modal-head h3 {
+      font-size: 15px;
+      font-weight: 750;
+      color: var(--text-primary);
+    }
+
+    .btn-kbd-close {
+      background: transparent;
+      border: none;
+      font-size: 18px;
+      color: var(--text-muted);
+      cursor: pointer;
+      line-height: 1;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .btn-kbd-close:hover {
+      background: #f1f5f9;
+      color: var(--text-primary);
+    }
+
+    .kbd-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .kbd-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .kbd-item .key-group {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    /* ==========================================================================
        SVG ICONS STYLES
        ========================================================================== */
     svg.icon {
-      width: 16px;
-      height: 16px;
+      width: 15px;
+      height: 15px;
       stroke-width: 2;
       stroke: currentColor;
       fill: none;
@@ -1066,6 +1541,13 @@
         <span class="brand-title">IT Helpdesk &amp; Asset Support Management System</span>
       </div>
       <div class="header-controls">
+        <!-- Fullscreen Presentation Button -->
+        <button class="btn-header-action" id="btnFullscreen" title="Toggle Fullscreen Mode (F)">
+          <svg class="icon" viewBox="0 0 24 24" id="fsIcon" style="width:13px;height:13px;">
+            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+          </svg>
+          <span id="fsText">Fullscreen</span>
+        </button>
         <span class="slide-counter" id="slideCounter">01 / 06</span>
       </div>
     </header>
@@ -1079,27 +1561,27 @@
       <section class="slide active" id="slide-1" data-slide="1">
         <div class="s1-container">
           <div>
-            <div class="s1-hero-badge">
+            <div class="s1-hero-badge anim-eyebrow">
               <svg class="icon" viewBox="0 0 24 24" style="width:13px;height:13px;">
                 <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
               </svg>
               Academic Project Review &bull; DBMS
             </div>
-            <h1 class="s1-title" style="margin-top: 12px;">
+            <h1 class="s1-title anim-title" style="margin-top: 12px;">
               IT Helpdesk &amp; Asset Support<br>Management System
             </h1>
-            <p class="s1-subtitle">
+            <p class="s1-subtitle anim-desc">
               A Database-Driven Solution for Managing IT Support Operations and Organizational Assets
             </p>
           </div>
 
-          <div class="s1-overview-card">
+          <div class="s1-overview-card anim-stagger-1">
             <p class="s1-overview-text">
               A centralized system designed to manage IT assets, support tickets, technician assignments, maintenance records, warranties and service requests through a structured relational database.
             </p>
           </div>
 
-          <div class="s1-badges-row">
+          <div class="s1-badges-row anim-stagger-2">
             <!-- Badge 1 -->
             <div class="tech-pill">
               <div class="tech-pill-icon">
@@ -1150,19 +1632,19 @@
       </section>
 
       <!-- ================================================================
-           SLIDE 2: THE PROBLEM (Vertically Lowered & Visually Balanced)
+           SLIDE 2: THE PROBLEM (With Smooth Interactive Hover States)
            ================================================================ -->
       <section class="slide" id="slide-2" data-slide="2">
         <div class="slide-problem-wrapper">
           <div class="s2-header">
-            <span class="eyebrow">Challenges &amp; Industry Motivation</span>
-            <h2 class="slide-title">The Problem</h2>
-            <p class="slide-desc">
+            <span class="eyebrow anim-eyebrow">Challenges &amp; Industry Motivation</span>
+            <h2 class="slide-title anim-title">The Problem</h2>
+            <p class="slide-desc anim-desc">
               Organizations often manage IT assets and employee support requests through emails, spreadsheets and disconnected systems.
             </p>
           </div>
 
-          <div class="s2-grid">
+          <div class="s2-grid anim-stagger-1">
             <!-- Card 1 -->
             <div class="problem-card">
               <div class="problem-card-top">
@@ -1213,7 +1695,7 @@
             </div>
           </div>
 
-          <div class="problem-highlight-statement">
+          <div class="problem-highlight-statement anim-stagger-2">
             <svg class="icon" viewBox="0 0 24 24" style="width:20px;height:20px;color:var(--accent-blue);flex-shrink:0;">
               <circle cx="12" cy="12" r="10"></circle>
               <line x1="12" y1="16" x2="12" y2="12"></line>
@@ -1225,124 +1707,151 @@
       </section>
 
       <!-- ================================================================
-           SLIDE 3: PROJECT OBJECTIVES
+           SLIDE 3: INTERACTIVE OBJECTIVE CARDS
            ================================================================ -->
       <section class="slide" id="slide-3" data-slide="3">
-        <div class="slide-header">
-          <span class="eyebrow">Project Goals &amp; Capabilities</span>
-          <h2 class="slide-title">What Are We Building?</h2>
-          <p class="slide-desc">
+        <div class="slide-header" style="margin-bottom: 12px;">
+          <span class="eyebrow anim-eyebrow">Project Goals &amp; Capabilities</span>
+          <div class="s3-interactive-bar anim-title">
+            <h2 class="slide-title">What Are We Building?</h2>
+            <span class="interactive-guide-pill">
+              <svg class="icon" viewBox="0 0 24 24" style="width:12px;height:12px;color:var(--accent-blue);"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+              Click any goal card to reveal technical details
+            </span>
+          </div>
+          <p class="slide-desc anim-desc">
             A reliable relational platform designed to unify daily service desk workflows with physical hardware lifecycle management.
           </p>
         </div>
 
-        <div class="s3-grid">
+        <div class="s3-grid anim-stagger-1" id="objectivesGrid">
           <!-- Item 1 -->
-          <div class="s3-card">
-            <div class="s3-top">
-              <span class="s3-index">Goal 01</span>
-              <svg class="icon" viewBox="0 0 24 24" style="color:var(--accent-navy);">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                <polyline points="14 2 14 8 20 8"></polyline>
-              </svg>
-            </div>
+          <div class="s3-card" data-goal="1">
             <div>
+              <div class="s3-top">
+                <span class="s3-index">Goal 01</span>
+                <svg class="icon" viewBox="0 0 24 24" style="color:var(--accent-navy);">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                </svg>
+              </div>
               <h4 class="s3-title">Centralize IT Support Ticket Management</h4>
               <p class="s3-desc">Unified repository for raising, categorizing, and prioritizing enterprise user issues.</p>
+            </div>
+            <div class="s3-detail">
+              Eliminates fragmented communication by logging requests into structured tables with automated sequencing and priority triage.
             </div>
           </div>
 
           <!-- Item 2 -->
-          <div class="s3-card">
-            <div class="s3-top">
-              <span class="s3-index">Goal 02</span>
-              <svg class="icon" viewBox="0 0 24 24" style="color:var(--accent-navy);">
-                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
-                <line x1="8" y1="21" x2="16" y2="21"></line>
-                <line x1="12" y1="17" x2="12" y2="21"></line>
-              </svg>
-            </div>
+          <div class="s3-card" data-goal="2">
             <div>
+              <div class="s3-top">
+                <span class="s3-index">Goal 02</span>
+                <svg class="icon" viewBox="0 0 24 24" style="color:var(--accent-navy);">
+                  <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                  <line x1="8" y1="21" x2="16" y2="21"></line>
+                  <line x1="12" y1="17" x2="12" y2="21"></line>
+                </svg>
+              </div>
               <h4 class="s3-title">Maintain Records of Organizational Assets</h4>
               <p class="s3-desc">Catalog physical devices, hardware specifications, asset tags, and department ownership.</p>
+            </div>
+            <div class="s3-detail">
+              Establishes single-source custody for equipment, tying unique asset tags and serials directly to departmental staff.
             </div>
           </div>
 
           <!-- Item 3 -->
-          <div class="s3-card">
-            <div class="s3-top">
-              <span class="s3-index">Goal 03</span>
-              <svg class="icon" viewBox="0 0 24 24" style="color:var(--accent-navy);">
-                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
-                <line x1="12" y1="9" x2="12" y2="13"></line>
-                <line x1="12" y1="17" x2="12.01" y2="17"></line>
-              </svg>
-            </div>
+          <div class="s3-card" data-goal="3">
             <div>
+              <div class="s3-top">
+                <span class="s3-index">Goal 03</span>
+                <svg class="icon" viewBox="0 0 24 24" style="color:var(--accent-navy);">
+                  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                  <line x1="12" y1="9" x2="12" y2="13"></line>
+                  <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
+              </div>
               <h4 class="s3-title">Manage Incidents &amp; Service Requests</h4>
               <p class="s3-desc">Differentiate critical unplanned system outages from standard employee hardware/access requests.</p>
+            </div>
+            <div class="s3-detail">
+              Separates urgent failure escalations from routine provisioning requests to enforce precise SLA resolution paths.
             </div>
           </div>
 
           <!-- Item 4 -->
-          <div class="s3-card">
-            <div class="s3-top">
-              <span class="s3-index">Goal 04</span>
-              <svg class="icon" viewBox="0 0 24 24" style="color:var(--accent-navy);">
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                <circle cx="9" cy="7" r="4"></circle>
-                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-              </svg>
-            </div>
+          <div class="s3-card" data-goal="4">
             <div>
+              <div class="s3-top">
+                <span class="s3-index">Goal 04</span>
+                <svg class="icon" viewBox="0 0 24 24" style="color:var(--accent-navy);">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="9" cy="7" r="4"></circle>
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+              </div>
               <h4 class="s3-title">Assign Tickets to Appropriate Technicians</h4>
               <p class="s3-desc">Structured delegation ensuring accountability and skill-matched technical troubleshooting.</p>
+            </div>
+            <div class="s3-detail">
+              Enforces assignment accountability via technician foreign keys, preventing neglected tickets and balancing queue loads.
             </div>
           </div>
 
           <!-- Item 5 -->
-          <div class="s3-card">
-            <div class="s3-top">
-              <span class="s3-index">Goal 05</span>
-              <svg class="icon" viewBox="0 0 24 24" style="color:var(--accent-navy);">
-                <circle cx="12" cy="12" r="10"></circle>
-                <polyline points="12 6 12 12 16 14"></polyline>
-              </svg>
-            </div>
+          <div class="s3-card" data-goal="5">
             <div>
+              <div class="s3-top">
+                <span class="s3-index">Goal 05</span>
+                <svg class="icon" viewBox="0 0 24 24" style="color:var(--accent-navy);">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+              </div>
               <h4 class="s3-title">Track Status &amp; Resolution History</h4>
               <p class="s3-desc">Capture immutable chronological status audit trails from intake to resolution closure.</p>
+            </div>
+            <div class="s3-detail">
+              Maintains full state audit logs in `status_histories`, recording timestamps and user actions from intake to resolution.
             </div>
           </div>
 
           <!-- Item 6 -->
-          <div class="s3-card">
-            <div class="s3-top">
-              <span class="s3-index">Goal 06</span>
-              <svg class="icon" viewBox="0 0 24 24" style="color:var(--accent-navy);">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-              </svg>
-            </div>
+          <div class="s3-card" data-goal="6">
             <div>
+              <div class="s3-top">
+                <span class="s3-index">Goal 06</span>
+                <svg class="icon" viewBox="0 0 24 24" style="color:var(--accent-navy);">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                </svg>
+              </div>
               <h4 class="s3-title">Monitor Warranties &amp; Maintenance</h4>
               <p class="s3-desc">Track active vendor warranty validity periods, repair descriptions, and servicing expenditures.</p>
+            </div>
+            <div class="s3-detail">
+              Prevents lapses in manufacturer coverage and maintains complete expense tracking across physical repairs.
             </div>
           </div>
 
           <!-- Item 7 (Wide card spanning 2 columns) -->
-          <div class="s3-card wide" style="background: linear-gradient(135deg, #ffffff 0%, #f9faff 100%);">
-            <div class="s3-top">
-              <span class="s3-index" style="background: var(--accent-indigo-soft); color: var(--accent-indigo); border-color: var(--accent-indigo-border);">Goal 07</span>
-              <svg class="icon" viewBox="0 0 24 24" style="color:var(--accent-indigo);">
-                <line x1="18" y1="20" x2="18" y2="10"></line>
-                <line x1="12" y1="20" x2="12" y2="4"></line>
-                <line x1="6" y1="20" x2="6" y2="14"></line>
-              </svg>
-            </div>
+          <div class="s3-card wide" data-goal="7" style="background: linear-gradient(135deg, #ffffff 0%, #f9faff 100%);">
             <div>
+              <div class="s3-top">
+                <span class="s3-index" style="background: var(--accent-indigo-soft); color: var(--accent-indigo); border-color: var(--accent-indigo-border);">Goal 07</span>
+                <svg class="icon" viewBox="0 0 24 24" style="color:var(--accent-indigo);">
+                  <line x1="18" y1="20" x2="18" y2="10"></line>
+                  <line x1="12" y1="20" x2="12" y2="4"></line>
+                  <line x1="6" y1="20" x2="6" y2="14"></line>
+                </svg>
+              </div>
               <h4 class="s3-title">Generate Meaningful Reports and Insights</h4>
               <p class="s3-desc">Execute multi-table relational aggregations to evaluate mean time to resolution (MTTR), technician workload, and high-frequency asset hardware failures.</p>
+            </div>
+            <div class="s3-detail">
+              Unlocks automated SQL aggregations for MTTR benchmarks, recurring equipment defects, and department support bottlenecks.
             </div>
           </div>
         </div>
@@ -1353,14 +1862,14 @@
            ================================================================ -->
       <section class="slide" id="slide-4" data-slide="4">
         <div class="slide-header">
-          <span class="eyebrow">Relational Architecture</span>
-          <h2 class="slide-title">Core Data Model</h2>
-          <p class="slide-desc">
+          <span class="eyebrow anim-eyebrow">Relational Architecture</span>
+          <h2 class="slide-title anim-title">Core Data Model</h2>
+          <p class="slide-desc anim-desc">
             The system is designed around interconnected entities that collectively manage IT support operations and organizational assets.
           </p>
         </div>
 
-        <div class="s4-container">
+        <div class="s4-container anim-stagger-1">
           <div class="s4-model-board">
             <!-- Domain Columns -->
             <div class="domain-columns">
@@ -1475,20 +1984,29 @@
       </section>
 
       <!-- ================================================================
-           SLIDE 5: ENTITY RELATIONSHIP DIAGRAM (FITS WITHIN LAPTOP SCREEN)
+           SLIDE 5: INTERACTIVE ENTITY RELATIONSHIP DIAGRAM
            ================================================================ -->
       <section class="slide" id="slide-5" data-slide="5">
-        <div class="slide-header" style="margin-bottom: 10px;">
-          <span class="eyebrow">Schema Specification &bull; 3NF Design</span>
-          <h2 class="slide-title" style="font-size: 26px;">Entity Relationship Diagram</h2>
-          <p class="slide-desc" style="font-size: 13px; margin-top: 2px;">
-            Compact representation of core relational tables, primary keys (PK), foreign keys (FK), and relationship cardinalities.
+        <div class="slide-header" style="margin-bottom: 8px;">
+          <span class="eyebrow anim-eyebrow">Interactive Schema &bull; 3NF Design</span>
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <h2 class="slide-title anim-title" style="font-size: 25px;">Entity Relationship Diagram</h2>
+            <span class="interactive-guide-pill anim-desc">
+              <svg class="icon" viewBox="0 0 24 24" style="width:12px;height:12px;color:var(--accent-blue);"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              Click any entity to trace relationships &bull; Click empty space to reset
+            </span>
+          </div>
+          <p class="slide-desc anim-desc" style="font-size: 13px; margin-top: 2px;">
+            Interactive exploration of table structures, primary keys (PK), foreign keys (FK), and referential links.
           </p>
         </div>
 
-        <div class="s5-erd-board">
+        <div class="s5-erd-board anim-stagger-1" id="erdBoard">
+          <!-- Dynamic SVG connector lines container -->
+          <svg class="erd-svg-overlay" id="erdSvgOverlay"></svg>
+
           <!-- Row 1: Col 1 - DEPARTMENT -->
-          <div class="erd-table">
+          <div class="erd-table" data-entity="DEPARTMENT">
             <div class="erd-head">
               <span class="erd-title">DEPARTMENT</span>
               <span class="erd-badge">Lookup</span>
@@ -1506,7 +2024,7 @@
           </div>
 
           <!-- Row 1: Col 2 - USER -->
-          <div class="erd-table">
+          <div class="erd-table" data-entity="USER">
             <div class="erd-head">
               <span class="erd-title">USER</span>
               <span class="erd-badge">Entity</span>
@@ -1532,7 +2050,7 @@
           </div>
 
           <!-- Row 1: Col 3 - CATEGORY -->
-          <div class="erd-table">
+          <div class="erd-table" data-entity="CATEGORY">
             <div class="erd-head">
               <span class="erd-title">CATEGORY</span>
               <span class="erd-badge">Lookup</span>
@@ -1550,7 +2068,7 @@
           </div>
 
           <!-- Row 1: Col 4 - ASSET -->
-          <div class="erd-table">
+          <div class="erd-table" data-entity="ASSET">
             <div class="erd-head">
               <span class="erd-title">ASSET</span>
               <span class="erd-badge">Core Asset</span>
@@ -1576,7 +2094,7 @@
           </div>
 
           <!-- Row 2: Col 1 - TICKET -->
-          <div class="erd-table">
+          <div class="erd-table" data-entity="TICKET">
             <div class="erd-head">
               <span class="erd-title">TICKET</span>
               <span class="erd-badge">Core Desk</span>
@@ -1602,7 +2120,7 @@
           </div>
 
           <!-- Row 2: Col 2 - PRIORITY -->
-          <div class="erd-table">
+          <div class="erd-table" data-entity="PRIORITY">
             <div class="erd-head">
               <span class="erd-title">PRIORITY</span>
               <span class="erd-badge">Lookup</span>
@@ -1620,7 +2138,7 @@
           </div>
 
           <!-- Row 2: Col 3 - TECHNICIAN -->
-          <div class="erd-table">
+          <div class="erd-table" data-entity="TECHNICIAN">
             <div class="erd-head">
               <span class="erd-title">TECHNICIAN</span>
               <span class="erd-badge">Staff</span>
@@ -1642,7 +2160,7 @@
           </div>
 
           <!-- Row 2: Col 4 - ASSIGNMENT -->
-          <div class="erd-table">
+          <div class="erd-table" data-entity="ASSIGNMENT">
             <div class="erd-head">
               <span class="erd-title">ASSIGNMENT</span>
               <span class="erd-badge">Bridge</span>
@@ -1664,7 +2182,7 @@
           </div>
 
           <!-- Row 3: Col 1 - STATUS_HISTORY -->
-          <div class="erd-table">
+          <div class="erd-table" data-entity="STATUS_HISTORY">
             <div class="erd-head">
               <span class="erd-title">STATUS_HISTORY</span>
               <span class="erd-badge">Audit</span>
@@ -1686,7 +2204,7 @@
           </div>
 
           <!-- Row 3: Col 2 - RESOLUTION -->
-          <div class="erd-table">
+          <div class="erd-table" data-entity="RESOLUTION">
             <div class="erd-head">
               <span class="erd-title">RESOLUTION</span>
               <span class="erd-badge">Audit</span>
@@ -1708,7 +2226,7 @@
           </div>
 
           <!-- Row 3: Col 3 - WARRANTY -->
-          <div class="erd-table">
+          <div class="erd-table" data-entity="WARRANTY">
             <div class="erd-head">
               <span class="erd-title">WARRANTY</span>
               <span class="erd-badge">Lifecycle</span>
@@ -1730,7 +2248,7 @@
           </div>
 
           <!-- Row 3: Col 4 - MAINTENANCE -->
-          <div class="erd-table">
+          <div class="erd-table" data-entity="MAINTENANCE">
             <div class="erd-head">
               <span class="erd-title">MAINTENANCE</span>
               <span class="erd-badge">Lifecycle</span>
@@ -1764,56 +2282,66 @@
                 &bull; Strict Referential Integrity (<span style="font-family:monospace;font-size:10.5px;">CASCADE / RESTRICT</span>)
               </div>
             </div>
-            <div style="font-weight: 700; color: var(--accent-navy);">
-              Total: 12 Relational Entities &bull; Third Normal Form (3NF)
+            <div class="erd-status-display">
+              <span id="erdStatusText">Click any entity to trace relationships</span>
+              <button class="btn-erd-reset" id="btnErdReset" title="Reset ERD focus">Reset View</button>
             </div>
           </div>
         </div>
       </section>
 
       <!-- ================================================================
-           SLIDE 6: IMPLEMENTATION
+           SLIDE 6: INTERACTIVE IMPLEMENTATION ARCHITECTURE
            ================================================================ -->
       <section class="slide" id="slide-6" data-slide="6">
         <div class="slide-header" style="margin-bottom: 12px;">
-          <span class="eyebrow">Technical Architecture &amp; Delivery</span>
-          <h2 class="slide-title">From Database Design to Implementation</h2>
-          <p class="slide-desc">
+          <span class="eyebrow anim-eyebrow">Technical Architecture &amp; Delivery</span>
+          <h2 class="slide-title anim-title">From Database Design to Implementation</h2>
+          <p class="slide-desc anim-desc">
             The project is implemented as a robust, database-driven application connecting backend relational structures with operational workflows.
           </p>
         </div>
 
-        <div class="s6-container">
-          <!-- Architecture Flow -->
-          <div class="pipeline-bar">
-            <div class="pipeline-step">
+        <div class="s6-container anim-stagger-1">
+          <!-- Interactive Architecture Flow -->
+          <div class="pipeline-bar" id="pipelineBar">
+            <div class="pipeline-step active" data-stage="1">
               <div class="step-num">1</div>
               <div class="step-text">
                 <span class="step-label">Database Design</span>
                 <span class="step-sub">ERD, Normalization &amp; Constraints</span>
               </div>
             </div>
-            <div class="pipeline-step">
+            <div class="pipeline-step" data-stage="2">
               <div class="step-num">2</div>
               <div class="step-text">
                 <span class="step-label">Relational Tables</span>
                 <span class="step-sub">MySQL DDL Schemas &amp; Indexes</span>
               </div>
             </div>
-            <div class="pipeline-step">
+            <div class="pipeline-step" data-stage="3">
               <div class="step-num">3</div>
               <div class="step-text">
                 <span class="step-label">Backend Logic</span>
                 <span class="step-sub">Transactional Query Execution</span>
               </div>
             </div>
-            <div class="pipeline-step">
+            <div class="pipeline-step" data-stage="4">
               <div class="step-num">4</div>
               <div class="step-text">
                 <span class="step-label">Web Application</span>
                 <span class="step-sub">Interactive Helpdesk UI Interface</span>
               </div>
             </div>
+          </div>
+
+          <!-- Dynamic Stage Explanation Banner -->
+          <div class="impl-exp-banner" id="implExpBanner">
+            <div class="impl-exp-content">
+              <span class="impl-exp-badge" id="implExpBadge">Stage 1</span>
+              <span class="impl-exp-text" id="implExpText">Database Design: Defines entities, attributes, constraints and relationships.</span>
+            </div>
+            <span class="impl-exp-guide">Click any stage above to inspect</span>
           </div>
 
           <!-- 9 Modules Grid -->
@@ -1916,12 +2444,18 @@
         <button class="dot" data-index="6" aria-label="Go to slide 6"></button>
       </div>
 
-      <!-- Center: Minimal Keyboard Shortcuts Guidance -->
-      <div class="keyboard-hint">
-        <span class="key-badge">&larr;</span>
-        <span class="key-badge">&rarr;</span>
-        <span style="margin: 0 2px;">or</span>
-        <span class="key-badge" style="padding: 0 6px;">Space</span>
+      <!-- Center: Minimal Keyboard Shortcuts Overlay Button -->
+      <div class="footer-center-controls">
+        <button class="btn-kbd-help" id="btnOpenKbdModal" title="View Keyboard Shortcuts (?)">
+          <svg class="icon" viewBox="0 0 24 24" style="width:12px;height:12px;"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M6 8h.001M10 8h.001M14 8h.001M18 8h.001M8 12h.001M12 12h.001M16 12h.001M7 16h10"/></svg>
+          Shortcuts
+        </button>
+        <div class="keyboard-hint">
+          <span class="key-badge">&larr;</span>
+          <span class="key-badge">&rarr;</span>
+          <span style="margin: 0 1px;">or</span>
+          <span class="key-badge" style="padding: 0 5px;">Space</span>
+        </div>
       </div>
 
       <!-- Right: Previous / Next Buttons -->
@@ -1938,6 +2472,42 @@
     </footer>
   </div>
 
+  <!-- Keyboard Controls Overlay Modal -->
+  <div class="kbd-overlay" id="kbdOverlay" role="dialog" aria-modal="true" aria-label="Keyboard Shortcuts">
+    <div class="kbd-modal-card">
+      <div class="kbd-modal-head">
+        <h3>Keyboard Controls</h3>
+        <button class="btn-kbd-close" id="btnCloseKbdModal" aria-label="Close modal">&times;</button>
+      </div>
+      <div class="kbd-list">
+        <div class="kbd-item">
+          <span>Previous Slide</span>
+          <div class="key-group"><span class="key-badge">&larr;</span> <span style="font-size:11px;color:#94a3b8;">or</span> <span class="key-badge">P</span></div>
+        </div>
+        <div class="kbd-item">
+          <span>Next Slide</span>
+          <div class="key-group"><span class="key-badge">&rarr;</span> <span style="font-size:11px;color:#94a3b8;">or</span> <span class="key-badge">N</span></div>
+        </div>
+        <div class="kbd-item">
+          <span>Advance Slide</span>
+          <div class="key-group"><span class="key-badge" style="padding:0 8px;">Space</span></div>
+        </div>
+        <div class="kbd-item">
+          <span>Jump to Specific Slide</span>
+          <div class="key-group"><span class="key-badge">1</span> &ndash; <span class="key-badge">6</span></div>
+        </div>
+        <div class="kbd-item">
+          <span>Toggle Fullscreen Mode</span>
+          <div class="key-group"><span class="key-badge">F</span></div>
+        </div>
+        <div class="kbd-item">
+          <span>Close Overlay / Clear Selection</span>
+          <div class="key-group"><span class="key-badge" style="padding:0 6px;">Esc</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
     (function () {
       'use strict';
@@ -1951,22 +2521,35 @@
       const progressBar = document.getElementById('progressBar');
       const btnPrev = document.getElementById('btnPrev');
       const btnNext = document.getElementById('btnNext');
+      const btnFullscreen = document.getElementById('btnFullscreen');
+      const fsText = document.getElementById('fsText');
+      const fsIcon = document.getElementById('fsIcon');
 
+      const kbdOverlay = document.getElementById('kbdOverlay');
+      const btnOpenKbdModal = document.getElementById('btnOpenKbdModal');
+      const btnCloseKbdModal = document.getElementById('btnCloseKbdModal');
+
+      // ======================================================================
+      // SLIDE NAVIGATION & SEQUENCED ENTRY ANIMATION TRIGGER
+      // ======================================================================
       function updatePresentation(targetIndex) {
         if (targetIndex < 1 || targetIndex > totalSlides) return;
         currentSlide = targetIndex;
 
-        // Toggle slides
+        // Toggle slide active classes
         slides.forEach((slide, idx) => {
           const slideNum = idx + 1;
           if (slideNum === currentSlide) {
+            slide.classList.remove('active');
+            // Force browser reflow so CSS sequence animations replay cleanly on entry
+            void slide.offsetWidth;
             slide.classList.add('active');
           } else {
             slide.classList.remove('active');
           }
         });
 
-        // Toggle dots
+        // Toggle dot indicators
         dots.forEach((dot, idx) => {
           const dotNum = idx + 1;
           if (dotNum === currentSlide) {
@@ -1976,18 +2559,22 @@
           }
         });
 
-        // Update counter & progress bar
+        // Update slide counter & progress line
         counter.textContent = String(currentSlide).padStart(2, '0') + ' / 0' + totalSlides;
         const percent = ((currentSlide - 1) / (totalSlides - 1)) * 100;
         progressBar.style.width = (percent === 0 ? (100 / totalSlides) : percent) + '%';
 
-        // Update buttons state
+        // Update Prev / Next buttons
         btnPrev.disabled = (currentSlide === 1);
         if (currentSlide === totalSlides) {
           btnNext.innerHTML = 'Finish <svg class="icon" viewBox="0 0 24 24" style="width:12px;height:12px;"><polyline points="20 6 9 17 4 12"/></svg>';
         } else {
           btnNext.innerHTML = 'Next <svg class="icon" viewBox="0 0 24 24" style="width:12px;height:12px;"><polyline points="9 18 15 12 9 6"/></svg>';
         }
+
+        // Reset any temporary selections on slide transition
+        resetObjectivesSelection();
+        resetErdFocus();
       }
 
       function nextSlide() {
@@ -2002,11 +2589,9 @@
         }
       }
 
-      // Event Listeners for Nav Buttons
       btnNext.addEventListener('click', nextSlide);
       btnPrev.addEventListener('click', prevSlide);
 
-      // Dot Clicks
       dots.forEach(dot => {
         dot.addEventListener('click', () => {
           const index = parseInt(dot.getAttribute('data-index'), 10);
@@ -2014,8 +2599,304 @@
         });
       });
 
-      // Keyboard Controls: Left Arrow, Right Arrow, Space, PageUp, PageDown, Numeric keys 1-6
+      // ======================================================================
+      // FULLSCREEN TOGGLE
+      // ======================================================================
+      function toggleFullscreen() {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen().catch(() => {});
+        } else {
+          if (document.exitFullscreen) {
+            document.exitFullscreen().catch(() => {});
+          }
+        }
+      }
+
+      function updateFullscreenUI() {
+        const isFs = Boolean(document.fullscreenElement);
+        if (fsText) fsText.textContent = isFs ? 'Exit' : 'Fullscreen';
+        if (fsIcon) {
+          if (isFs) {
+            fsIcon.innerHTML = '<path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/>';
+          } else {
+            fsIcon.innerHTML = '<path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>';
+          }
+        }
+      }
+
+      if (btnFullscreen) {
+        btnFullscreen.addEventListener('click', toggleFullscreen);
+      }
+      document.addEventListener('fullscreenchange', updateFullscreenUI);
+
+      // ======================================================================
+      // KEYBOARD SHORTCUTS MODAL OVERLAY
+      // ======================================================================
+      function openKbdModal() {
+        if (kbdOverlay) kbdOverlay.classList.add('active');
+      }
+
+      function closeKbdModal() {
+        if (kbdOverlay) kbdOverlay.classList.remove('active');
+      }
+
+      if (btnOpenKbdModal) btnOpenKbdModal.addEventListener('click', openKbdModal);
+      if (btnCloseKbdModal) btnCloseKbdModal.addEventListener('click', closeKbdModal);
+      if (kbdOverlay) {
+        kbdOverlay.addEventListener('click', (e) => {
+          if (e.target === kbdOverlay) closeKbdModal();
+        });
+      }
+
+      // ======================================================================
+      // SLIDE 3: INTERACTIVE OBJECTIVE CARDS
+      // ======================================================================
+      const objectivesGrid = document.getElementById('objectivesGrid');
+      const objectiveCards = document.querySelectorAll('.s3-card');
+
+      function resetObjectivesSelection() {
+        if (!objectivesGrid) return;
+        objectivesGrid.classList.remove('has-active-selection');
+        objectiveCards.forEach(card => card.classList.remove('selected'));
+      }
+
+      objectiveCards.forEach(card => {
+        card.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const isAlreadySelected = card.classList.contains('selected');
+
+          if (isAlreadySelected) {
+            resetObjectivesSelection();
+          } else {
+            objectivesGrid.classList.add('has-active-selection');
+            objectiveCards.forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+          }
+        });
+      });
+
+      // ======================================================================
+      // SLIDE 5: INTERACTIVE ER DIAGRAM (Relational Line Tracing & Isolation)
+      // ======================================================================
+      const erdBoard = document.getElementById('erdBoard');
+      const erdTables = document.querySelectorAll('.erd-table');
+      const erdSvgOverlay = document.getElementById('erdSvgOverlay');
+      const erdStatusText = document.getElementById('erdStatusText');
+      const btnErdReset = document.getElementById('btnErdReset');
+
+      // Comprehensive Entity Relationship Map (Foreign Key dependencies)
+      const erdRelations = {
+        'DEPARTMENT': ['USER', 'ASSET'],
+        'USER': ['DEPARTMENT', 'TICKET'],
+        'CATEGORY': ['ASSET'],
+        'ASSET': ['DEPARTMENT', 'CATEGORY', 'WARRANTY', 'MAINTENANCE'],
+        'TICKET': ['USER', 'PRIORITY', 'ASSIGNMENT', 'STATUS_HISTORY', 'RESOLUTION'],
+        'PRIORITY': ['TICKET'],
+        'TECHNICIAN': ['ASSIGNMENT'],
+        'ASSIGNMENT': ['TICKET', 'TECHNICIAN'],
+        'STATUS_HISTORY': ['TICKET'],
+        'RESOLUTION': ['TICKET'],
+        'WARRANTY': ['ASSET'],
+        'MAINTENANCE': ['ASSET']
+      };
+
+      let activeErdEntity = null;
+
+      function clearErdLines() {
+        if (erdSvgOverlay) erdSvgOverlay.innerHTML = '';
+      }
+
+      function drawErdLinkLine(sourceEl, targetEl) {
+        if (!erdBoard || !erdSvgOverlay || !sourceEl || !targetEl) return;
+
+        const boardRect = erdBoard.getBoundingClientRect();
+        const srcRect = sourceEl.getBoundingClientRect();
+        const tgtRect = targetEl.getBoundingClientRect();
+
+        // Calculate center points relative to the ERD board
+        const x1 = srcRect.left - boardRect.left + srcRect.width / 2;
+        const y1 = srcRect.top - boardRect.top + srcRect.height / 2;
+        const x2 = tgtRect.left - boardRect.left + tgtRect.width / 2;
+        const y2 = tgtRect.top - boardRect.top + tgtRect.height / 2;
+
+        // Quadratic curve offset for elegant visual curvature
+        const midX = (x1 + x2) / 2;
+        const midY = (y1 + y2) / 2 - (Math.abs(x2 - x1) > 100 ? 12 : 0);
+
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('d', `M ${x1} ${y1} Q ${midX} ${midY} ${x2} ${y2}`);
+        path.setAttribute('class', 'erd-connector-path');
+        erdSvgOverlay.appendChild(path);
+      }
+
+      function selectErdEntity(entityName) {
+        if (!erdBoard) return;
+        activeErdEntity = entityName;
+
+        erdBoard.classList.add('has-erd-focus');
+        clearErdLines();
+
+        const relatedList = erdRelations[entityName] || [];
+        let sourceCard = null;
+        const targetCards = [];
+
+        erdTables.forEach(table => {
+          const name = table.getAttribute('data-entity');
+          table.classList.remove('is-selected', 'is-related');
+
+          if (name === entityName) {
+            table.classList.add('is-selected');
+            sourceCard = table;
+          } else if (relatedList.includes(name)) {
+            table.classList.add('is-related');
+            targetCards.push(table);
+          }
+        });
+
+        // Draw curved connector lines from selected entity to all directly related entities
+        if (sourceCard) {
+          targetCards.forEach(targetCard => {
+            drawErdLinkLine(sourceCard, targetCard);
+          });
+        }
+
+        // Update Legend Status Bar
+        if (erdStatusText) {
+          erdStatusText.textContent = `Tracing: ${entityName} → Connected to ${relatedList.length} entities (${relatedList.join(', ')})`;
+        }
+        if (btnErdReset) {
+          btnErdReset.style.display = 'inline-block';
+        }
+      }
+
+      function resetErdFocus() {
+        if (!erdBoard) return;
+        activeErdEntity = null;
+        erdBoard.classList.remove('has-erd-focus');
+        erdTables.forEach(table => table.classList.remove('is-selected', 'is-related'));
+        clearErdLines();
+
+        if (erdStatusText) {
+          erdStatusText.textContent = 'Click any entity to trace relationships';
+        }
+        if (btnErdReset) {
+          btnErdReset.style.display = 'none';
+        }
+      }
+
+      erdTables.forEach(table => {
+        table.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const name = table.getAttribute('data-entity');
+          if (activeErdEntity === name) {
+            resetErdFocus();
+          } else {
+            selectErdEntity(name);
+          }
+        });
+      });
+
+      if (erdBoard) {
+        erdBoard.addEventListener('click', (e) => {
+          // If clicked in whitespace inside ERD board, reset focus
+          if (e.target === erdBoard || e.target === erdSvgOverlay) {
+            resetErdFocus();
+          }
+        });
+      }
+
+      if (btnErdReset) {
+        btnErdReset.addEventListener('click', (e) => {
+          e.stopPropagation();
+          resetErdFocus();
+        });
+      }
+
+      // Re-render connection lines if browser window resizes
+      window.addEventListener('resize', () => {
+        if (activeErdEntity) {
+          selectErdEntity(activeErdEntity);
+        }
+      });
+
+      // ======================================================================
+      // SLIDE 6: INTERACTIVE IMPLEMENTATION PIPELINE
+      // ======================================================================
+      const pipelineSteps = document.querySelectorAll('.pipeline-step');
+      const implExpBadge = document.getElementById('implExpBadge');
+      const implExpText = document.getElementById('implExpText');
+
+      const stageExplanations = {
+        '1': {
+          title: 'Stage 1',
+          desc: 'Database Design: Defines entities, attributes, constraints and relationships.'
+        },
+        '2': {
+          title: 'Stage 2',
+          desc: 'Relational Tables: Transforms the conceptual model into normalized database tables.'
+        },
+        '3': {
+          title: 'Stage 3',
+          desc: 'Backend Logic: Handles validation, data processing and database operations.'
+        },
+        '4': {
+          title: 'Stage 4',
+          desc: 'Web Application Interface: Provides users with an intuitive way to manage tickets and assets.'
+        }
+      };
+
+      pipelineSteps.forEach(step => {
+        step.addEventListener('click', () => {
+          const stage = step.getAttribute('data-stage');
+          pipelineSteps.forEach(s => s.classList.remove('active'));
+          step.classList.add('active');
+
+          if (stageExplanations[stage] && implExpBadge && implExpText) {
+            implExpBadge.textContent = stageExplanations[stage].title;
+            implExpText.textContent = stageExplanations[stage].desc;
+          }
+        });
+      });
+
+      // Background click resets on slides
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('#objectivesGrid')) {
+          resetObjectivesSelection();
+        }
+        if (!e.target.closest('#erdBoard')) {
+          resetErdFocus();
+        }
+      });
+
+      // ======================================================================
+      // GLOBAL KEYBOARD NAVIGATION
+      // ======================================================================
       window.addEventListener('keydown', (e) => {
+        // Close modal or reset active selections on Esc
+        if (e.key === 'Escape') {
+          closeKbdModal();
+          resetObjectivesSelection();
+          resetErdFocus();
+          return;
+        }
+
+        // Toggle Fullscreen with 'F' or 'f'
+        if (e.key === 'f' || e.key === 'F') {
+          toggleFullscreen();
+          return;
+        }
+
+        // Toggle keyboard help overlay with '?'
+        if (e.key === '?' || (e.shiftKey && e.key === '/')) {
+          if (kbdOverlay && kbdOverlay.classList.contains('active')) {
+            closeKbdModal();
+          } else {
+            openKbdModal();
+          }
+          return;
+        }
+
+        // Navigation keys
         if (['ArrowRight', 'ArrowLeft', 'Space', 'PageDown', 'PageUp'].includes(e.code)) {
           e.preventDefault();
         }
@@ -2029,7 +2910,7 @@
         }
       });
 
-      // Initial state setup
+      // Initial presentation boot
       updatePresentation(1);
     })();
   </script>
