@@ -1,0 +1,2003 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IT Helpdesk & Asset Support Management System — DBMS Project Review</title>
+  <style>
+    /* ==========================================================================
+       DESIGN SYSTEM & CSS RESET
+       Light theme: Off-white canvas, pure white cards, charcoal text, deep blue accents
+       ========================================================================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg-canvas: #f6f8fa;
+      --bg-card: #ffffff;
+      --border-subtle: #e2e8f0;
+      --border-medium: #cbd5e1;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #64748b;
+      --text-subtle: #94a3b8;
+      
+      --accent-navy: #1e3a8a;
+      --accent-blue: #1d4ed8;
+      --accent-blue-soft: #eff6ff;
+      --accent-blue-border: #bfdbfe;
+      
+      --accent-indigo: #4338ca;
+      --accent-indigo-soft: #eef2ff;
+      --accent-indigo-border: #c7d2fe;
+
+      --accent-emerald: #047857;
+      --accent-emerald-soft: #ecfdf5;
+
+      --shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.04);
+      --shadow-sm: 0 2px 5px rgba(15, 23, 42, 0.05), 0 1px 2px rgba(15, 23, 42, 0.03);
+      --shadow-md: 0 6px 16px -2px rgba(15, 23, 42, 0.06), 0 2px 6px -1px rgba(15, 23, 42, 0.03);
+      
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      
+      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: var(--font-family);
+      background-color: var(--bg-canvas);
+      color: var(--text-primary);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* ==========================================================================
+       PRESENTATION DECK SHELL
+       ========================================================================== */
+    .deck-container {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      background: radial-gradient(circle at 10% 10%, rgba(29, 78, 216, 0.02) 0%, transparent 40%),
+                  radial-gradient(circle at 90% 90%, rgba(67, 56, 202, 0.025) 0%, transparent 40%),
+                  var(--bg-canvas);
+    }
+
+    /* Top Navigation / Header Bar */
+    .deck-header {
+      height: 48px;
+      padding: 0 36px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-subtle);
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(8px);
+      z-index: 50;
+      flex-shrink: 0;
+    }
+
+    .brand-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-tag {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--accent-blue);
+      background: var(--accent-blue-soft);
+      border: 1px solid var(--accent-blue-border);
+      padding: 3px 8px;
+      border-radius: var(--radius-sm);
+    }
+
+    .brand-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      letter-spacing: -0.01em;
+    }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .slide-counter {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      font-variant-numeric: tabular-nums;
+      background: #f1f5f9;
+      padding: 3px 10px;
+      border-radius: 20px;
+      border: 1px solid var(--border-subtle);
+    }
+
+    /* Main Slides Stage */
+    .deck-stage {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px 36px;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 20px 48px;
+      max-width: 1280px;
+      margin: 0 auto;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(8px) scale(0.995);
+      transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .slide.active {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0) scale(1);
+    }
+
+    /* Bottom Controls & Progress Bar */
+    .deck-footer {
+      height: 52px;
+      padding: 0 36px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid var(--border-subtle);
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(8px);
+      z-index: 50;
+      flex-shrink: 0;
+    }
+
+    .progress-bar-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--border-subtle);
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent-blue), var(--accent-indigo));
+      width: 16.666%;
+      transition: width 0.3s ease;
+    }
+
+    .dot-indicators {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .dot {
+      width: 26px;
+      height: 6px;
+      border-radius: 4px;
+      background: #e2e8f0;
+      cursor: pointer;
+      border: none;
+      transition: all 0.25s ease;
+    }
+
+    .dot:hover {
+      background: #cbd5e1;
+    }
+
+    .dot.active {
+      width: 44px;
+      background: var(--accent-blue);
+    }
+
+    .keyboard-hint {
+      font-size: 11px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .key-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 18px;
+      height: 18px;
+      padding: 0 4px;
+      background: #f1f5f9;
+      border: 1px solid var(--border-medium);
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      box-shadow: 0 1px 0 rgba(0,0,0,0.05);
+    }
+
+    .nav-buttons {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-nav {
+      height: 32px;
+      padding: 0 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-medium);
+      background: var(--bg-card);
+      color: var(--text-secondary);
+      font-size: 12px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      box-shadow: var(--shadow-xs);
+      transition: all 0.15s ease;
+    }
+
+    .btn-nav:hover:not(:disabled) {
+      background: #f8fafc;
+      color: var(--text-primary);
+      border-color: #94a3b8;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-nav:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      border-color: var(--border-subtle);
+    }
+
+    .btn-nav.primary {
+      background: var(--accent-blue);
+      color: #ffffff;
+      border-color: var(--accent-blue);
+    }
+
+    .btn-nav.primary:hover:not(:disabled) {
+      background: #1e40af;
+      border-color: #1e40af;
+    }
+
+    /* ==========================================================================
+       TYPOGRAPHY & SHARED SLIDE COMPONENTS
+       ========================================================================== */
+    .slide-header {
+      margin-bottom: 18px;
+    }
+
+    .eyebrow {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent-blue);
+      margin-bottom: 6px;
+      display: inline-block;
+    }
+
+    .slide-title {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+
+    .slide-desc {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-top: 4px;
+      line-height: 1.45;
+      max-width: 820px;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card:hover {
+      border-color: var(--border-medium);
+      box-shadow: var(--shadow-md);
+    }
+
+    .highlight-statement {
+      background: linear-gradient(135deg, #f8faff 0%, #f0f4ff 100%);
+      border: 1px solid var(--accent-blue-border);
+      border-left: 4px solid var(--accent-blue);
+      border-radius: var(--radius-md);
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--accent-navy);
+      font-weight: 600;
+      font-size: 13.5px;
+      line-height: 1.45;
+    }
+
+    /* ==========================================================================
+       SLIDE 1: PROJECT OVERVIEW
+       ========================================================================== */
+    .s1-container {
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+      max-width: 980px;
+    }
+
+    .s1-hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--accent-blue);
+      background: var(--accent-blue-soft);
+      border: 1px solid var(--accent-blue-border);
+      padding: 4px 12px;
+      border-radius: 20px;
+      width: fit-content;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .s1-title {
+      font-size: 42px;
+      font-weight: 800;
+      color: var(--text-primary);
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+    }
+
+    .s1-subtitle {
+      font-size: 18px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      line-height: 1.4;
+      margin-top: 6px;
+    }
+
+    .s1-overview-card {
+      padding: 18px 22px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+    }
+
+    .s1-overview-text {
+      font-size: 14.5px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .s1-badges-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .tech-pill {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #ffffff;
+      border: 1px solid var(--border-subtle);
+      padding: 10px 18px;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-xs);
+      transition: all 0.2s ease;
+    }
+
+    .tech-pill:hover {
+      border-color: var(--accent-blue-border);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .tech-pill-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      background: var(--accent-blue-soft);
+      color: var(--accent-blue);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .tech-pill-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .tech-pill-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    /* ==========================================================================
+       SLIDE 2: THE PROBLEM
+       ========================================================================== */
+    .s2-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .problem-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      box-shadow: var(--shadow-xs);
+    }
+
+    .problem-card:hover {
+      border-color: #fca5a5;
+      background: #fffafa;
+    }
+
+    .problem-num {
+      font-size: 11px;
+      font-weight: 800;
+      color: #dc2626;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .problem-card-content h4 {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 3px;
+    }
+
+    .problem-card-content p {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    /* ==========================================================================
+       SLIDE 3: PROJECT OBJECTIVES
+       ========================================================================== */
+    .s3-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    .s3-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 13px 15px;
+      box-shadow: var(--shadow-xs);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .s3-card:hover {
+      border-color: var(--accent-blue-border);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .s3-card.wide {
+      grid-column: span 2;
+    }
+
+    .s3-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .s3-index {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--accent-blue);
+      background: var(--accent-blue-soft);
+      padding: 2px 7px;
+      border-radius: 4px;
+      border: 1px solid var(--accent-blue-border);
+    }
+
+    .s3-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+      line-height: 1.3;
+    }
+
+    .s3-desc {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    /* ==========================================================================
+       SLIDE 4: CORE DATA MODEL
+       ========================================================================== */
+    .s4-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      height: 100%;
+    }
+
+    .s4-model-board {
+      background: #ffffff;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 16px 20px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .domain-columns {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1.35fr;
+      gap: 16px;
+    }
+
+    .domain-box {
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      background: #f8fafc;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .domain-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 6px;
+    }
+
+    .domain-title {
+      font-size: 11.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-secondary);
+    }
+
+    .domain-tag {
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: #ffffff;
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+    }
+
+    .entities-chip-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .entity-chip {
+      background: #ffffff;
+      border: 1px solid var(--border-subtle);
+      padding: 5px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--text-primary);
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+    }
+
+    .chip-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent-blue);
+    }
+
+    .chip-dot.purple {
+      background: var(--accent-indigo);
+    }
+
+    .chip-dot.emerald {
+      background: var(--accent-emerald);
+    }
+
+    .relations-matrix {
+      background: #f8fafc;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 12px 16px;
+    }
+
+    .matrix-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .relations-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+    }
+
+    .relation-node {
+      background: #ffffff;
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      padding: 7px 10px;
+      font-size: 11px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .relation-source {
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .relation-arrow {
+      color: var(--accent-blue);
+      font-weight: 700;
+      padding: 0 2px;
+    }
+
+    .relation-target {
+      font-weight: 600;
+      color: var(--accent-indigo);
+    }
+
+    /* ==========================================================================
+       SLIDE 5: COMPACT ENTITY RELATIONSHIP DIAGRAM (FITS WITHIN SCREEN)
+       ========================================================================== */
+    .s5-erd-board {
+      background: #ffffff;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 12px 14px;
+      box-shadow: var(--shadow-sm);
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      position: relative;
+    }
+
+    .erd-table {
+      background: #ffffff;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      box-shadow: var(--shadow-xs);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .erd-table:hover {
+      border-color: var(--accent-blue-border);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .erd-head {
+      background: #f1f5f9;
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 5px 9px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .erd-title {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      color: var(--accent-navy);
+      text-transform: uppercase;
+    }
+
+    .erd-badge {
+      font-size: 9px;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: #ffffff;
+      padding: 1px 4px;
+      border-radius: 3px;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .erd-body {
+      padding: 4px 0;
+      background: #ffffff;
+    }
+
+    .erd-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 2.5px 9px;
+      font-size: 10.5px;
+      border-bottom: 1px solid #f8fafc;
+    }
+
+    .erd-row:last-child {
+      border-bottom: none;
+    }
+
+    .erd-row.pk {
+      background: #eff6ff;
+      font-weight: 600;
+    }
+
+    .erd-row.fk {
+      background: #faf5ff;
+      font-weight: 500;
+    }
+
+    .col-name {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      color: var(--text-primary);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 10px;
+    }
+
+    .tag-pk {
+      font-size: 8px;
+      font-weight: 800;
+      color: #1d4ed8;
+      background: #dbeafe;
+      padding: 1px 3px;
+      border-radius: 2px;
+    }
+
+    .tag-fk {
+      font-size: 8px;
+      font-weight: 800;
+      color: #6b21a8;
+      background: #f3e8ff;
+      padding: 1px 3px;
+      border-radius: 2px;
+    }
+
+    .col-type {
+      font-size: 9.5px;
+      color: var(--text-muted);
+    }
+
+    .erd-legend-bar {
+      grid-column: span 4;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #f8fafc;
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      padding: 6px 14px;
+      font-size: 10.5px;
+      color: var(--text-secondary);
+    }
+
+    .legend-items {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-weight: 500;
+    }
+
+    /* ==========================================================================
+       SLIDE 6: FROM DATABASE DESIGN TO IMPLEMENTATION
+       ========================================================================== */
+    .s6-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .pipeline-bar {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      position: relative;
+    }
+
+    .pipeline-step {
+      background: #ffffff;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 10px 14px;
+      box-shadow: var(--shadow-xs);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      position: relative;
+    }
+
+    .pipeline-step:hover {
+      border-color: var(--accent-blue-border);
+    }
+
+    .step-num {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--accent-blue-soft);
+      border: 1px solid var(--accent-blue-border);
+      color: var(--accent-blue);
+      font-size: 11px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .step-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .step-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .step-sub {
+      font-size: 10.5px;
+      color: var(--text-muted);
+    }
+
+    .modules-matrix {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 9px;
+    }
+
+    .module-item {
+      background: #ffffff;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 9px 12px;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+    }
+
+    .module-item:hover {
+      border-color: var(--accent-indigo-border);
+      background: #fafbff;
+    }
+
+    .module-icon {
+      width: 22px;
+      height: 22px;
+      border-radius: 4px;
+      background: var(--accent-indigo-soft);
+      color: var(--accent-indigo);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .module-name {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .current-impl-box {
+      background: #ffffff;
+      border: 1px solid var(--accent-blue-border);
+      border-radius: var(--radius-md);
+      padding: 11px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      box-shadow: var(--shadow-xs);
+    }
+
+    .impl-left {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .impl-badge {
+      font-size: 10.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--accent-blue);
+    }
+
+    .impl-text {
+      font-size: 12.5px;
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+
+    .s6-quote {
+      background: linear-gradient(135deg, #f0f4ff 0%, #eef2ff 100%);
+      border: 1px solid var(--accent-indigo-border);
+      border-left: 4px solid var(--accent-indigo);
+      padding: 10px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--accent-navy);
+      text-align: center;
+      letter-spacing: -0.01em;
+    }
+
+    /* ==========================================================================
+       SVG ICONS STYLES
+       ========================================================================== */
+    svg.icon {
+      width: 15px;
+      height: 15px;
+      stroke-width: 2;
+      stroke: currentColor;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="deck-container">
+    <!-- Top Meta Header -->
+    <header class="deck-header">
+      <div class="brand-meta">
+        <span class="brand-tag">DBMS Review</span>
+        <span class="brand-title">IT Helpdesk &amp; Asset Support Management System</span>
+      </div>
+      <div class="header-controls">
+        <span class="slide-counter" id="slideCounter">01 / 06</span>
+      </div>
+    </header>
+
+    <!-- Slide Stage Container -->
+    <main class="deck-stage" id="deckStage">
+
+      <!-- ================================================================
+           SLIDE 1: PROJECT OVERVIEW
+           ================================================================ -->
+      <section class="slide active" id="slide-1" data-slide="1">
+        <div class="s1-container">
+          <div>
+            <div class="s1-hero-badge">
+              <svg class="icon" viewBox="0 0 24 24" style="width:13px;height:13px;">
+                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+              </svg>
+              Academic Project Review &bull; DBMS
+            </div>
+            <h1 class="s1-title" style="margin-top: 10px;">
+              IT Helpdesk &amp; Asset Support<br>Management System
+            </h1>
+            <p class="s1-subtitle">
+              A Database-Driven Solution for Managing IT Support Operations and Organizational Assets
+            </p>
+          </div>
+
+          <div class="s1-overview-card">
+            <p class="s1-overview-text">
+              A centralized system designed to manage IT assets, support tickets, technician assignments, maintenance records, warranties and service requests through a structured relational database.
+            </p>
+          </div>
+
+          <div class="s1-badges-row">
+            <!-- Badge 1 -->
+            <div class="tech-pill">
+              <div class="tech-pill-icon">
+                <svg class="icon" viewBox="0 0 24 24">
+                  <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+                  <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+                  <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+                </svg>
+              </div>
+              <div>
+                <div class="tech-pill-name">Database Management System</div>
+                <div class="tech-pill-sub">Normalized Relational Architecture</div>
+              </div>
+            </div>
+
+            <!-- Badge 2 -->
+            <div class="tech-pill">
+              <div class="tech-pill-icon" style="background: var(--accent-indigo-soft); color: var(--accent-indigo);">
+                <svg class="icon" viewBox="0 0 24 24">
+                  <path d="M3 3h7v7H3z"></path>
+                  <path d="M14 3h7v7h-7z"></path>
+                  <path d="M14 14h7v7h-7z"></path>
+                  <path d="M3 14h7v7H3z"></path>
+                </svg>
+              </div>
+              <div>
+                <div class="tech-pill-name">Relational Database</div>
+                <div class="tech-pill-sub">Foreign Keys &amp; Integrity Constraints</div>
+              </div>
+            </div>
+
+            <!-- Badge 3 -->
+            <div class="tech-pill">
+              <div class="tech-pill-icon" style="background: var(--accent-emerald-soft); color: var(--accent-emerald);">
+                <svg class="icon" viewBox="0 0 24 24">
+                  <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                  <line x1="8" y1="21" x2="16" y2="21"></line>
+                  <line x1="12" y1="17" x2="12" y2="21"></line>
+                </svg>
+              </div>
+              <div>
+                <div class="tech-pill-name">Web-Based Application</div>
+                <div class="tech-pill-sub">Interactive Administrative Client</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================================================================
+           SLIDE 2: THE PROBLEM
+           ================================================================ -->
+      <section class="slide" id="slide-2" data-slide="2">
+        <div class="slide-header">
+          <span class="eyebrow">Challenges &amp; Industry Motivation</span>
+          <h2 class="slide-title">The Problem</h2>
+          <p class="slide-desc">
+            Organizations often manage IT assets and employee support requests through emails, spreadsheets and disconnected systems.
+          </p>
+        </div>
+
+        <div class="s2-grid">
+          <!-- Card 1 -->
+          <div class="problem-card">
+            <div class="problem-num">01</div>
+            <div class="problem-card-content">
+              <h4>Poor Ticket Visibility</h4>
+              <p>Support issues remain untracked across disparate email chains with no unified progress tracking.</p>
+            </div>
+          </div>
+          <!-- Card 2 -->
+          <div class="problem-card">
+            <div class="problem-num">02</div>
+            <div class="problem-card-content">
+              <h4>Delayed Issue Resolution</h4>
+              <p>Lack of escalation protocols and priority metrics leads to bottlenecks and service delays.</p>
+            </div>
+          </div>
+          <!-- Card 3 -->
+          <div class="problem-card">
+            <div class="problem-num">03</div>
+            <div class="problem-card-content">
+              <h4>Difficulty Tracking IT Assets</h4>
+              <p>Physical hardware locations, serial numbers, and assigned employees are fragmented or lost.</p>
+            </div>
+          </div>
+          <!-- Card 4 -->
+          <div class="problem-card">
+            <div class="problem-num">04</div>
+            <div class="problem-card-content">
+              <h4>Inefficient Technician Assignment</h4>
+              <p>Tickets are manually distributed without balancing workload or technician specializations.</p>
+            </div>
+          </div>
+          <!-- Card 5 -->
+          <div class="problem-card">
+            <div class="problem-num">05</div>
+            <div class="problem-card-content">
+              <h4>Missing Maintenance &amp; Warranties</h4>
+              <p>Unrecorded warranty periods cause missed vendor claims and unexpected hardware repair expenses.</p>
+            </div>
+          </div>
+          <!-- Card 6 -->
+          <div class="problem-card">
+            <div class="problem-num">06</div>
+            <div class="problem-card-content">
+              <h4>Lack of Centralized Reporting</h4>
+              <p>Absence of relational audit logs prevents analysis of recurring faults and operational metrics.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="highlight-statement">
+          <svg class="icon" viewBox="0 0 24 24" style="width:20px;height:20px;color:var(--accent-blue);flex-shrink:0;">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="16" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+          </svg>
+          <span>&ldquo;A centralized database-driven system is required to connect IT support operations with asset management.&rdquo;</span>
+        </div>
+      </section>
+
+      <!-- ================================================================
+           SLIDE 3: PROJECT OBJECTIVES
+           ================================================================ -->
+      <section class="slide" id="slide-3" data-slide="3">
+        <div class="slide-header">
+          <span class="eyebrow">Project Goals &amp; Capabilities</span>
+          <h2 class="slide-title">What Are We Building?</h2>
+          <p class="slide-desc">
+            A reliable relational platform designed to unify daily service desk workflows with physical hardware lifecycle management.
+          </p>
+        </div>
+
+        <div class="s3-grid">
+          <!-- Item 1 -->
+          <div class="s3-card">
+            <div class="s3-top">
+              <span class="s3-index">Goal 01</span>
+              <svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px;color:var(--accent-blue);">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+              </svg>
+            </div>
+            <div>
+              <h4 class="s3-title">Centralize IT Support Ticket Management</h4>
+              <p class="s3-desc">Unified repository for raising, categorizing, and prioritizing enterprise user issues.</p>
+            </div>
+          </div>
+
+          <!-- Item 2 -->
+          <div class="s3-card">
+            <div class="s3-top">
+              <span class="s3-index">Goal 02</span>
+              <svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px;color:var(--accent-blue);">
+                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                <line x1="8" y1="21" x2="16" y2="21"></line>
+                <line x1="12" y1="17" x2="12" y2="21"></line>
+              </svg>
+            </div>
+            <div>
+              <h4 class="s3-title">Maintain Records of Organizational Assets</h4>
+              <p class="s3-desc">Catalog physical devices, hardware specifications, asset tags, and department ownership.</p>
+            </div>
+          </div>
+
+          <!-- Item 3 -->
+          <div class="s3-card">
+            <div class="s3-top">
+              <span class="s3-index">Goal 03</span>
+              <svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px;color:var(--accent-blue);">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                <line x1="12" y1="9" x2="12" y2="13"></line>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+              </svg>
+            </div>
+            <div>
+              <h4 class="s3-title">Manage Incidents &amp; Service Requests</h4>
+              <p class="s3-desc">Differentiate critical unplanned system outages from standard employee hardware/access requests.</p>
+            </div>
+          </div>
+
+          <!-- Item 4 -->
+          <div class="s3-card">
+            <div class="s3-top">
+              <span class="s3-index">Goal 04</span>
+              <svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px;color:var(--accent-blue);">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+              </svg>
+            </div>
+            <div>
+              <h4 class="s3-title">Assign Tickets to Appropriate Technicians</h4>
+              <p class="s3-desc">Structured delegation ensuring accountability and skill-matched technical troubleshooting.</p>
+            </div>
+          </div>
+
+          <!-- Item 5 -->
+          <div class="s3-card">
+            <div class="s3-top">
+              <span class="s3-index">Goal 05</span>
+              <svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px;color:var(--accent-blue);">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+            </div>
+            <div>
+              <h4 class="s3-title">Track Status &amp; Resolution History</h4>
+              <p class="s3-desc">Capture immutable chronological status audit trails from intake to resolution closure.</p>
+            </div>
+          </div>
+
+          <!-- Item 6 -->
+          <div class="s3-card">
+            <div class="s3-top">
+              <span class="s3-index">Goal 06</span>
+              <svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px;color:var(--accent-blue);">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              </svg>
+            </div>
+            <div>
+              <h4 class="s3-title">Monitor Warranties &amp; Maintenance</h4>
+              <p class="s3-desc">Track active vendor warranty validity periods, repair descriptions, and servicing expenditures.</p>
+            </div>
+          </div>
+
+          <!-- Item 7 (Wide card spanning 2 columns) -->
+          <div class="s3-card wide" style="background: linear-gradient(135deg, #ffffff 0%, #f8faff 100%);">
+            <div class="s3-top">
+              <span class="s3-index" style="background: var(--accent-indigo-soft); color: var(--accent-indigo); border-color: var(--accent-indigo-border);">Goal 07</span>
+              <svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px;color:var(--accent-indigo);">
+                <line x1="18" y1="20" x2="18" y2="10"></line>
+                <line x1="12" y1="20" x2="12" y2="4"></line>
+                <line x1="6" y1="20" x2="6" y2="14"></line>
+              </svg>
+            </div>
+            <div>
+              <h4 class="s3-title">Generate Meaningful Reports and Insights</h4>
+              <p class="s3-desc">Execute multi-table relational aggregations to evaluate mean time to resolution (MTTR), technician workload, and high-frequency asset hardware failures.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================================================================
+           SLIDE 4: CORE DATA MODEL
+           ================================================================ -->
+      <section class="slide" id="slide-4" data-slide="4">
+        <div class="slide-header">
+          <span class="eyebrow">Relational Architecture</span>
+          <h2 class="slide-title">Core Data Model</h2>
+          <p class="slide-desc">
+            The system is designed around interconnected entities that collectively manage IT support operations and organizational assets.
+          </p>
+        </div>
+
+        <div class="s4-container">
+          <div class="s4-model-board">
+            <!-- Domain Columns -->
+            <div class="domain-columns">
+              <!-- Organization & Users -->
+              <div class="domain-box">
+                <div class="domain-header">
+                  <span class="domain-title">Organization Domain</span>
+                  <span class="domain-tag">2 Entities</span>
+                </div>
+                <div class="entities-chip-group">
+                  <span class="entity-chip"><span class="chip-dot"></span>Departments</span>
+                  <span class="entity-chip"><span class="chip-dot"></span>Users</span>
+                </div>
+              </div>
+
+              <!-- Assets & Hardware -->
+              <div class="domain-box">
+                <div class="domain-header">
+                  <span class="domain-title">Asset &amp; Lifecycle Domain</span>
+                  <span class="domain-tag">4 Entities</span>
+                </div>
+                <div class="entities-chip-group">
+                  <span class="entity-chip"><span class="chip-dot emerald"></span>Categories</span>
+                  <span class="entity-chip"><span class="chip-dot emerald"></span>Assets</span>
+                  <span class="entity-chip"><span class="chip-dot emerald"></span>Warranties</span>
+                  <span class="entity-chip"><span class="chip-dot emerald"></span>Maintenance</span>
+                </div>
+              </div>
+
+              <!-- Support & Operations -->
+              <div class="domain-box">
+                <div class="domain-header">
+                  <span class="domain-title">Ticketing &amp; Support Operations</span>
+                  <span class="domain-tag">7 Entities</span>
+                </div>
+                <div class="entities-chip-group">
+                  <span class="entity-chip"><span class="chip-dot purple"></span>Tickets</span>
+                  <span class="entity-chip"><span class="chip-dot purple"></span>Service Requests</span>
+                  <span class="entity-chip"><span class="chip-dot purple"></span>Priorities</span>
+                  <span class="entity-chip"><span class="chip-dot purple"></span>Technicians</span>
+                  <span class="entity-chip"><span class="chip-dot purple"></span>Assignments</span>
+                  <span class="entity-chip"><span class="chip-dot purple"></span>Status History</span>
+                  <span class="entity-chip"><span class="chip-dot purple"></span>Resolutions</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Relationships Matrix -->
+            <div class="relations-matrix">
+              <div class="matrix-title">
+                <svg class="icon" viewBox="0 0 24 24" style="width:13px;height:13px;color:var(--accent-blue);">
+                  <polyline points="16 18 22 12 16 6"></polyline>
+                  <polyline points="8 6 2 12 8 18"></polyline>
+                </svg>
+                Key Logical Foreign Key Mappings
+              </div>
+              <div class="relations-grid">
+                <div class="relation-node">
+                  <span class="relation-source">Department</span>
+                  <span class="relation-arrow">&rarr;</span>
+                  <span class="relation-target">Users</span>
+                </div>
+                <div class="relation-node">
+                  <span class="relation-source">Department</span>
+                  <span class="relation-arrow">&rarr;</span>
+                  <span class="relation-target">Assets</span>
+                </div>
+                <div class="relation-node">
+                  <span class="relation-source">Category</span>
+                  <span class="relation-arrow">&rarr;</span>
+                  <span class="relation-target">Assets</span>
+                </div>
+                <div class="relation-node">
+                  <span class="relation-source">User</span>
+                  <span class="relation-arrow">&rarr;</span>
+                  <span class="relation-target">Tickets</span>
+                </div>
+                <div class="relation-node">
+                  <span class="relation-source">Ticket</span>
+                  <span class="relation-arrow">&rarr;</span>
+                  <span class="relation-target">Priority</span>
+                </div>
+                <div class="relation-node">
+                  <span class="relation-source">Ticket</span>
+                  <span class="relation-arrow">&rarr;</span>
+                  <span class="relation-target">Assignment</span>
+                </div>
+                <div class="relation-node">
+                  <span class="relation-source">Assignment</span>
+                  <span class="relation-arrow">&rarr;</span>
+                  <span class="relation-target">Technician</span>
+                </div>
+                <div class="relation-node">
+                  <span class="relation-source">Ticket</span>
+                  <span class="relation-arrow">&rarr;</span>
+                  <span class="relation-target">Status History</span>
+                </div>
+                <div class="relation-node">
+                  <span class="relation-source">Ticket</span>
+                  <span class="relation-arrow">&rarr;</span>
+                  <span class="relation-target">Resolution</span>
+                </div>
+                <div class="relation-node">
+                  <span class="relation-source">Asset</span>
+                  <span class="relation-arrow">&rarr;</span>
+                  <span class="relation-target">Warranty / Maint.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================================================================
+           SLIDE 5: ENTITY RELATIONSHIP DIAGRAM (FITS WITHIN LAPTOP SCREEN)
+           ================================================================ -->
+      <section class="slide" id="slide-5" data-slide="5">
+        <div class="slide-header" style="margin-bottom: 10px;">
+          <span class="eyebrow">Schema Specification &bull; 3NF Design</span>
+          <h2 class="slide-title" style="font-size: 24px;">Entity Relationship Diagram</h2>
+          <p class="slide-desc" style="font-size: 12px; margin-top: 2px;">
+            Compact representation of core relational tables, primary keys (PK), foreign keys (FK), and relationship cardinalities.
+          </p>
+        </div>
+
+        <div class="s5-erd-board">
+          <!-- Row 1: Col 1 - DEPARTMENT -->
+          <div class="erd-table">
+            <div class="erd-head">
+              <span class="erd-title">DEPARTMENT</span>
+              <span class="erd-badge">Lookup</span>
+            </div>
+            <div class="erd-body">
+              <div class="erd-row pk">
+                <span class="col-name"><span class="tag-pk">PK</span> department_id</span>
+                <span class="col-type">INT</span>
+              </div>
+              <div class="erd-row">
+                <span class="col-name">department_name</span>
+                <span class="col-type">VARCHAR</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Row 1: Col 2 - USER -->
+          <div class="erd-table">
+            <div class="erd-head">
+              <span class="erd-title">USER</span>
+              <span class="erd-badge">Entity</span>
+            </div>
+            <div class="erd-body">
+              <div class="erd-row pk">
+                <span class="col-name"><span class="tag-pk">PK</span> user_id</span>
+                <span class="col-type">INT</span>
+              </div>
+              <div class="erd-row">
+                <span class="col-name">name</span>
+                <span class="col-type">VARCHAR</span>
+              </div>
+              <div class="erd-row">
+                <span class="col-name">email</span>
+                <span class="col-type">VARCHAR</span>
+              </div>
+              <div class="erd-row fk">
+                <span class="col-name"><span class="tag-fk">FK</span> department_id</span>
+                <span class="col-type">INT</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Row 1: Col 3 - CATEGORY -->
+          <div class="erd-table">
+            <div class="erd-head">
+              <span class="erd-title">CATEGORY</span>
+              <span class="erd-badge">Lookup</span>
+            </div>
+            <div class="erd-body">
+              <div class="erd-row pk">
+                <span class="col-name"><span class="tag-pk">PK</span> category_id</span>
+                <span class="col-type">INT</span>
+              </div>
+              <div class="erd-row">
+                <span class="col-name">category_name</span>
+                <span class="col-type">VARCHAR</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Row 1: Col 4 - ASSET -->
+          <div class="erd-table">
+            <div class="erd-head">
+              <span class="erd-title">ASSET</span>
+              <span class="erd-badge">Core Asset</span>
+            </div>
+            <div class="erd-body">
+              <div class="erd-row pk">
+                <span class="col-name"><span class="tag-pk">PK</span> asset_id</span>
+                <span class="col-type">INT</span>
+              </div>
+              <div class="erd-row">
+                <span class="col-name">asset_tag, name</span>
+                <span class="col-type">VARCHAR</span>
+              </div>
+              <div class="erd-row fk">
+                <span class="col-name"><span class="tag-fk">FK</span> category_id</span>
+                <span class="col-type">INT</span>
+              </div>
+              <div class="erd-row fk">
+                <span class="col-name"><span class="tag-fk">FK</span> department_id</span>
+                <span class="col-type">INT</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Row 2: Col 1 - TICKET -->
+          <div class="erd-table">
+            <div class="erd-head">
+              <span class="erd-title">TICKET</span>
+              <span class="erd-badge">Core Desk</span>
+            </div>
+            <div class="erd-body">
+              <div class="erd-row pk">
+                <span class="col-name"><span class="tag-pk">PK</span> ticket_id</span>
+                <span class="col-type">INT</span>
+              </div>
+              <div class="erd-row">
+                <span class="col-name">ticket_number, title</span>
+                <span class="col-type">VARCHAR</span>
+              </div>
+              <div class="erd-row">
+                <span class="col-name">description, status</span>
+                <span class="col-type">TEXT/ENUM</span>
+              </div>
+              <div class="erd-row fk">
+                <span class="col-name"><span class="tag-fk">FK</span> user_id, priority_id</span>
+                <span class="col-type">INT</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Row 2: Col 2 - PRIORITY -->
+          <div class="erd-table">
+            <div class="erd-head">
+              <span class="erd-title">PRIORITY</span>
+              <span class="erd-badge">Lookup</span>
+            </div>
+            <div class="erd-body">
+              <div class="erd-row pk">
+                <span class="col-name"><span class="tag-pk">PK</span> priority_id</span>
+                <span class="col-type">INT</span>
+              </div>
+              <div class="erd-row">
+                <span class="col-name">priority_name</span>
+                <span class="col-type">VARCHAR</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Row 2: Col 3 - TECHNICIAN -->
+          <div class="erd-table">
+            <div class="erd-head">
+              <span class="erd-title">TECHNICIAN</span>
+              <span class="erd-badge">Staff</span>
+            </div>
+            <div class="erd-body">
+              <div class="erd-row pk">
+                <span class="col-name"><span class="tag-pk">PK</span> technician_id</span>
+                <span class="col-type">INT</span>
+              </div>
+              <div class="erd-row">
+                <span class="col-name">name</span>
+                <span class="col-type">VARCHAR</span>
+              </div>
+              <div class="erd-row">
+                <span class="col-name">email</span>
+                <span class="col-type">VARCHAR</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Row 2: Col 4 - ASSIGNMENT -->
+          <div class="erd-table">
+            <div class="erd-head">
+              <span class="erd-title">ASSIGNMENT</span>
+              <span class="erd-badge">Bridge</span>
+            </div>
+            <div class="erd-body">
+              <div class="erd-row pk">
+                <span class="col-name"><span class="tag-pk">PK</span> assignment_id</span>
+                <span class="col-type">INT</span>
+              </div>
+              <div class="erd-row fk">
+                <span class="col-name"><span class="tag-fk">FK</span> ticket_id</span>
+                <span class="col-type">INT</span>
+              </div>
+              <div class="erd-row fk">
+                <span class="col-name"><span class="tag-fk">FK</span> technician_id</span>
+                <span class="col-type">INT</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Row 3: Col 1 - STATUS_HISTORY -->
+          <div class="erd-table">
+            <div class="erd-head">
+              <span class="erd-title">STATUS_HISTORY</span>
+              <span class="erd-badge">Audit</span>
+            </div>
+            <div class="erd-body">
+              <div class="erd-row pk">
+                <span class="col-name"><span class="tag-pk">PK</span> history_id</span>
+                <span class="col-type">INT</span>
+              </div>
+              <div class="erd-row fk">
+                <span class="col-name"><span class="tag-fk">FK</span> ticket_id</span>
+                <span class="col-type">INT</span>
+              </div>
+              <div class="erd-row">
+                <span class="col-name">old_status, new_status</span>
+                <span class="col-type">VARCHAR</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Row 3: Col 2 - RESOLUTION -->
+          <div class="erd-table">
+            <div class="erd-head">
+              <span class="erd-title">RESOLUTION</span>
+              <span class="erd-badge">Audit</span>
+            </div>
+            <div class="erd-body">
+              <div class="erd-row pk">
+                <span class="col-name"><span class="tag-pk">PK</span> resolution_id</span>
+                <span class="col-type">INT</span>
+              </div>
+              <div class="erd-row fk">
+                <span class="col-name"><span class="tag-fk">FK</span> ticket_id</span>
+                <span class="col-type">INT</span>
+              </div>
+              <div class="erd-row">
+                <span class="col-name">resolution_details</span>
+                <span class="col-type">TEXT</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Row 3: Col 3 - WARRANTY -->
+          <div class="erd-table">
+            <div class="erd-head">
+              <span class="erd-title">WARRANTY</span>
+              <span class="erd-badge">Lifecycle</span>
+            </div>
+            <div class="erd-body">
+              <div class="erd-row pk">
+                <span class="col-name"><span class="tag-pk">PK</span> warranty_id</span>
+                <span class="col-type">INT</span>
+              </div>
+              <div class="erd-row fk">
+                <span class="col-name"><span class="tag-fk">FK</span> asset_id</span>
+                <span class="col-type">INT</span>
+              </div>
+              <div class="erd-row">
+                <span class="col-name">expiry_date</span>
+                <span class="col-type">DATE</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Row 3: Col 4 - MAINTENANCE -->
+          <div class="erd-table">
+            <div class="erd-head">
+              <span class="erd-title">MAINTENANCE</span>
+              <span class="erd-badge">Lifecycle</span>
+            </div>
+            <div class="erd-body">
+              <div class="erd-row pk">
+                <span class="col-name"><span class="tag-pk">PK</span> maintenance_id</span>
+                <span class="col-type">INT</span>
+              </div>
+              <div class="erd-row fk">
+                <span class="col-name"><span class="tag-fk">FK</span> asset_id</span>
+                <span class="col-type">INT</span>
+              </div>
+              <div class="erd-row">
+                <span class="col-name">maintenance_date</span>
+                <span class="col-type">DATE</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Legend Bar -->
+          <div class="erd-legend-bar">
+            <div class="legend-items">
+              <div class="legend-item">
+                <span class="tag-pk">PK</span> Primary Key
+              </div>
+              <div class="legend-item">
+                <span class="tag-fk">FK</span> Foreign Key Reference
+              </div>
+              <div class="legend-item" style="color: var(--text-muted);">
+                &bull; Strict Referential Integrity (<span style="font-family:monospace;font-size:10px;">CASCADE / RESTRICT</span>)
+              </div>
+            </div>
+            <div style="font-weight: 600; color: var(--accent-navy);">
+              Total: 12 Relational Entities &bull; Third Normal Form (3NF)
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================================================================
+           SLIDE 6: IMPLEMENTATION
+           ================================================================ -->
+      <section class="slide" id="slide-6" data-slide="6">
+        <div class="slide-header" style="margin-bottom: 12px;">
+          <span class="eyebrow">Technical Architecture &amp; Delivery</span>
+          <h2 class="slide-title">From Database Design to Implementation</h2>
+          <p class="slide-desc" style="font-size: 13px;">
+            The project is implemented as a robust, database-driven application connecting backend relational structures with operational workflows.
+          </p>
+        </div>
+
+        <div class="s6-container">
+          <!-- Architecture Flow -->
+          <div class="pipeline-bar">
+            <div class="pipeline-step">
+              <div class="step-num">1</div>
+              <div class="step-text">
+                <span class="step-label">Database Design</span>
+                <span class="step-sub">ERD, Normalization &amp; Constraints</span>
+              </div>
+            </div>
+            <div class="pipeline-step">
+              <div class="step-num">2</div>
+              <div class="step-text">
+                <span class="step-label">Relational Tables</span>
+                <span class="step-sub">MySQL DDL Schemas &amp; Indexes</span>
+              </div>
+            </div>
+            <div class="pipeline-step">
+              <div class="step-num">3</div>
+              <div class="step-text">
+                <span class="step-label">Backend Logic</span>
+                <span class="step-sub">Transactional Query Execution</span>
+              </div>
+            </div>
+            <div class="pipeline-step">
+              <div class="step-num">4</div>
+              <div class="step-text">
+                <span class="step-label">Web Application</span>
+                <span class="step-sub">Interactive Helpdesk UI Interface</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 9 Modules Grid -->
+          <div class="modules-matrix">
+            <div class="module-item">
+              <div class="module-icon">
+                <svg class="icon" viewBox="0 0 24 24" style="width:12px;height:12px;"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+              </div>
+              <span class="module-name">Asset Registration &amp; Tracking</span>
+            </div>
+            <div class="module-item">
+              <div class="module-icon">
+                <svg class="icon" viewBox="0 0 24 24" style="width:12px;height:12px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              </div>
+              <span class="module-name">Ticket / Incident Management</span>
+            </div>
+            <div class="module-item">
+              <div class="module-icon">
+                <svg class="icon" viewBox="0 0 24 24" style="width:12px;height:12px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              </div>
+              <span class="module-name">Service Request Management</span>
+            </div>
+            <div class="module-item">
+              <div class="module-icon">
+                <svg class="icon" viewBox="0 0 24 24" style="width:12px;height:12px;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+              </div>
+              <span class="module-name">Technician Assignment</span>
+            </div>
+            <div class="module-item">
+              <div class="module-icon">
+                <svg class="icon" viewBox="0 0 24 24" style="width:12px;height:12px;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              </div>
+              <span class="module-name">Status Updates</span>
+            </div>
+            <div class="module-item">
+              <div class="module-icon">
+                <svg class="icon" viewBox="0 0 24 24" style="width:12px;height:12px;"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <span class="module-name">Resolution Tracking</span>
+            </div>
+            <div class="module-item">
+              <div class="module-icon">
+                <svg class="icon" viewBox="0 0 24 24" style="width:12px;height:12px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              </div>
+              <span class="module-name">Warranty Management</span>
+            </div>
+            <div class="module-item">
+              <div class="module-icon">
+                <svg class="icon" viewBox="0 0 24 24" style="width:12px;height:12px;"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+              </div>
+              <span class="module-name">Maintenance Records</span>
+            </div>
+            <div class="module-item">
+              <div class="module-icon">
+                <svg class="icon" viewBox="0 0 24 24" style="width:12px;height:12px;"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+              </div>
+              <span class="module-name">Reporting &amp; Analytics</span>
+            </div>
+          </div>
+
+          <!-- Highlight Section -->
+          <div class="current-impl-box">
+            <div class="impl-left">
+              <span class="impl-badge">Current Implementation</span>
+              <p class="impl-text">
+                The relational database schema and application interface are being integrated to create a centralized IT support and asset management platform.
+              </p>
+            </div>
+            <div style="flex-shrink:0;">
+              <span style="font-size:11px;font-weight:700;color:#047857;background:#ecfdf5;padding:4px 10px;border-radius:20px;border:1px solid #a7f3d0;display:inline-flex;align-items:center;gap:4px;">
+                <span style="width:6px;height:6px;border-radius:50%;background:#10b981;"></span>
+                Schema Verified &bull; Active Integration
+              </span>
+            </div>
+          </div>
+
+          <!-- Closing Statement Quote -->
+          <div class="s6-quote">
+            &ldquo;Transforming fragmented IT support operations into a centralized, structured and scalable system.&rdquo;
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Bottom Navigation Footer -->
+    <footer class="deck-footer">
+      <!-- Top Progress Line -->
+      <div class="progress-bar-container">
+        <div class="progress-bar-fill" id="progressBar"></div>
+      </div>
+
+      <!-- Left: Slide indicator dots -->
+      <div class="dot-indicators" id="dotIndicators">
+        <button class="dot active" data-index="1" aria-label="Go to slide 1"></button>
+        <button class="dot" data-index="2" aria-label="Go to slide 2"></button>
+        <button class="dot" data-index="3" aria-label="Go to slide 3"></button>
+        <button class="dot" data-index="4" aria-label="Go to slide 4"></button>
+        <button class="dot" data-index="5" aria-label="Go to slide 5"></button>
+        <button class="dot" data-index="6" aria-label="Go to slide 6"></button>
+      </div>
+
+      <!-- Center: Keyboard Shortcuts Guidance -->
+      <div class="keyboard-hint">
+        <span>Navigate:</span>
+        <span class="key-badge">&larr;</span>
+        <span class="key-badge">&rarr;</span>
+        <span style="margin-left: 2px;">or</span>
+        <span class="key-badge" style="padding: 0 6px;">Space</span>
+      </div>
+
+      <!-- Right: Previous / Next Buttons -->
+      <div class="nav-buttons">
+        <button class="btn-nav" id="btnPrev" disabled>
+          <svg class="icon" viewBox="0 0 24 24" style="width:13px;height:13px;"><polyline points="15 18 9 12 15 6"/></svg>
+          Previous
+        </button>
+        <button class="btn-nav primary" id="btnNext">
+          Next
+          <svg class="icon" viewBox="0 0 24 24" style="width:13px;height:13px;"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      const totalSlides = 6;
+      let currentSlide = 1;
+
+      const slides = document.querySelectorAll('.slide');
+      const dots = document.querySelectorAll('.dot');
+      const counter = document.getElementById('slideCounter');
+      const progressBar = document.getElementById('progressBar');
+      const btnPrev = document.getElementById('btnPrev');
+      const btnNext = document.getElementById('btnNext');
+
+      function updatePresentation(targetIndex) {
+        if (targetIndex < 1 || targetIndex > totalSlides) return;
+        currentSlide = targetIndex;
+
+        // Toggle slides
+        slides.forEach((slide, idx) => {
+          const slideNum = idx + 1;
+          if (slideNum === currentSlide) {
+            slide.classList.add('active');
+          } else {
+            slide.classList.remove('active');
+          }
+        });
+
+        // Toggle dots
+        dots.forEach((dot, idx) => {
+          const dotNum = idx + 1;
+          if (dotNum === currentSlide) {
+            dot.classList.add('active');
+          } else {
+            dot.classList.remove('active');
+          }
+        });
+
+        // Update counter & progress bar
+        counter.textContent = String(currentSlide).padStart(2, '0') + ' / 0' + totalSlides;
+        const percent = ((currentSlide - 1) / (totalSlides - 1)) * 100;
+        progressBar.style.width = (percent === 0 ? (100 / totalSlides) : percent) + '%';
+
+        // Update buttons state
+        btnPrev.disabled = (currentSlide === 1);
+        if (currentSlide === totalSlides) {
+          btnNext.innerHTML = 'Finish <svg class="icon" viewBox="0 0 24 24" style="width:13px;height:13px;"><polyline points="20 6 9 17 4 12"/></svg>';
+        } else {
+          btnNext.innerHTML = 'Next <svg class="icon" viewBox="0 0 24 24" style="width:13px;height:13px;"><polyline points="9 18 15 12 9 6"/></svg>';
+        }
+      }
+
+      function nextSlide() {
+        if (currentSlide < totalSlides) {
+          updatePresentation(currentSlide + 1);
+        }
+      }
+
+      function prevSlide() {
+        if (currentSlide > 1) {
+          updatePresentation(currentSlide - 1);
+        }
+      }
+
+      // Event Listeners for Nav Buttons
+      btnNext.addEventListener('click', nextSlide);
+      btnPrev.addEventListener('click', prevSlide);
+
+      // Dot Clicks
+      dots.forEach(dot => {
+        dot.addEventListener('click', () => {
+          const index = parseInt(dot.getAttribute('data-index'), 10);
+          updatePresentation(index);
+        });
+      });
+
+      // Keyboard Controls: Left Arrow, Right Arrow, Space, PageUp, PageDown
+      window.addEventListener('keydown', (e) => {
+        // Prevent default behavior for space and arrow keys when presenting
+        if (['ArrowRight', 'ArrowLeft', 'Space', 'PageDown', 'PageUp'].includes(e.code)) {
+          e.preventDefault();
+        }
+
+        if (e.code === 'ArrowRight' || e.code === 'Space' || e.code === 'PageDown' || e.key === 'n' || e.key === 'N') {
+          nextSlide();
+        } else if (e.code === 'ArrowLeft' || e.code === 'PageUp' || e.key === 'p' || e.key === 'P') {
+          prevSlide();
+        } else if (e.key >= '1' && e.key <= '6') {
+          updatePresentation(parseInt(e.key, 10));
+        }
+      });
+
+      // Initial state setup
+      updatePresentation(1);
+    })();
+  </script>
+</body>
+</html>
