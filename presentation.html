@@ -482,6 +482,75 @@
       font-weight: 450;
     }
 
+    /* Academic Credits Grid (Student & Faculty Details) */
+    .s1-credits-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .credit-card {
+      background: #ffffff;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 13px 18px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      box-shadow: var(--shadow-subtle);
+      transition: all 0.2s ease;
+    }
+
+    .credit-card:hover {
+      border-color: var(--accent-blue-border);
+      box-shadow: var(--shadow-card);
+      transform: translateY(-1px);
+    }
+
+    .credit-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: var(--accent-blue-soft);
+      color: var(--accent-navy);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .credit-icon.guide-icon {
+      background: var(--accent-indigo-soft);
+      color: var(--accent-indigo);
+    }
+
+    .credit-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .credit-label {
+      font-size: 10.5px;
+      font-weight: 750;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent-navy);
+    }
+
+    .credit-name {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin-top: 1px;
+      letter-spacing: -0.01em;
+    }
+
+    .credit-meta {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 1px;
+    }
+
     .s1-badges-row {
       display: flex;
       align-items: center;
@@ -810,7 +879,98 @@
     }
 
     /* ==========================================================================
-       SLIDE 4: CORE DATA MODEL
+       SLIDE 4: FUNCTIONAL REQUIREMENTS (FR1 - FR7)
+       ========================================================================== */
+    .s4-fr-container {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      width: 100%;
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+
+    .fr-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 13px;
+    }
+
+    .fr-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      box-shadow: var(--shadow-card);
+      min-height: 126px;
+      justify-content: flex-start;
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+                  box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+                  border-color 0.22s ease;
+      cursor: default;
+    }
+
+    .fr-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-card-hover);
+      border-color: var(--accent-blue-border);
+    }
+
+    .fr-card.wide {
+      grid-column: span 2;
+    }
+
+    .fr-card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .fr-badge {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--accent-navy);
+      background: var(--accent-blue-soft);
+      border: 1px solid var(--accent-blue-border);
+      padding: 2.5px 8px;
+      border-radius: 4px;
+      letter-spacing: 0.04em;
+    }
+
+    .fr-badge.indigo {
+      color: var(--accent-indigo);
+      background: var(--accent-indigo-soft);
+      border-color: var(--accent-indigo-border);
+    }
+
+    .fr-title {
+      font-size: 14px;
+      font-weight: 750;
+      color: var(--text-primary);
+      line-height: 1.32;
+    }
+
+    .fr-desc {
+      font-size: 12.5px;
+      color: var(--text-secondary);
+      line-height: 1.45;
+    }
+
+    .fr-desc code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 11px;
+      background: #f1f5f9;
+      padding: 1px 4px;
+      border-radius: 3px;
+      color: var(--accent-navy);
+      font-weight: 600;
+    }
+
+    /* ==========================================================================
+       SLIDE 5: CORE DATA MODEL
        ========================================================================== */
     .s4-container {
       display: flex;
@@ -1576,7 +1736,7 @@
           </svg>
           <span id="fsText">Fullscreen</span>
         </button>
-        <span class="slide-counter" id="slideCounter">01 / 06</span>
+        <span class="slide-counter" id="slideCounter">01 / 07</span>
       </div>
     </header>
 
@@ -1609,7 +1769,40 @@
             </p>
           </div>
 
-          <div class="s1-badges-row anim-stagger-2">
+          <!-- Student & Faculty Details Grid -->
+          <div class="s1-credits-grid anim-stagger-2">
+            <!-- Student Details -->
+            <div class="credit-card">
+              <div class="credit-icon">
+                <svg class="icon" viewBox="0 0 24 24" style="width:16px;height:16px;">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+              </div>
+              <div class="credit-info">
+                <span class="credit-label">Presented By</span>
+                <h4 class="credit-name">Md Aali Rahman</h4>
+                <span class="credit-meta">Roll No: <strong>25WU0102156</strong></span>
+              </div>
+            </div>
+
+            <!-- Faculty Details -->
+            <div class="credit-card">
+              <div class="credit-icon guide-icon">
+                <svg class="icon" viewBox="0 0 24 24" style="width:16px;height:16px;">
+                  <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+                  <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+                </svg>
+              </div>
+              <div class="credit-info">
+                <span class="credit-label">Faculty Guide</span>
+                <h4 class="credit-name">Dr. Kiranmayee Adavala</h4>
+                <span class="credit-meta">Department of Computer Science &amp; Engineering</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="s1-badges-row anim-stagger-3">
             <!-- Badge 1 -->
             <div class="tech-pill">
               <div class="tech-pill-icon">
@@ -1886,9 +2079,119 @@
       </section>
 
       <!-- ================================================================
-           SLIDE 4: CORE DATA MODEL
+           SLIDE 4: FUNCTIONAL REQUIREMENTS (FR1 - FR7)
            ================================================================ -->
       <section class="slide" id="slide-4" data-slide="4">
+        <div class="slide-header" style="margin-bottom: 14px;">
+          <span class="eyebrow anim-eyebrow">System Capabilities &amp; Specifications</span>
+          <h2 class="slide-title anim-title">Functional Requirements</h2>
+          <p class="slide-desc anim-desc">
+            Core functional specifications governing ticketing workflows, hardware asset tracking, and relational data integrity.
+          </p>
+        </div>
+
+        <div class="s4-fr-container anim-stagger-1">
+          <div class="fr-grid">
+            <!-- FR1 -->
+            <div class="fr-card">
+              <div class="fr-card-top">
+                <span class="fr-badge">FR-01</span>
+                <svg class="icon" viewBox="0 0 24 24" style="color:var(--accent-navy);width:14px;height:14px;">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                </svg>
+              </div>
+              <h4 class="fr-title">Ticket Lifecycle Management</h4>
+              <p class="fr-desc">Create, categorize, and prioritize issues with automated classification into Incident (outage) vs Service Request (provisioning).</p>
+            </div>
+
+            <!-- FR2 -->
+            <div class="fr-card">
+              <div class="fr-card-top">
+                <span class="fr-badge">FR-02</span>
+                <svg class="icon" viewBox="0 0 24 24" style="color:var(--accent-navy);width:14px;height:14px;">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="9" cy="7" r="4"></circle>
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+              </div>
+              <h4 class="fr-title">Technician Assignment Engine</h4>
+              <p class="fr-desc">Assign pending tickets to specialized support staff with foreign key validation and automatic status transition to <code>In Progress</code>.</p>
+            </div>
+
+            <!-- FR3 -->
+            <div class="fr-card">
+              <div class="fr-card-top">
+                <span class="fr-badge">FR-03</span>
+                <svg class="icon" viewBox="0 0 24 24" style="color:var(--accent-navy);width:14px;height:14px;">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+              </div>
+              <h4 class="fr-title">Status Lifecycle &amp; Audit Logging</h4>
+              <p class="fr-desc">Track immutable chronological transitions (<code>Open</code> &rarr; <code>In Progress</code> &rarr; <code>Pending</code> &rarr; <code>Resolved</code> &rarr; <code>Closed</code>) in <code>status_histories</code>.</p>
+            </div>
+
+            <!-- FR4 -->
+            <div class="fr-card">
+              <div class="fr-card-top">
+                <span class="fr-badge">FR-04</span>
+                <svg class="icon" viewBox="0 0 24 24" style="color:var(--accent-navy);width:14px;height:14px;">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </div>
+              <h4 class="fr-title">Resolution Verification</h4>
+              <p class="fr-desc">Record resolution descriptions, timestamps, and technician sign-offs while enforcing database constraints against duplicate resolutions.</p>
+            </div>
+
+            <!-- FR5 -->
+            <div class="fr-card">
+              <div class="fr-card-top">
+                <span class="fr-badge">FR-05</span>
+                <svg class="icon" viewBox="0 0 24 24" style="color:var(--accent-navy);width:14px;height:14px;">
+                  <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                  <line x1="8" y1="21" x2="16" y2="21"></line>
+                  <line x1="12" y1="17" x2="12" y2="21"></line>
+                </svg>
+              </div>
+              <h4 class="fr-title">Hardware Asset Inventory</h4>
+              <p class="fr-desc">Catalog enterprise devices with unique asset tags, serial numbers, categories, departmental locations, and designated user ownership.</p>
+            </div>
+
+            <!-- FR6 -->
+            <div class="fr-card">
+              <div class="fr-card-top">
+                <span class="fr-badge">FR-06</span>
+                <svg class="icon" viewBox="0 0 24 24" style="color:var(--accent-navy);width:14px;height:14px;">
+                  <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+                </svg>
+              </div>
+              <h4 class="fr-title">Maintenance &amp; Expense Records</h4>
+              <p class="fr-desc">Log servicing dates, repair actions, vendor contracts, and expenditure costs directly associated with physical equipment.</p>
+            </div>
+
+            <!-- FR7 -->
+            <div class="fr-card wide" style="background: linear-gradient(135deg, #ffffff 0%, #f9faff 100%);">
+              <div class="fr-card-top">
+                <span class="fr-badge indigo">FR-07</span>
+                <svg class="icon" viewBox="0 0 24 24" style="color:var(--accent-indigo);width:14px;height:14px;">
+                  <line x1="18" y1="20" x2="18" y2="10"></line>
+                  <line x1="12" y1="20" x2="12" y2="4"></line>
+                  <line x1="6" y1="20" x2="6" y2="14"></line>
+                </svg>
+              </div>
+              <h4 class="fr-title">Relational Reporting &amp; Analytics</h4>
+              <p class="fr-desc">Execute multi-table relational aggregations to evaluate mean time to resolution (MTTR), technician queue metrics, high-failure hardware components, and upcoming warranty expiries.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================================================================
+           SLIDE 5: CORE DATA MODEL
+           ================================================================ -->
+      <section class="slide" id="slide-5" data-slide="5">
         <div class="slide-header">
           <span class="eyebrow anim-eyebrow">Relational Architecture</span>
           <h2 class="slide-title anim-title">Core Data Model</h2>
@@ -2012,9 +2315,9 @@
       </section>
 
       <!-- ================================================================
-           SLIDE 5: INTERACTIVE ENTITY RELATIONSHIP DIAGRAM
+           SLIDE 6: INTERACTIVE ENTITY RELATIONSHIP DIAGRAM
            ================================================================ -->
-      <section class="slide" id="slide-5" data-slide="5">
+      <section class="slide" id="slide-6" data-slide="6">
         <div class="slide-header" style="margin-bottom: 8px;">
           <span class="eyebrow anim-eyebrow">Interactive Schema &bull; 3NF Design</span>
           <div style="display: flex; align-items: center; justify-content: space-between;">
@@ -2319,9 +2622,9 @@
       </section>
 
       <!-- ================================================================
-           SLIDE 6: INTERACTIVE IMPLEMENTATION ARCHITECTURE
+           SLIDE 7: INTERACTIVE IMPLEMENTATION ARCHITECTURE
            ================================================================ -->
-      <section class="slide" id="slide-6" data-slide="6">
+      <section class="slide" id="slide-7" data-slide="7">
         <div class="slide-header" style="margin-bottom: 12px;">
           <span class="eyebrow anim-eyebrow">Technical Architecture &amp; Delivery</span>
           <h2 class="slide-title anim-title">From Database Design to Implementation</h2>
@@ -2470,6 +2773,7 @@
         <button class="dot" data-index="4" aria-label="Go to slide 4"></button>
         <button class="dot" data-index="5" aria-label="Go to slide 5"></button>
         <button class="dot" data-index="6" aria-label="Go to slide 6"></button>
+        <button class="dot" data-index="7" aria-label="Go to slide 7"></button>
       </div>
 
       <!-- Center: Minimal Keyboard Shortcuts Overlay Button -->
@@ -2522,7 +2826,7 @@
         </div>
         <div class="kbd-item">
           <span>Jump to Specific Slide</span>
-          <div class="key-group"><span class="key-badge">1</span> &ndash; <span class="key-badge">6</span></div>
+          <div class="key-group"><span class="key-badge">1</span> &ndash; <span class="key-badge">7</span></div>
         </div>
         <div class="kbd-item">
           <span>Toggle Fullscreen Mode</span>
@@ -2540,7 +2844,7 @@
     (function () {
       'use strict';
 
-      const totalSlides = 6;
+      const totalSlides = 7;
       let currentSlide = 1;
 
       const slides = document.querySelectorAll('.slide');
@@ -2933,7 +3237,7 @@
           nextSlide();
         } else if (e.code === 'ArrowLeft' || e.code === 'PageUp' || e.key === 'p' || e.key === 'P') {
           prevSlide();
-        } else if (e.key >= '1' && e.key <= '6') {
+        } else if (e.key >= '1' && e.key <= '7') {
           updatePresentation(parseInt(e.key, 10));
         }
       });
