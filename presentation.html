@@ -487,29 +487,41 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 16px;
+      margin-top: 2px;
     }
 
     .credit-card {
       background: #ffffff;
       border: 1px solid var(--border-subtle);
+      border-left: 3.5px solid var(--accent-navy);
       border-radius: var(--radius-md);
-      padding: 13px 18px;
+      padding: 11px 18px;
       display: flex;
       align-items: center;
       gap: 14px;
       box-shadow: var(--shadow-subtle);
-      transition: all 0.2s ease;
+      transition: all 0.22s ease;
+    }
+
+    .credit-card.guide-card {
+      border-left-color: var(--accent-indigo);
     }
 
     .credit-card:hover {
       border-color: var(--accent-blue-border);
+      border-left-color: var(--accent-blue);
       box-shadow: var(--shadow-card);
       transform: translateY(-1px);
     }
 
+    .credit-card.guide-card:hover {
+      border-color: var(--accent-indigo);
+      border-left-color: var(--accent-indigo);
+    }
+
     .credit-icon {
-      width: 36px;
-      height: 36px;
+      width: 38px;
+      height: 38px;
       border-radius: 8px;
       background: var(--accent-blue-soft);
       color: var(--accent-navy);
@@ -527,28 +539,74 @@
     .credit-info {
       display: flex;
       flex-direction: column;
+      gap: 4px;
+      min-width: 0;
     }
 
     .credit-label {
-      font-size: 10.5px;
+      font-size: 10px;
       font-weight: 750;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--accent-navy);
+      letter-spacing: 0.09em;
+      color: var(--text-muted);
     }
 
-    .credit-name {
+    .credit-name-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .credit-name-highlight {
       font-size: 15px;
       font-weight: 800;
-      color: var(--text-primary);
-      margin-top: 1px;
+      color: #1e40af;
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.1) 0%, rgba(59, 130, 246, 0.16) 100%);
+      border: 1px solid rgba(37, 99, 235, 0.28);
+      border-radius: 6px;
+      padding: 3px 10px;
       letter-spacing: -0.01em;
+      display: inline-flex;
+      align-items: center;
+      box-shadow: 0 1px 3px rgba(37, 99, 235, 0.08);
+      transition: all 0.2s ease;
     }
 
-    .credit-meta {
+    .credit-name-highlight.guide-highlight {
+      color: #4338ca;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(129, 140, 248, 0.16) 100%);
+      border-color: rgba(99, 102, 241, 0.28);
+      box-shadow: 0 1px 3px rgba(99, 102, 241, 0.08);
+    }
+
+    .credit-card:hover .credit-name-highlight {
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.16) 0%, rgba(59, 130, 246, 0.24) 100%);
+      border-color: rgba(37, 99, 235, 0.42);
+    }
+
+    .credit-card.guide-card:hover .credit-name-highlight.guide-highlight {
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.16) 0%, rgba(129, 140, 248, 0.24) 100%);
+      border-color: rgba(99, 102, 241, 0.42);
+    }
+
+    .credit-roll-badge {
       font-size: 12px;
-      color: var(--text-muted);
-      margin-top: 1px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-subtle);
+      padding: 2.5px 8px;
+      border-radius: 5px;
+      letter-spacing: 0.01em;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .credit-roll-badge strong {
+      color: var(--text-primary);
+      font-weight: 750;
     }
 
     .s1-badges-row {
@@ -1769,40 +1827,8 @@
             </p>
           </div>
 
-          <!-- Student & Faculty Details Grid -->
-          <div class="s1-credits-grid anim-stagger-2">
-            <!-- Student Details -->
-            <div class="credit-card">
-              <div class="credit-icon">
-                <svg class="icon" viewBox="0 0 24 24" style="width:16px;height:16px;">
-                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                  <circle cx="12" cy="7" r="4"></circle>
-                </svg>
-              </div>
-              <div class="credit-info">
-                <span class="credit-label">Presented By</span>
-                <h4 class="credit-name">Md Aali Rahman</h4>
-                <span class="credit-meta">Roll No: <strong>25WU0102156</strong></span>
-              </div>
-            </div>
-
-            <!-- Faculty Details -->
-            <div class="credit-card">
-              <div class="credit-icon guide-icon">
-                <svg class="icon" viewBox="0 0 24 24" style="width:16px;height:16px;">
-                  <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
-                  <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
-                </svg>
-              </div>
-              <div class="credit-info">
-                <span class="credit-label">Faculty Guide</span>
-                <h4 class="credit-name">Dr. Kiranmayee Adavala</h4>
-                <span class="credit-meta">Department of Computer Science &amp; Engineering</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="s1-badges-row anim-stagger-3">
+          <!-- Technology Pillars Row -->
+          <div class="s1-badges-row anim-stagger-2">
             <!-- Badge 1 -->
             <div class="tech-pill">
               <div class="tech-pill-icon">
@@ -1846,6 +1872,42 @@
               <div>
                 <div class="tech-pill-name">Web-Based Application</div>
                 <div class="tech-pill-sub">Interactive Administrative Client</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Academic Credits Grid (Student & Faculty Details placed at bottom) -->
+          <div class="s1-credits-grid anim-stagger-3">
+            <!-- Student Details -->
+            <div class="credit-card">
+              <div class="credit-icon">
+                <svg class="icon" viewBox="0 0 24 24" style="width:17px;height:17px;">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+              </div>
+              <div class="credit-info">
+                <span class="credit-label">Presented By</span>
+                <div class="credit-name-row">
+                  <span class="credit-name-highlight">Md Aali Rahman</span>
+                  <span class="credit-roll-badge">Roll No: <strong>25WU0102156</strong></span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Faculty Details -->
+            <div class="credit-card guide-card">
+              <div class="credit-icon guide-icon">
+                <svg class="icon" viewBox="0 0 24 24" style="width:17px;height:17px;">
+                  <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+                  <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+                </svg>
+              </div>
+              <div class="credit-info">
+                <span class="credit-label">Faculty Guide</span>
+                <div class="credit-name-row">
+                  <span class="credit-name-highlight guide-highlight">Dr. Kiranmayee Adavala</span>
+                </div>
               </div>
             </div>
           </div>
