@@ -1,0 +1,3338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Real-Time CPU &amp; System Architecture Visualization — See the Computer Think</title>
+  <meta name="description" content="An interactive hardware-level visualization of computer architecture. Watch CPU registers, ALU operations, bus cycles, memory hierarchies, and instruction pipelines execute in real time on an authentic PCB circuit board.">
+
+  <!-- Typography: JetBrains Mono for precision technical readout & Inter for crisp typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+  <style>
+    /* ==========================================================================
+       AUTHENTIC ELECTRONICS PCB DESIGN SYSTEM
+       Theme: Industrial Solder Mask Green, Muted Copper Traces, Tin Solder Pads,
+              Amber Indicators, Cyan Logic Data Lines, Silkscreen Warm White.
+       NO generic SaaS gradients, NO generic glassmorphism blobs.
+       ========================================================================== */
+    :root {
+      /* PCB Substrate & Solder Mask */
+      --pcb-deep: #060b08;
+      --pcb-base: #0a130e;
+      --pcb-surface: #0f1c15;
+      --pcb-surface-raised: #15261d;
+      --pcb-border: #1d3629;
+      --pcb-border-subtle: #162a20;
+
+      /* Copper & Metals */
+      --copper-bright: #d99343;
+      --copper-trace: #966127;
+      --copper-subtle: #573715;
+      --gold-contact: #e0ac43;
+      --tin-solder: #b8c4bc;
+      --tin-solder-bright: #e2ece5;
+      --via-hole: #030604;
+
+      /* Silkscreen & Text */
+      --silkscreen-white: #e6ede8;
+      --silkscreen-muted: #8fa396;
+      --silkscreen-dim: #4d6356;
+      --silkscreen-gold: #cfa856;
+
+      /* Signal Logic Colors (Physical Electronics) */
+      --sig-data: #00d4ff;        /* Cyan data bus */
+      --sig-data-dim: rgba(0, 212, 255, 0.15);
+      --sig-addr: #f59e0b;        /* Amber address bus */
+      --sig-addr-dim: rgba(245, 158, 11, 0.15);
+      --sig-ctrl: #ff4757;        /* Ruby red control signals */
+      --sig-ctrl-dim: rgba(255, 71, 87, 0.15);
+      --sig-clk: #10b981;         /* Emerald clock pulse */
+      --sig-clk-dim: rgba(16, 185, 129, 0.15);
+
+      /* IC Packaging */
+      --ic-body: #121614;
+      --ic-border: #222c26;
+      --ic-notch: #080b09;
+
+      /* Typography */
+      --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      background-color: var(--pcb-deep);
+      color: var(--silkscreen-white);
+      font-family: var(--font-sans);
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    body {
+      min-height: 100vh;
+      overflow-x: hidden;
+      background-color: var(--pcb-base);
+      background-image: 
+        radial-gradient(var(--pcb-border-subtle) 1px, transparent 1px),
+        radial-gradient(circle at 50% 0%, #102118 0%, transparent 60%);
+      background-size: 24px 24px, 100% 100%;
+      background-position: 0 0, 0 0;
+      color: var(--silkscreen-white);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Selection */
+    ::selection {
+      background: var(--copper-trace);
+      color: #fff;
+    }
+
+    /* ==========================================================================
+       UTILITIES & HARDWARE ACCENTS
+       ========================================================================== */
+    .mono { font-family: var(--font-mono); }
+    .copper-text { color: var(--copper-bright); }
+    .gold-text { color: var(--gold-contact); }
+    .cyan-text { color: var(--sig-data); }
+    .amber-text { color: var(--sig-addr); }
+    .emerald-text { color: var(--sig-clk); }
+    .ruby-text { color: var(--sig-ctrl); }
+
+    /* Silkscreen Labels (Authentic PCB typography) */
+    .silkscreen-label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--silkscreen-muted);
+      user-select: none;
+    }
+
+    /* Solder Pad Dot */
+    .solder-pad {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, var(--tin-solder-bright) 0%, var(--tin-solder) 55%, #47554e 100%);
+      border: 1px solid var(--copper-trace);
+      box-shadow: 0 0 1px rgba(0,0,0,0.8);
+      display: inline-block;
+    }
+
+    .solder-pad.via {
+      position: relative;
+    }
+    .solder-pad.via::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 3px;
+      height: 3px;
+      background: var(--via-hole);
+      border-radius: 50%;
+    }
+
+    /* Small SMD LED */
+    .smd-led {
+      width: 7px;
+      height: 11px;
+      border-radius: 2px;
+      background: #252a27;
+      border: 1px solid #3c4840;
+      position: relative;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    .smd-led::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 1px;
+      right: 1px;
+      bottom: 2px;
+      border-radius: 1px;
+      background: #444;
+      transition: all 0.15s ease;
+    }
+    .smd-led.green-active::after {
+      background: #10b981;
+      box-shadow: 0 0 8px #10b981, 0 0 14px rgba(16, 185, 129, 0.4);
+    }
+    .smd-led.amber-active::after {
+      background: #f59e0b;
+      box-shadow: 0 0 8px #f59e0b, 0 0 14px rgba(245, 158, 11, 0.4);
+    }
+    .smd-led.cyan-active::after {
+      background: #00d4ff;
+      box-shadow: 0 0 8px #00d4ff, 0 0 14px rgba(0, 212, 255, 0.4);
+    }
+    .smd-led.red-active::after {
+      background: #ff4757;
+      box-shadow: 0 0 8px #ff4757, 0 0 14px rgba(255, 71, 87, 0.4);
+    }
+
+    /* PCB Corner Mount Screw Hole */
+    .pcb-mount-hole {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #020403 40%, var(--gold-contact) 45%, var(--tin-solder) 65%, var(--pcb-surface) 70%, var(--pcb-border) 100%);
+      border: 1px solid #000;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.9), 0 1px 2px rgba(255,255,255,0.05);
+    }
+
+    /* ==========================================================================
+       TOP NAVIGATION / INDUSTRIAL LAB HEADER
+       ========================================================================== */
+    .lab-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background-color: rgba(10, 19, 14, 0.94);
+      backdrop-filter: blur(8px);
+      border-bottom: 2px solid var(--pcb-border);
+      padding: 0 2rem;
+    }
+
+    .lab-nav-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.5rem;
+    }
+
+    .brand-mark {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .ic-logo-chip {
+      width: 34px;
+      height: 34px;
+      background: var(--ic-body);
+      border: 1.5px solid var(--copper-bright);
+      border-radius: 4px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.6);
+    }
+    .ic-logo-chip::before {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: #000;
+      border: 1px solid #333;
+    }
+    .ic-logo-chip span {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--copper-bright);
+    }
+
+    .brand-text h1 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: var(--silkscreen-white);
+      line-height: 1.2;
+    }
+    .brand-text p {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      color: var(--silkscreen-muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--silkscreen-muted);
+      text-decoration: none;
+      transition: color 0.15s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .nav-links a:hover {
+      color: var(--copper-bright);
+    }
+    .nav-links a.active {
+      color: var(--copper-bright);
+    }
+
+    .nav-telemetry-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #0d1a13;
+      border: 1px solid var(--pcb-border);
+      padding: 5px 12px;
+      border-radius: 3px;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+    }
+    .pulse-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--sig-clk);
+      box-shadow: 0 0 6px var(--sig-clk);
+      animation: clkPulse 1.2s infinite ease-in-out;
+    }
+    @keyframes clkPulse {
+      0%, 100% { opacity: 0.3; transform: scale(0.85); }
+      50% { opacity: 1; transform: scale(1.15); }
+    }
+
+    /* ==========================================================================
+       HERO SECTION
+       ========================================================================== */
+    .hero-section {
+      position: relative;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 3rem 2rem 4rem 2rem;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.25fr;
+      gap: 2.5rem;
+      align-items: center;
+    }
+
+    @media (max-width: 1024px) {
+      .hero-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Left Copy Area */
+    .hero-copy {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .subheading-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(150, 97, 39, 0.12);
+      border: 1px solid var(--copper-trace);
+      padding: 4px 10px;
+      border-radius: 2px;
+      width: fit-content;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--copper-bright);
+    }
+
+    .hero-copy h2 {
+      font-size: 3.4rem;
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      color: #ffffff;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    }
+
+    .hero-copy h3 {
+      font-family: var(--font-mono);
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--copper-bright);
+      letter-spacing: -0.01em;
+    }
+
+    .hero-copy p.supporting-text {
+      font-size: 1.05rem;
+      line-height: 1.6;
+      color: var(--silkscreen-muted);
+      max-width: 540px;
+      border-left: 2px solid var(--copper-trace);
+      padding-left: 1.2rem;
+    }
+
+    .cta-row {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      padding-top: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    /* Authentic PCB Buttons */
+    .btn-pcb-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: linear-gradient(180deg, #bb7c33 0%, #8a531e 100%);
+      color: #ffffff;
+      font-family: var(--font-mono);
+      font-size: 0.88rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 12px 24px;
+      border-radius: 3px;
+      border: 1px solid var(--gold-contact);
+      box-shadow: 0 3px 6px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.25);
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .btn-pcb-primary:hover {
+      background: linear-gradient(180deg, #d38e3e 0%, #9c6024 100%);
+      box-shadow: 0 4px 12px rgba(217, 147, 67, 0.3), inset 0 1px 0 rgba(255,255,255,0.4);
+      transform: translateY(-1px);
+    }
+    .btn-pcb-primary:active {
+      transform: translateY(1px);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.8);
+    }
+
+    .btn-pcb-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--pcb-surface);
+      color: var(--silkscreen-white);
+      font-family: var(--font-mono);
+      font-size: 0.88rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 12px 22px;
+      border-radius: 3px;
+      border: 1px solid var(--pcb-border);
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .btn-pcb-secondary:hover {
+      border-color: var(--copper-bright);
+      color: var(--copper-bright);
+      background: var(--pcb-surface-raised);
+    }
+
+    /* Signal Legend Strip */
+    .signal-legend {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      padding: 0.85rem 1.1rem;
+      background: #09130e;
+      border: 1px solid var(--pcb-border);
+      border-radius: 4px;
+      width: fit-content;
+      margin-top: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .legend-title {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--silkscreen-dim);
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+    }
+    .legend-indicator {
+      width: 12px;
+      height: 3px;
+      border-radius: 1px;
+    }
+
+    /* ==========================================================================
+       RIGHT HERO: THE MOTHERBOARD VISUALIZER
+       ========================================================================== */
+    .motherboard-container {
+      position: relative;
+      background: var(--pcb-surface);
+      border: 2px solid var(--pcb-border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      box-shadow: 
+        0 15px 35px rgba(0,0,0,0.8),
+        inset 0 0 60px rgba(4, 9, 6, 0.7);
+    }
+
+    /* Silkscreen Board Frame & Corner Mount Screws */
+    .corner-mount {
+      position: absolute;
+      z-index: 10;
+    }
+    .corner-mount.tl { top: 10px; left: 10px; }
+    .corner-mount.tr { top: 10px; right: 10px; }
+    .corner-mount.bl { bottom: 10px; left: 10px; }
+    .corner-mount.br { bottom: 10px; right: 10px; }
+
+    /* Silkscreen Board Labels */
+    .board-silkscreen-hdr {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px dashed var(--pcb-border);
+      padding-bottom: 0.75rem;
+      margin-bottom: 1rem;
+    }
+    .board-part-no {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: var(--silkscreen-muted);
+    }
+    .board-rev {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      color: var(--copper-bright);
+      background: #15261c;
+      padding: 2px 6px;
+      border-radius: 2px;
+      border: 1px solid var(--pcb-border);
+    }
+
+    /* Interactive Motherboard Canvas & SVG Overlay */
+    .board-work-area {
+      position: relative;
+      width: 100%;
+      min-height: 520px;
+      background-color: #0c1812;
+      border: 1px solid var(--pcb-border);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    /* Copper Traces SVG Layer */
+    .circuit-traces-svg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    /* Real-Time Animated Signal Particles */
+    .signal-pulse-data {
+      stroke: var(--sig-data);
+      stroke-width: 2.5;
+      stroke-dasharray: 8, 32;
+      animation: pulseMove 1.8s linear infinite;
+      filter: drop-shadow(0 0 4px var(--sig-data));
+    }
+    .signal-pulse-addr {
+      stroke: var(--sig-addr);
+      stroke-width: 2.5;
+      stroke-dasharray: 8, 32;
+      animation: pulseMove 2.2s linear infinite;
+      filter: drop-shadow(0 0 4px var(--sig-addr));
+    }
+    .signal-pulse-ctrl {
+      stroke: var(--sig-ctrl);
+      stroke-width: 2;
+      stroke-dasharray: 6, 28;
+      animation: pulseMove 1.4s linear infinite;
+      filter: drop-shadow(0 0 3px var(--sig-ctrl));
+    }
+    .signal-pulse-clk {
+      stroke: var(--sig-clk);
+      stroke-width: 2;
+      stroke-dasharray: 6, 20;
+      animation: pulseMove 0.8s linear infinite;
+      filter: drop-shadow(0 0 3px var(--sig-clk));
+    }
+
+    @keyframes pulseMove {
+      from { stroke-dashoffset: 80; }
+      to { stroke-dashoffset: 0; }
+    }
+
+    /* Motherboard Layout Components (Absolute Grid on PCB) */
+    .pcb-component {
+      position: absolute;
+      z-index: 5;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      user-select: none;
+    }
+    .pcb-component:hover {
+      transform: scale(1.02);
+      z-index: 12;
+    }
+
+    /* Central CPU Socket Package */
+    .cpu-package {
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 240px;
+      height: 240px;
+      background: var(--ic-body);
+      border: 2px solid var(--gold-contact);
+      border-radius: 8px;
+      box-shadow: 
+        0 0 0 5px #0a140f,
+        0 0 0 8px var(--copper-trace),
+        0 10px 30px rgba(0,0,0,0.9);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .cpu-package:hover {
+      transform: translate(-50%, -50%) scale(1.02);
+      box-shadow: 
+        0 0 0 5px #0a140f,
+        0 0 0 8px var(--copper-bright),
+        0 0 25px rgba(224, 172, 67, 0.25),
+        0 12px 35px rgba(0,0,0,0.95);
+    }
+
+    /* Pin 1 Index Marker & Gold Heatspreader Corner Notch */
+    .cpu-package::before {
+      content: '';
+      position: absolute;
+      top: 6px;
+      left: 6px;
+      width: 0;
+      height: 0;
+      border-top: 10px solid var(--gold-contact);
+      border-right: 10px solid transparent;
+    }
+
+    .cpu-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #293830;
+      padding-bottom: 6px;
+    }
+    .cpu-title {
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      font-weight: 800;
+      letter-spacing: 0.15em;
+      color: var(--copper-bright);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .cpu-pins-label {
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      color: var(--silkscreen-muted);
+    }
+
+    /* CPU Internal Micro-Blocks */
+    .cpu-die-internals {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin: 6px 0;
+    }
+
+    .cpu-sub-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+
+    .cpu-die-block {
+      background: #17221b;
+      border: 1px solid #2f4538;
+      border-radius: 3px;
+      padding: 6px 4px;
+      text-align: center;
+      transition: all 0.15s ease;
+    }
+    .cpu-die-block:hover, .cpu-die-block.active {
+      background: #23392c;
+      border-color: var(--sig-data);
+      box-shadow: 0 0 8px rgba(0, 212, 255, 0.3);
+    }
+    .cpu-die-block .block-code {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #fff;
+    }
+    .cpu-die-block .block-desc {
+      font-family: var(--font-mono);
+      font-size: 0.58rem;
+      color: var(--copper-bright);
+    }
+
+    .registers-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 5px;
+    }
+    .reg-box {
+      background: #0f1a14;
+      border: 1px solid #283e30;
+      padding: 3px 2px;
+      text-align: center;
+      border-radius: 2px;
+    }
+    .reg-name {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--sig-data);
+    }
+    .reg-val {
+      font-family: var(--font-mono);
+      font-size: 0.58rem;
+      color: var(--silkscreen-muted);
+    }
+
+    .cpu-cache-die {
+      background: #121c16;
+      border: 1px solid #2e4537;
+      padding: 4px;
+      text-align: center;
+      border-radius: 2px;
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: var(--sig-clk);
+      letter-spacing: 0.1em;
+    }
+
+    /* RAM Modules (North of CPU) */
+    .ram-module-block {
+      top: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 320px;
+      height: 48px;
+      background: #0d1711;
+      border: 1.5px solid var(--pcb-border);
+      border-radius: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 4px 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.6);
+    }
+    .ram-module-block:hover {
+      border-color: var(--copper-bright);
+    }
+    .ram-chips-row {
+      display: flex;
+      gap: 8px;
+    }
+    .smd-ram-chip {
+      width: 46px;
+      height: 22px;
+      background: #18221b;
+      border: 1px solid #2c3e32;
+      border-radius: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-size: 0.58rem;
+      color: var(--copper-bright);
+    }
+    .ram-gold-fingers {
+      position: absolute;
+      bottom: -6px;
+      left: 15px;
+      right: 15px;
+      height: 5px;
+      background: repeating-linear-gradient(90deg, var(--gold-contact) 0, var(--gold-contact) 4px, transparent 4px, transparent 6px);
+    }
+
+    /* I/O Controller (East of CPU) */
+    .io-controller-block {
+      top: 50%;
+      right: 18px;
+      transform: translateY(-50%);
+      width: 100px;
+      height: 120px;
+      background: #111a14;
+      border: 1.5px solid var(--pcb-border);
+      border-radius: 4px;
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.6);
+    }
+    .io-controller-block:hover {
+      border-color: var(--sig-ctrl);
+    }
+
+    /* Clock Crystal Oscillator (West of CPU) */
+    .crystal-osc-block {
+      top: 50%;
+      left: 20px;
+      transform: translateY(-50%);
+      width: 90px;
+      background: #0e1712;
+      border: 1.5px solid var(--pcb-border);
+      border-radius: 4px;
+      padding: 10px 8px;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.6);
+    }
+    .metal-can-xtal {
+      width: 44px;
+      height: 20px;
+      margin: 4px auto;
+      background: linear-gradient(180deg, #d2dad5 0%, #89968e 50%, #606d65 100%);
+      border-radius: 10px;
+      border: 1px solid #adbdb4;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.7);
+    }
+
+    /* Passive Components Spread across Motherboard (Resistors, Capacitors, Diodes) */
+    .discrete-part {
+      position: absolute;
+      z-index: 4;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      cursor: help;
+    }
+    .resistor-smd {
+      width: 18px;
+      height: 8px;
+      background: #1e2822;
+      border: 1px solid #3c4f44;
+      border-left: 3px solid var(--tin-solder);
+      border-right: 3px solid var(--tin-solder);
+      position: relative;
+    }
+    .capacitor-can {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #2d3e33 40%, var(--tin-solder) 85%, #18231c 100%);
+      border: 1px solid #4a6353;
+      position: relative;
+    }
+    .capacitor-can::after {
+      content: '';
+      position: absolute;
+      top: 1px;
+      left: 1px;
+      width: 4px;
+      bottom: 1px;
+      background: #111;
+      border-top-left-radius: 8px;
+      border-bottom-left-radius: 8px;
+    }
+
+    /* Passive Component Tooltip on Hover */
+    .discrete-part:hover::after {
+      content: attr(data-label);
+      position: absolute;
+      top: -24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #060b08;
+      color: var(--copper-bright);
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      padding: 2px 6px;
+      border: 1px solid var(--copper-trace);
+      border-radius: 2px;
+      white-space: nowrap;
+      pointer-events: none;
+      z-index: 50;
+    }
+
+    /* Bus Labels overlaid on PCB traces */
+    .bus-trace-tag {
+      position: absolute;
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      padding: 2px 6px;
+      border-radius: 2px;
+      background: rgba(8, 14, 10, 0.9);
+      border: 1px solid;
+      z-index: 8;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .bus-trace-tag.data-bus { color: var(--sig-data); border-color: var(--sig-data); }
+    .bus-trace-tag.addr-bus { color: var(--sig-addr); border-color: var(--sig-addr); }
+    .bus-trace-tag.ctrl-bus { color: var(--sig-ctrl); border-color: var(--sig-ctrl); }
+    .bus-trace-tag.clk-bus { color: var(--sig-clk); border-color: var(--sig-clk); }
+    .bus-trace-tag:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 10px currentColor;
+    }
+
+    /* Motherboard Bottom Bus Trunk */
+    .system-bus-trunk {
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 460px;
+      height: 38px;
+      background: #0a140f;
+      border: 1.5px solid var(--pcb-border);
+      border-radius: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      padding: 0 16px;
+      box-shadow: inset 0 2px 6px rgba(0,0,0,0.8);
+    }
+    .bus-wire-indicator {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 700;
+    }
+
+    /* ==========================================================================
+       LIVE STATUS PANEL (Integrated Motherboard Telemetry)
+       ========================================================================== */
+    .live-status-hud {
+      margin-top: 1.5rem;
+      background: #09130e;
+      border: 1.5px solid var(--pcb-border);
+      border-radius: 6px;
+      padding: 1.2rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .status-hud-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--pcb-border);
+      padding-bottom: 0.6rem;
+    }
+
+    .hud-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--silkscreen-white);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .hud-sim-tag {
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      color: var(--copper-bright);
+      background: rgba(150, 97, 39, 0.2);
+      border: 1px solid var(--copper-trace);
+      padding: 2px 6px;
+      border-radius: 2px;
+      letter-spacing: 0.08em;
+    }
+
+    .telemetry-metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 1rem;
+    }
+
+    @media (max-width: 1100px) {
+      .telemetry-metrics-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+    @media (max-width: 640px) {
+      .telemetry-metrics-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .metric-cell {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .metric-name {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      font-weight: 600;
+      color: var(--silkscreen-muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .metric-value {
+      font-family: var(--font-mono);
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #ffffff;
+      transition: color 0.15s ease;
+    }
+    .metric-bar-wrap {
+      width: 100%;
+      height: 3px;
+      background: #17261d;
+      border-radius: 1px;
+      overflow: hidden;
+      margin-top: 2px;
+    }
+    .metric-bar-fill {
+      height: 100%;
+      background: var(--sig-data);
+      transition: width 0.4s ease;
+    }
+
+    /* Clock Frequency Controller in HUD */
+    .clock-control-strip {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #0d1a13;
+      border: 1px solid var(--pcb-border-subtle);
+      border-radius: 4px;
+      padding: 6px 12px;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+    }
+    .clock-buttons {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .clk-btn {
+      background: #15261d;
+      border: 1px solid var(--pcb-border);
+      color: var(--silkscreen-muted);
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 2px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .clk-btn:hover {
+      color: var(--copper-bright);
+      border-color: var(--copper-trace);
+    }
+    .clk-btn.active {
+      background: var(--copper-trace);
+      color: #fff;
+      border-color: var(--copper-bright);
+    }
+
+    /* ==========================================================================
+       SECTION CONTAINER & COMMON LAYOUT
+       ========================================================================== */
+    .content-section {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 5rem 2rem;
+      position: relative;
+    }
+
+    .section-divider-trace {
+      position: relative;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 3.5rem;
+    }
+    .section-divider-trace::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: repeating-linear-gradient(90deg, var(--pcb-border) 0, var(--pcb-border) 20px, transparent 20px, transparent 30px);
+    }
+    .trace-center-via {
+      position: relative;
+      z-index: 2;
+      background: var(--pcb-base);
+      padding: 0 1rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.15em;
+      color: var(--copper-bright);
+    }
+
+    .section-header {
+      margin-bottom: 2.5rem;
+    }
+    .section-kicker {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--copper-bright);
+      margin-bottom: 0.5rem;
+    }
+    .section-title {
+      font-size: 2.3rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: #ffffff;
+      line-height: 1.15;
+    }
+    .section-subtitle {
+      font-size: 1.05rem;
+      color: var(--silkscreen-muted);
+      margin-top: 0.5rem;
+      max-width: 680px;
+    }
+
+    /* ==========================================================================
+       INSTRUCTION PIPELINE SECTION (Physical Circuit Modules)
+       ========================================================================== */
+    .pipeline-board {
+      background: var(--pcb-surface);
+      border: 2px solid var(--pcb-border);
+      border-radius: 8px;
+      padding: 2rem;
+      position: relative;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+    }
+
+    .pipeline-stages-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1.25rem;
+      position: relative;
+      z-index: 2;
+    }
+
+    @media (max-width: 992px) {
+      .pipeline-stages-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .pipeline-stage-module {
+      background: #0e1913;
+      border: 1.5px solid var(--pcb-border);
+      border-radius: 6px;
+      padding: 1.25rem;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 240px;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .pipeline-stage-module:hover, .pipeline-stage-module.active-stage {
+      border-color: var(--copper-bright);
+      background: #14241b;
+      transform: translateY(-4px);
+      box-shadow: 0 10px 24px rgba(0,0,0,0.8), 0 0 15px rgba(217, 147, 67, 0.2);
+    }
+
+    .stage-card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #1f3529;
+      padding-bottom: 8px;
+    }
+    .stage-index {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      font-weight: 800;
+      color: var(--copper-bright);
+      background: #1a2f23;
+      padding: 2px 6px;
+      border-radius: 2px;
+      border: 1px solid var(--copper-trace);
+    }
+    .stage-led-indicator {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .stage-name {
+      font-family: var(--font-mono);
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      color: #ffffff;
+      margin: 12px 0 6px 0;
+    }
+    .stage-latin-label {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--copper-bright);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .stage-quote-explanation {
+      font-size: 0.88rem;
+      line-height: 1.45;
+      color: var(--silkscreen-muted);
+      margin-top: 10px;
+      background: #09130e;
+      padding: 8px 10px;
+      border-left: 2px solid var(--copper-trace);
+      border-radius: 0 3px 3px 0;
+    }
+
+    .stage-micro-specs {
+      margin-top: 14px;
+      border-top: 1px dashed #203529;
+      padding-top: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--silkscreen-dim);
+    }
+    .stage-micro-specs span strong {
+      color: var(--sig-data);
+    }
+
+    /* Interactive Instruction Queue Stream Bar */
+    .instruction-runner-bar {
+      margin-top: 1.5rem;
+      background: #09130e;
+      border: 1px solid var(--pcb-border);
+      border-radius: 4px;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .active-instruction-stream {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+    }
+    .opcode-chip {
+      background: #192a20;
+      border: 1px solid var(--copper-trace);
+      color: var(--copper-bright);
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 3px;
+    }
+
+    /* ==========================================================================
+       MEMORY HIERARCHY SECTION (Progressive Physical Modules)
+       ========================================================================== */
+    .memory-hierarchy-board {
+      background: var(--pcb-surface);
+      border: 2px solid var(--pcb-border);
+      border-radius: 8px;
+      padding: 2.5rem 2rem;
+      position: relative;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+    }
+
+    .memory-rule-banner {
+      background: rgba(150, 97, 39, 0.15);
+      border: 1px solid var(--copper-trace);
+      border-radius: 4px;
+      padding: 12px 18px;
+      margin-bottom: 2.5rem;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .memory-rule-banner p {
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #ffffff;
+      letter-spacing: 0.02em;
+    }
+
+    /* Vertical Pyramid / Motherboard Module Cascade */
+    .memory-modules-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      align-items: center;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    .memory-tier-row {
+      display: grid;
+      grid-template-columns: 180px 1fr 180px;
+      align-items: center;
+      gap: 1.5rem;
+      width: 100%;
+    }
+
+    @media (max-width: 768px) {
+      .memory-tier-row {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+      }
+    }
+
+    .tier-stat-left {
+      text-align: right;
+      font-family: var(--font-mono);
+    }
+    .tier-stat-left .latency-label {
+      font-size: 0.65rem;
+      color: var(--silkscreen-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .tier-stat-left .latency-value {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--sig-data);
+    }
+
+    .tier-physical-module {
+      background: #0f1c15;
+      border: 1.5px solid var(--pcb-border);
+      border-radius: 4px;
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+    .tier-physical-module:hover {
+      border-color: var(--copper-bright);
+      background: #172a20;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+      transform: scale(1.01);
+    }
+
+    /* Progressively Sized Widths for Physical Hierarchy */
+    .tier-w-1 { width: 34%; margin: 0 auto; }
+    .tier-w-2 { width: 46%; margin: 0 auto; }
+    .tier-w-3 { width: 60%; margin: 0 auto; }
+    .tier-w-4 { width: 75%; margin: 0 auto; }
+    .tier-w-5 { width: 90%; margin: 0 auto; }
+    .tier-w-6 { width: 100%; margin: 0 auto; }
+
+    .tier-name {
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: 0.08em;
+    }
+    .tier-tech {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      color: var(--copper-bright);
+    }
+
+    .tier-stat-right {
+      text-align: left;
+      font-family: var(--font-mono);
+    }
+    .tier-stat-right .capacity-label {
+      font-size: 0.65rem;
+      color: var(--silkscreen-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .tier-stat-right .capacity-value {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--gold-contact);
+    }
+
+    /* Connector Trace Arrow between modules */
+    .memory-interconnect-arrow {
+      height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .memory-interconnect-arrow::before {
+      content: '';
+      width: 2px;
+      height: 100%;
+      background: var(--copper-trace);
+    }
+
+    /* ==========================================================================
+       ARCHITECTURE EXPLORER SECTION (Component Probe & Oscilloscope)
+       ========================================================================== */
+    .explorer-layout {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 2rem;
+      align-items: start;
+    }
+
+    @media (max-width: 992px) {
+      .explorer-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Component Selection Menu */
+    .component-selector-panel {
+      background: var(--pcb-surface);
+      border: 1.5px solid var(--pcb-border);
+      border-radius: 6px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .selector-panel-title {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--silkscreen-dim);
+      border-bottom: 1px solid var(--pcb-border);
+      padding-bottom: 8px;
+      margin-bottom: 4px;
+    }
+
+    .component-btn {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #0c1712;
+      border: 1px solid var(--pcb-border-subtle);
+      border-radius: 3px;
+      padding: 10px 14px;
+      color: var(--silkscreen-white);
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      text-align: left;
+    }
+    .component-btn:hover {
+      background: #16261d;
+      border-color: var(--copper-trace);
+      color: var(--copper-bright);
+    }
+    .component-btn.active {
+      background: #182c21;
+      border-color: var(--copper-bright);
+      color: #ffffff;
+      box-shadow: inset 3px 0 0 var(--copper-bright);
+    }
+    .component-btn-pin {
+      font-size: 0.65rem;
+      color: var(--silkscreen-dim);
+    }
+
+    /* Component Detail & Oscilloscope Screen */
+    .explorer-display-panel {
+      background: var(--pcb-surface);
+      border: 2px solid var(--pcb-border);
+      border-radius: 8px;
+      padding: 2rem;
+      position: relative;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+    }
+
+    .display-panel-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1.5px solid var(--pcb-border);
+      padding-bottom: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+    .active-component-tag {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .active-chip-badge {
+      font-family: var(--font-mono);
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--copper-bright);
+      letter-spacing: 0.08em;
+    }
+    .active-ic-code {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--silkscreen-muted);
+      background: #0d1a13;
+      padding: 3px 8px;
+      border-radius: 2px;
+      border: 1px solid var(--pcb-border);
+    }
+
+    .explorer-grid-specs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    @media (max-width: 640px) {
+      .explorer-grid-specs {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .spec-card {
+      background: #0a140f;
+      border: 1px solid var(--pcb-border);
+      border-radius: 4px;
+      padding: 1.2rem;
+    }
+    .spec-card-title {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--copper-bright);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .spec-card-body {
+      font-size: 0.9rem;
+      line-height: 1.55;
+      color: var(--silkscreen-white);
+    }
+    .spec-card-body p {
+      margin-bottom: 6px;
+    }
+
+    .pin-signals-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+    }
+    .pin-signals-list li {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px dashed #172b20;
+      padding-bottom: 3px;
+    }
+    .pin-name { color: var(--silkscreen-muted); }
+    .pin-state { font-weight: 700; }
+
+    /* Oscilloscope / Logic Analyzer Canvas Screen */
+    .oscilloscope-screen-wrap {
+      background: #040806;
+      border: 2px solid #1c3024;
+      border-radius: 6px;
+      padding: 1rem;
+      position: relative;
+      box-shadow: inset 0 0 30px rgba(0,0,0,0.95);
+    }
+    .scope-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #14241b;
+      padding-bottom: 8px;
+      margin-bottom: 10px;
+    }
+    .scope-title {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: var(--sig-clk);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .scope-canvas {
+      width: 100%;
+      height: 140px;
+      background: #020503;
+      border-radius: 3px;
+      display: block;
+    }
+
+    /* ==========================================================================
+       SCROLL EXPERIENCE NARRATIVE (Hardware -> Architecture -> Execution)
+       ========================================================================== */
+    .narrative-scroll-section {
+      background: #08110c;
+      border-top: 2px solid var(--pcb-border);
+      border-bottom: 2px solid var(--pcb-border);
+      padding: 4rem 2rem;
+      margin: 4rem 0;
+    }
+
+    .narrative-container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .narrative-steps-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+      position: relative;
+    }
+    @media (max-width: 868px) {
+      .narrative-steps-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .narrative-step-card {
+      background: #0c1711;
+      border: 1.5px solid var(--pcb-border);
+      border-radius: 6px;
+      padding: 1.8rem;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      transition: all 0.2s ease;
+    }
+    .narrative-step-card:hover {
+      border-color: var(--copper-bright);
+      transform: translateY(-4px);
+    }
+
+    .narrative-badge {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--copper-bright);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .narrative-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.01em;
+    }
+    .narrative-body {
+      font-size: 0.92rem;
+      line-height: 1.6;
+      color: var(--silkscreen-muted);
+    }
+
+    /* ==========================================================================
+       MINIMAL TECHNICAL FOOTER
+       ========================================================================== */
+    .lab-footer {
+      background: #050a07;
+      border-top: 2px solid var(--pcb-border);
+      padding: 4rem 2rem 3rem 2rem;
+      position: relative;
+    }
+
+    .footer-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 2.5rem;
+    }
+
+    .footer-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 2rem;
+      border-bottom: 1px solid #14241b;
+      padding-bottom: 2.5rem;
+    }
+
+    .footer-brand h4 {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 0.4rem;
+    }
+    .footer-brand p {
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      color: var(--copper-bright);
+      font-style: italic;
+    }
+
+    .footer-links-grid {
+      display: flex;
+      gap: 3rem;
+      list-style: none;
+    }
+    .footer-links-grid a {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--silkscreen-muted);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+    .footer-links-grid a:hover {
+      color: var(--copper-bright);
+    }
+
+    .footer-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--silkscreen-dim);
+    }
+
+    /* Modal / Popover Component Detail Inspection Overlay */
+    .inspection-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(3, 7, 5, 0.85);
+      backdrop-filter: blur(6px);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+    .inspection-modal.active {
+      display: flex;
+    }
+    .modal-pcb-card {
+      background: var(--pcb-surface);
+      border: 2px solid var(--copper-bright);
+      border-radius: 6px;
+      max-width: 580px;
+      width: 100%;
+      padding: 1.75rem;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.9);
+      position: relative;
+    }
+    .modal-close-btn {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      background: #111e17;
+      border: 1px solid var(--pcb-border);
+      color: var(--silkscreen-muted);
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      padding: 4px 8px;
+      cursor: pointer;
+      border-radius: 2px;
+    }
+    .modal-close-btn:hover {
+      color: #fff;
+      border-color: var(--copper-bright);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==========================================================================
+       TOP LAB NAVIGATION
+       ========================================================================== -->
+  <header class="lab-nav">
+    <div class="lab-nav-inner">
+      <a href="#hero" class="brand-mark">
+        <div class="ic-logo-chip">
+          <span>CPU</span>
+        </div>
+        <div class="brand-text">
+          <h1>Real-Time CPU &amp; System Architecture</h1>
+          <p>LAB INSTRUMENT &amp; VISUALIZER // REV 4.2</p>
+        </div>
+      </a>
+
+      <nav>
+        <ul class="nav-links">
+          <li><a href="#visualizer" class="active"><span class="solder-pad"></span> Visualizer</a></li>
+          <li><a href="#pipeline"><span class="solder-pad"></span> Pipeline</a></li>
+          <li><a href="#memory"><span class="solder-pad"></span> Memory</a></li>
+          <li><a href="#architecture"><span class="solder-pad"></span> Architecture</a></li>
+        </ul>
+      </nav>
+
+      <div class="nav-telemetry-badge">
+        <div class="pulse-dot"></div>
+        <span class="mono copper-text">CLK: 3.40 GHz</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==========================================================================
+       HERO SECTION: SEE THE COMPUTER THINK
+       ========================================================================== -->
+  <section class="hero-section" id="hero">
+    <div class="hero-grid">
+      
+      <!-- Left Column: Copy & CTAs -->
+      <div class="hero-copy">
+        <div class="subheading-badge">
+          <span class="solder-pad via"></span>
+          <span>Real-Time CPU &amp; System Architecture Visualization</span>
+        </div>
+
+        <h2>See the Computer Think.</h2>
+
+        <p class="supporting-text">
+          Visualize how instructions move through the CPU, how registers change, how memory is accessed, and how every component works together — in real time.
+        </p>
+
+        <div class="cta-row">
+          <a href="#visualizer" class="btn-pcb-primary" id="btn-launch-visualizer">
+            <span class="smd-led green-active"></span>
+            <span>Launch Visualizer</span>
+          </a>
+          <a href="#architecture" class="btn-pcb-secondary" id="btn-explore-arch">
+            <span>Explore Architecture &rarr;</span>
+          </a>
+        </div>
+
+        <!-- Real-Time Signal Legend -->
+        <div class="signal-legend">
+          <span class="legend-title">BUS SIGNALS:</span>
+          <div class="legend-item cyan-text">
+            <span class="legend-indicator" style="background: var(--sig-data); box-shadow: 0 0 6px var(--sig-data);"></span>
+            <span>DATA</span>
+          </div>
+          <div class="legend-item amber-text">
+            <span class="legend-indicator" style="background: var(--sig-addr); box-shadow: 0 0 6px var(--sig-addr);"></span>
+            <span>ADDRESS</span>
+          </div>
+          <div class="legend-item ruby-text">
+            <span class="legend-indicator" style="background: var(--sig-ctrl); box-shadow: 0 0 6px var(--sig-ctrl);"></span>
+            <span>CONTROL</span>
+          </div>
+          <div class="legend-item emerald-text">
+            <span class="legend-indicator" style="background: var(--sig-clk); box-shadow: 0 0 6px var(--sig-clk);"></span>
+            <span>CLOCK</span>
+          </div>
+        </div>
+
+        <!-- Hardware Silk Screen Markings -->
+        <div class="silkscreen-meta mono" style="font-size: 0.72rem; color: var(--silkscreen-dim); display: flex; gap: 1.5rem;">
+          <span>VCC: +3.3V / +5.0V</span>
+          <span>PCB SOLDERMASK: JEDEC-94V0</span>
+          <span>TEST POINTS: TP1..TP8 OK</span>
+        </div>
+      </div>
+
+      <!-- Right Column: Interactive CPU Motherboard Visualization -->
+      <div class="motherboard-container" id="visualizer">
+        <!-- Corner Mounting Screws -->
+        <div class="corner-mount tl"><div class="pcb-mount-hole"></div></div>
+        <div class="corner-mount tr"><div class="pcb-mount-hole"></div></div>
+        <div class="corner-mount bl"><div class="pcb-mount-hole"></div></div>
+        <div class="corner-mount br"><div class="pcb-mount-hole"></div></div>
+
+        <!-- Header Silkscreen Info -->
+        <div class="board-silkscreen-hdr">
+          <div class="board-part-no">
+            PCB-SYS-ARCH-1002 // EXP-SOCKET-AM4 // 64-BIT CORE
+          </div>
+          <div class="board-rev">REV 4.2-SIM</div>
+        </div>
+
+        <!-- Active Board Canvas -->
+        <div class="board-work-area" id="motherboard-work-area">
+          
+          <!-- SVG Copper Traces & Animated Signal Particles -->
+          <svg class="circuit-traces-svg" viewBox="0 0 600 520" preserveAspectRatio="none">
+            <!-- Background Static Traces (Copper) -->
+            <g stroke="#3a2510" stroke-width="2" fill="none" stroke-linejoin="round" opacity="0.6">
+              <path d="M 40,40 L 120,40 L 160,80 L 160,200" />
+              <path d="M 560,40 L 480,40 L 440,80 L 440,200" />
+              <path d="M 50,480 L 140,480 L 180,440 L 180,360" />
+              <path d="M 550,480 L 460,480 L 420,440 L 420,360" />
+              <!-- Test points -->
+              <circle cx="120" cy="40" r="3" fill="#805422" />
+              <circle cx="480" cy="40" r="3" fill="#805422" />
+              <circle cx="140" cy="480" r="3" fill="#805422" />
+              <circle cx="460" cy="480" r="3" fill="#805422" />
+            </g>
+
+            <!-- Main Signal Paths between RAM (North), Clock (West), CPU (Center), I/O (East), System Bus (South) -->
+            <!-- DATA BUS PATHS (Cyan) -->
+            <path id="path-data-ram" d="M 300,70 L 300,140" stroke="#1d4240" stroke-width="3" fill="none" />
+            <path class="signal-pulse-data" d="M 300,70 L 300,140" fill="none" />
+
+            <path id="path-data-cpu-bus" d="M 280,380 L 280,450" stroke="#1d4240" stroke-width="3" fill="none" />
+            <path class="signal-pulse-data" d="M 280,380 L 280,450" fill="none" />
+
+            <!-- ADDRESS BUS PATHS (Amber) -->
+            <path id="path-addr-ram" d="M 260,70 L 260,140" stroke="#4a3713" stroke-width="3" fill="none" />
+            <path class="signal-pulse-addr" d="M 260,140 L 260,70" fill="none" />
+
+            <path id="path-addr-bus" d="M 320,380 L 320,450" stroke="#4a3713" stroke-width="3" fill="none" />
+            <path class="signal-pulse-addr" d="M 320,380 L 320,450" fill="none" />
+
+            <!-- CLOCK SIGNAL (Emerald - from Oscillator to CPU) -->
+            <path id="path-clk-cpu" d="M 110,260 L 180,260" stroke="#143b27" stroke-width="2.5" fill="none" />
+            <path class="signal-pulse-clk" d="M 110,260 L 180,260" fill="none" />
+
+            <!-- CONTROL SIGNAL (Ruby - between CPU and I/O) -->
+            <path id="path-ctrl-io" d="M 420,260 L 490,260" stroke="#4d1c23" stroke-width="2.5" fill="none" />
+            <path class="signal-pulse-ctrl" d="M 420,260 L 490,260" fill="none" />
+
+            <!-- Diagonal Cross Traces -->
+            <path d="M 110,240 L 140,240 L 180,210" stroke="#253a2d" stroke-width="1.5" fill="none" />
+            <path d="M 490,240 L 460,240 L 420,210" stroke="#253a2d" stroke-width="1.5" fill="none" />
+          </svg>
+
+          <!-- RAM MODULE (North) -->
+          <div class="pcb-component ram-module-block" id="comp-ram" data-component="RAM" title="Click to inspect RAM Module">
+            <div class="silkscreen-label">DIMM_DDR5 // MEM_BUS</div>
+            <div class="ram-chips-row">
+              <div class="smd-ram-chip">IC1</div>
+              <div class="smd-ram-chip">IC2</div>
+              <div class="smd-ram-chip">IC3</div>
+              <div class="smd-ram-chip">IC4</div>
+            </div>
+            <div class="smd-led green-active"></div>
+            <div class="ram-gold-fingers"></div>
+          </div>
+
+          <!-- CRYSTAL OSCILLATOR / CLOCK GENERATOR (West) -->
+          <div class="pcb-component crystal-osc-block" id="comp-clock" data-component="CLOCK" title="Click to inspect Clock Generator">
+            <div class="silkscreen-label">Y1 XTAL</div>
+            <div class="metal-can-xtal"></div>
+            <div class="silkscreen-label" style="font-size: 0.58rem; color: var(--sig-clk);">14.318 MHz</div>
+            <div class="smd-led amber-active" style="margin-top: 4px;"></div>
+          </div>
+
+          <!-- CENTRAL CPU PACKAGE -->
+          <div class="pcb-component cpu-package" id="comp-cpu" data-component="CPU" title="Central Processing Unit">
+            <!-- CPU Package Header -->
+            <div class="cpu-header">
+              <div class="cpu-title">
+                <span class="solder-pad"></span>
+                <span>CPU</span>
+              </div>
+              <div class="cpu-pins-label mono">AM4-PGA 1331</div>
+            </div>
+
+            <!-- Inside CPU: ALU, CTRL, Registers, Cache -->
+            <div class="cpu-die-internals">
+              <!-- Row 1: ALU + Control Unit -->
+              <div class="cpu-sub-row">
+                <div class="cpu-die-block" id="block-alu" data-component="ALU">
+                  <div class="block-code">ALU</div>
+                  <div class="block-desc">ARITHMETIC</div>
+                </div>
+                <div class="cpu-die-block" id="block-ctrl" data-component="CONTROL UNIT">
+                  <div class="block-code">CTRL</div>
+                  <div class="block-desc">MICRO-SEQ</div>
+                </div>
+              </div>
+
+              <!-- Row 2: Registers R0, R1, PC -->
+              <div class="registers-grid" id="block-registers" data-component="REGISTERS">
+                <div class="reg-box">
+                  <div class="reg-name">R0</div>
+                  <div class="reg-val" id="hud-reg-r0">0x004A</div>
+                </div>
+                <div class="reg-box">
+                  <div class="reg-name">R1</div>
+                  <div class="reg-val" id="hud-reg-r1">0x00FF</div>
+                </div>
+                <div class="reg-box">
+                  <div class="reg-name">PC</div>
+                  <div class="reg-val" id="hud-reg-pc">0x0402</div>
+                </div>
+              </div>
+
+              <!-- Row 3: Internal L1/L2 Cache Die -->
+              <div class="cpu-cache-die" id="block-cache" data-component="CACHE">
+                L1/L2 ON-DIE CACHE // 94.2% HIT
+              </div>
+            </div>
+
+            <!-- CPU Package Footer -->
+            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #202e26; padding-top: 4px;">
+              <span class="silkscreen-label" style="font-size: 0.55rem;">64-BIT RISC-V DIE</span>
+              <div style="display: flex; gap: 3px;">
+                <span class="smd-led green-active"></span>
+                <span class="smd-led cyan-active"></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- I/O CONTROLLER CHIP (East) -->
+          <div class="pcb-component io-controller-block" id="comp-io" data-component="I/O" title="Click to inspect Input / Output Controller">
+            <div class="silkscreen-label">U3 I/O CTRL</div>
+            <div style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--silkscreen-white); text-align: center;">
+              PCIe / UART<br>DMA HOST
+            </div>
+            <div style="display: flex; justify-content: space-around;">
+              <div class="smd-led red-active"></div>
+              <div class="smd-led cyan-active"></div>
+            </div>
+          </div>
+
+          <!-- SYSTEM BUS TRUNK (South) -->
+          <div class="pcb-component system-bus-trunk" id="comp-bus" data-component="BUS" title="Click to inspect System Buses">
+            <div class="bus-wire-indicator cyan-text">
+              <span class="solder-pad"></span>
+              <span>DATA [63:0]</span>
+            </div>
+            <div class="bus-wire-indicator amber-text">
+              <span class="solder-pad"></span>
+              <span>ADDR [31:0]</span>
+            </div>
+            <div class="bus-wire-indicator ruby-text">
+              <span class="solder-pad"></span>
+              <span>CTRL BUS</span>
+            </div>
+          </div>
+
+          <!-- DISCRETE PCB HARDWARE DETAILS (Resistors, Capacitors, Diodes, Test Points) -->
+          <!-- Resistors -->
+          <div class="discrete-part" style="top: 110px; left: 160px;" data-label="R1: 10kΩ Pull-Up">
+            <div class="resistor-smd"></div>
+            <span class="silkscreen-label">R1</span>
+          </div>
+          <div class="discrete-part" style="top: 110px; right: 170px;" data-label="R2: 4.7kΩ I2C Bias">
+            <div class="resistor-smd"></div>
+            <span class="silkscreen-label">R2</span>
+          </div>
+          <div class="discrete-part" style="bottom: 120px; left: 150px;" data-label="R3: 120Ω Bus Term">
+            <div class="resistor-smd"></div>
+            <span class="silkscreen-label">R3</span>
+          </div>
+          <div class="discrete-part" style="bottom: 120px; right: 160px;" data-label="R4: 100Ω Reset Strobe">
+            <div class="resistor-smd"></div>
+            <span class="silkscreen-label">R4</span>
+          </div>
+
+          <!-- Capacitors -->
+          <div class="discrete-part" style="top: 190px; left: 80px;" data-label="C1: 22pF Crystal Load">
+            <div class="capacitor-can"></div>
+            <span class="silkscreen-label">C1</span>
+          </div>
+          <div class="discrete-part" style="top: 310px; left: 80px;" data-label="C2: 22pF Crystal Load">
+            <div class="capacitor-can"></div>
+            <span class="silkscreen-label">C2</span>
+          </div>
+          <div class="discrete-part" style="top: 80px; right: 80px;" data-label="C3: 100nF VCC Decouple">
+            <div class="capacitor-can"></div>
+            <span class="silkscreen-label">C3</span>
+          </div>
+          <div class="discrete-part" style="bottom: 80px; left: 80px;" data-label="C4: 47μF Tantalum Bulk">
+            <div class="capacitor-can"></div>
+            <span class="silkscreen-label">C4</span>
+          </div>
+
+          <!-- Bus Trace Tags -->
+          <div class="bus-trace-tag data-bus" style="top: 100px; left: 310px;">DATA BUS</div>
+          <div class="bus-trace-tag addr-bus" style="top: 100px; left: 200px;">ADDR BUS</div>
+          <div class="bus-trace-tag clk-bus" style="top: 245px; left: 125px;">CLK 3.4GHz</div>
+          <div class="bus-trace-tag ctrl-bus" style="top: 245px; right: 125px;">CTRL R/W#</div>
+
+          <!-- Silkscreen Ground & Voltage Annotations -->
+          <div class="silkscreen-label" style="position: absolute; top: 12px; left: 45px;">GND ⏚</div>
+          <div class="silkscreen-label" style="position: absolute; top: 12px; right: 45px;">+3.3V VCC</div>
+          <div class="silkscreen-label" style="position: absolute; bottom: 12px; left: 45px;">TP1 (RESET#)</div>
+          <div class="silkscreen-label" style="position: absolute; bottom: 12px; right: 45px;">TP2 (HALT)</div>
+        </div>
+
+        <!-- Integrated Live Status Panel (Hardware Monitoring HUD) -->
+        <div class="live-status-hud">
+          <div class="status-hud-header">
+            <div class="hud-title">
+              <span class="smd-led green-active"></span>
+              <span>Hardware Telemetry HUD</span>
+            </div>
+            <div class="hud-sim-tag mono">SIMULATED TELEMETRY</div>
+          </div>
+
+          <div class="telemetry-metrics-grid">
+            <div class="metric-cell">
+              <span class="metric-name">CPU LOAD</span>
+              <span class="metric-value cyan-text" id="metric-cpu-load">42%</span>
+              <div class="metric-bar-wrap"><div class="metric-bar-fill" id="bar-cpu-load" style="width: 42%;"></div></div>
+            </div>
+
+            <div class="metric-cell">
+              <span class="metric-name">CLOCK</span>
+              <span class="metric-value emerald-text" id="metric-clock">3.40 GHz</span>
+              <div class="metric-bar-wrap"><div class="metric-bar-fill" style="width: 85%; background: var(--sig-clk);"></div></div>
+            </div>
+
+            <div class="metric-cell">
+              <span class="metric-name">TEMPERATURE</span>
+              <span class="metric-value amber-text" id="metric-temp">51°C</span>
+              <div class="metric-bar-wrap"><div class="metric-bar-fill" id="bar-temp" style="width: 51%; background: var(--sig-addr);"></div></div>
+            </div>
+
+            <div class="metric-cell">
+              <span class="metric-name">CACHE HIT</span>
+              <span class="metric-value gold-text" id="metric-cache">94.2%</span>
+              <div class="metric-bar-wrap"><div class="metric-bar-fill" style="width: 94.2%; background: var(--gold-contact);"></div></div>
+            </div>
+
+            <div class="metric-cell">
+              <span class="metric-name">INSTRUCTIONS</span>
+              <span class="metric-value" id="metric-instr" style="color: #fff;">1,284</span>
+              <div class="metric-bar-wrap"><div class="metric-bar-fill" style="width: 65%;"></div></div>
+            </div>
+
+            <div class="metric-cell">
+              <span class="metric-name">MEMORY</span>
+              <span class="metric-value" id="metric-mem" style="color: #cbd5e1;">6.8 GB</span>
+              <div class="metric-bar-wrap"><div class="metric-bar-fill" style="width: 42%;"></div></div>
+            </div>
+
+            <div class="metric-cell">
+              <span class="metric-name">BUS ACTIVITY</span>
+              <span class="metric-value ruby-text" id="metric-bus">ACTIVE</span>
+              <div class="metric-bar-wrap"><div class="metric-bar-fill" style="width: 100%; background: var(--sig-ctrl);"></div></div>
+            </div>
+          </div>
+
+          <!-- Speed / Stepping Controls -->
+          <div class="clock-control-strip">
+            <span class="silkscreen-label">CLOCK PULSE SPEED:</span>
+            <div class="clock-buttons">
+              <button class="clk-btn" id="clk-step">STEP (1 CYCLE)</button>
+              <button class="clk-btn" id="clk-1hz">1 Hz SLOW</button>
+              <button class="clk-btn active" id="clk-norm">NORMAL (3.4 GHz)</button>
+              <button class="clk-btn" id="clk-pause">PAUSE</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       SECTION 2: INSTRUCTION PIPELINE (FETCH -> DECODE -> EXECUTE -> MEMORY -> WRITE BACK)
+       ========================================================================== -->
+  <section class="content-section" id="pipeline">
+    <div class="section-divider-trace">
+      <div class="trace-center-via">
+        <span class="solder-pad via"></span>
+        <span>CIRCUIT MODULE SECTION // BUS BUS-A0</span>
+        <span class="solder-pad via"></span>
+      </div>
+    </div>
+
+    <div class="section-header">
+      <div class="section-kicker">
+        <span class="solder-pad"></span>
+        <span>Physical Circuit Module Execution</span>
+      </div>
+      <h3 class="section-title">Instruction Pipeline</h3>
+      <p class="section-subtitle">
+        Every machine code operation traverses five dedicated hardware execution modules in strict synchronization with the system clock.
+      </p>
+    </div>
+
+    <!-- 5 Physical Circuit Modules Grid -->
+    <div class="pipeline-board">
+      <div class="pipeline-stages-grid">
+        
+        <!-- Stage 1: FETCH -->
+        <div class="pipeline-stage-module active-stage" data-stage="FETCH">
+          <div class="stage-card-top">
+            <span class="stage-index">STAGE 01</span>
+            <div class="stage-led-indicator">
+              <span class="smd-led cyan-active"></span>
+            </div>
+          </div>
+          <div>
+            <div class="stage-latin-label">MEM_READ_PC</div>
+            <div class="stage-name">FETCH</div>
+            <div class="stage-quote-explanation">
+              “Instruction is retrieved from memory.”
+            </div>
+          </div>
+          <div class="stage-micro-specs">
+            <span>INPUT: <strong>Program Counter (PC)</strong></span>
+            <span>HARDWARE: <strong>Instruction Latch</strong></span>
+            <span>BUS: <strong>32-Bit Address Strobe</strong></span>
+          </div>
+        </div>
+
+        <!-- Stage 2: DECODE -->
+        <div class="pipeline-stage-module" data-stage="DECODE">
+          <div class="stage-card-top">
+            <span class="stage-index">STAGE 02</span>
+            <div class="stage-led-indicator">
+              <span class="smd-led amber-active"></span>
+            </div>
+          </div>
+          <div>
+            <div class="stage-latin-label">CTRL_OP_PARSE</div>
+            <div class="stage-name">DECODE</div>
+            <div class="stage-quote-explanation">
+              “Control unit interprets the instruction.”
+            </div>
+          </div>
+          <div class="stage-micro-specs">
+            <span>INPUT: <strong>Opcode [31:26]</strong></span>
+            <span>HARDWARE: <strong>Control Microcode ROM</strong></span>
+            <span>SIG: <strong>RegFile Read Address</strong></span>
+          </div>
+        </div>
+
+        <!-- Stage 3: EXECUTE -->
+        <div class="pipeline-stage-module" data-stage="EXECUTE">
+          <div class="stage-card-top">
+            <span class="stage-index">STAGE 03</span>
+            <div class="stage-led-indicator">
+              <span class="smd-led ruby-active"></span>
+            </div>
+          </div>
+          <div>
+            <div class="stage-latin-label">ALU_OP_CALC</div>
+            <div class="stage-name">EXECUTE</div>
+            <div class="stage-quote-explanation">
+              “ALU or another execution unit performs the operation.”
+            </div>
+          </div>
+          <div class="stage-micro-specs">
+            <span>INPUT: <strong>Operands A &amp; B</strong></span>
+            <span>HARDWARE: <strong>Arithmetic Logic Unit</strong></span>
+            <span>FLAGS: <strong>ZF, CF, OF, SF Latch</strong></span>
+          </div>
+        </div>
+
+        <!-- Stage 4: MEMORY -->
+        <div class="pipeline-stage-module" data-stage="MEMORY">
+          <div class="stage-card-top">
+            <span class="stage-index">STAGE 04</span>
+            <div class="stage-led-indicator">
+              <span class="smd-led cyan-active"></span>
+            </div>
+          </div>
+          <div>
+            <div class="stage-latin-label">D-CACHE_ACCESS</div>
+            <div class="stage-name">MEMORY</div>
+            <div class="stage-quote-explanation">
+              “Data is read from or written to memory.”
+            </div>
+          </div>
+          <div class="stage-micro-specs">
+            <span>INPUT: <strong>Effective Address</strong></span>
+            <span>HARDWARE: <strong>L1 Data Cache (SRAM)</strong></span>
+            <span>BUS: <strong>Read / Write Enable</strong></span>
+          </div>
+        </div>
+
+        <!-- Stage 5: WRITE BACK -->
+        <div class="pipeline-stage-module" data-stage="WRITE BACK">
+          <div class="stage-card-top">
+            <span class="stage-index">STAGE 05</span>
+            <div class="stage-led-indicator">
+              <span class="smd-led emerald-active"></span>
+            </div>
+          </div>
+          <div>
+            <div class="stage-latin-label">REG_FILE_COMMIT</div>
+            <div class="stage-name">WRITE BACK</div>
+            <div class="stage-quote-explanation">
+              “Result is stored in the destination register.”
+            </div>
+          </div>
+          <div class="stage-micro-specs">
+            <span>INPUT: <strong>ALU Result / Loaded Word</strong></span>
+            <span>HARDWARE: <strong>Register File Write Port</strong></span>
+            <span>STATE: <strong>Commit Destination Reg</strong></span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Live Instruction Flow Display -->
+      <div class="instruction-runner-bar">
+        <div class="active-instruction-stream">
+          <span class="silkscreen-label">LIVE INSTRUCTION:</span>
+          <span class="opcode-chip" id="curr-opcode">ADD R0, R1, #0x04</span>
+          <span class="silkscreen-dim mono">HEX: 0x01208020</span>
+        </div>
+        <div class="mono" style="font-size: 0.72rem; color: var(--silkscreen-muted);">
+          CYCLE COUNT: <span class="emerald-text" id="pipeline-cycle-counter">8,419</span> | HAZARD: <span class="cyan-text">NONE (FORWARDING ACTIVE)</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       SECTION 3: MEMORY HIERARCHY (CPU -> L1 -> L2 -> L3 -> RAM -> STORAGE)
+       ========================================================================== -->
+  <section class="content-section" id="memory">
+    <div class="section-divider-trace">
+      <div class="trace-center-via">
+        <span class="solder-pad via"></span>
+        <span>LATENCY &amp; CAPACITY TRADEOFF // SUBSTRATE INTERCONNECT</span>
+        <span class="solder-pad via"></span>
+      </div>
+    </div>
+
+    <div class="section-header">
+      <div class="section-kicker">
+        <span class="solder-pad"></span>
+        <span>Memory Hierarchy Architecture</span>
+      </div>
+      <h3 class="section-title">Physical Memory Subsystem</h3>
+      <p class="section-subtitle">
+        Physical scale dictates memory performance. The further signals must travel through copper traces, the higher the access latency.
+      </p>
+    </div>
+
+    <div class="memory-hierarchy-board">
+      <!-- Essential Educational Rule Quote -->
+      <div class="memory-rule-banner">
+        <span class="smd-led amber-active"></span>
+        <p>“Closer memory is faster and smaller. Farther memory is slower and larger.”</p>
+      </div>
+
+      <!-- Progressive Modules Stack -->
+      <div class="memory-modules-stack">
+        
+        <!-- 1. CPU REGISTERS -->
+        <div class="memory-tier-row">
+          <div class="tier-stat-left">
+            <div class="latency-label">LATENCY</div>
+            <div class="latency-value">&lt; 0.3 ns</div>
+          </div>
+          <div class="tier-physical-module tier-w-1" data-tier="CPU Registers">
+            <span class="solder-pad"></span>
+            <div>
+              <div class="tier-name">CPU REGISTERS</div>
+              <div class="tier-tech">ON-DIE FLIP-FLOPS</div>
+            </div>
+            <div class="smd-led cyan-active"></div>
+          </div>
+          <div class="tier-stat-right">
+            <div class="capacity-label">CAPACITY</div>
+            <div class="capacity-value">64 BYTES</div>
+          </div>
+        </div>
+
+        <div class="memory-interconnect-arrow"></div>
+
+        <!-- 2. L1 CACHE -->
+        <div class="memory-tier-row">
+          <div class="tier-stat-left">
+            <div class="latency-label">LATENCY</div>
+            <div class="latency-value">0.9 ns</div>
+          </div>
+          <div class="tier-physical-module tier-w-2" data-tier="L1 Cache">
+            <span class="solder-pad"></span>
+            <div>
+              <div class="tier-name">L1 CACHE</div>
+              <div class="tier-tech">CORE-ISOLATED SRAM (6T CELL)</div>
+            </div>
+            <div class="smd-led cyan-active"></div>
+          </div>
+          <div class="tier-stat-right">
+            <div class="capacity-label">CAPACITY</div>
+            <div class="capacity-value">64 KB / CORE</div>
+          </div>
+        </div>
+
+        <div class="memory-interconnect-arrow"></div>
+
+        <!-- 3. L2 CACHE -->
+        <div class="memory-tier-row">
+          <div class="tier-stat-left">
+            <div class="latency-label">LATENCY</div>
+            <div class="latency-value">2.8 ns</div>
+          </div>
+          <div class="tier-physical-module tier-w-3" data-tier="L2 Cache">
+            <span class="solder-pad"></span>
+            <div>
+              <div class="tier-name">L2 CACHE</div>
+              <div class="tier-tech">ON-DIE TIGHT SRAM</div>
+            </div>
+            <div class="smd-led green-active"></div>
+          </div>
+          <div class="tier-stat-right">
+            <div class="capacity-label">CAPACITY</div>
+            <div class="capacity-value">512 KB</div>
+          </div>
+        </div>
+
+        <div class="memory-interconnect-arrow"></div>
+
+        <!-- 4. L3 CACHE -->
+        <div class="memory-tier-row">
+          <div class="tier-stat-left">
+            <div class="latency-label">LATENCY</div>
+            <div class="latency-value">11.4 ns</div>
+          </div>
+          <div class="tier-physical-module tier-w-4" data-tier="L3 Cache">
+            <span class="solder-pad"></span>
+            <div>
+              <div class="tier-name">L3 CACHE</div>
+              <div class="tier-tech">SHARED ALL-CORE DIE SRAM</div>
+            </div>
+            <div class="smd-led amber-active"></div>
+          </div>
+          <div class="tier-stat-right">
+            <div class="capacity-label">CAPACITY</div>
+            <div class="capacity-value">16 MB</div>
+          </div>
+        </div>
+
+        <div class="memory-interconnect-arrow"></div>
+
+        <!-- 5. RAM -->
+        <div class="memory-tier-row">
+          <div class="tier-stat-left">
+            <div class="latency-label">LATENCY</div>
+            <div class="latency-value">65 ns</div>
+          </div>
+          <div class="tier-physical-module tier-w-5" data-tier="Main RAM">
+            <span class="solder-pad"></span>
+            <div>
+              <div class="tier-name">SYSTEM RAM (DDR5)</div>
+              <div class="tier-tech">OFF-CHIP PCB DIMM CAPACITIVE DRAM</div>
+            </div>
+            <div class="smd-led amber-active"></div>
+          </div>
+          <div class="tier-stat-right">
+            <div class="capacity-label">CAPACITY</div>
+            <div class="capacity-value">32 GB</div>
+          </div>
+        </div>
+
+        <div class="memory-interconnect-arrow"></div>
+
+        <!-- 6. SECONDARY STORAGE -->
+        <div class="memory-tier-row">
+          <div class="tier-stat-left">
+            <div class="latency-label">LATENCY</div>
+            <div class="latency-value">15,000 ns</div>
+          </div>
+          <div class="tier-physical-module tier-w-6" data-tier="Secondary Storage">
+            <span class="solder-pad"></span>
+            <div>
+              <div class="tier-name">SECONDARY STORAGE (NVMe SSD)</div>
+              <div class="tier-tech">PCIe 5.0 FLASH NAND MATRIX</div>
+            </div>
+            <div class="smd-led red-active"></div>
+          </div>
+          <div class="tier-stat-right">
+            <div class="capacity-label">CAPACITY</div>
+            <div class="capacity-value">2 TB</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       SECTION 4: ARCHITECTURE EXPLORER (Interactive Component Inspector)
+       ========================================================================== -->
+  <section class="content-section" id="architecture">
+    <div class="section-divider-trace">
+      <div class="trace-center-via">
+        <span class="solder-pad via"></span>
+        <span>LOGIC PROBE &amp; ARCHITECTURAL EXPLORER</span>
+        <span class="solder-pad via"></span>
+      </div>
+    </div>
+
+    <div class="section-header">
+      <div class="section-kicker">
+        <span class="solder-pad"></span>
+        <span>Interactive Hardware Inspector</span>
+      </div>
+      <h3 class="section-title">Explore the Architecture</h3>
+      <p class="section-subtitle">
+        Probe internal execution blocks, signal registers, and control lines. Observe the physical electrical pin states and micro-architectural roles in real time.
+      </p>
+    </div>
+
+    <div class="explorer-layout">
+      <!-- Component Selection Column -->
+      <div class="component-selector-panel">
+        <div class="selector-panel-title">SELECT SUB-SYSTEM PROBE</div>
+        
+        <button class="component-btn active" data-probe="CPU">
+          <span>CPU (CORE DIE)</span>
+          <span class="component-btn-pin">U1-AM4</span>
+        </button>
+
+        <button class="component-btn" data-probe="ALU">
+          <span>ALU (EXEC UNIT)</span>
+          <span class="component-btn-pin">SUB-BLK-01</span>
+        </button>
+
+        <button class="component-btn" data-probe="CONTROL UNIT">
+          <span>CONTROL UNIT</span>
+          <span class="component-btn-pin">SUB-BLK-02</span>
+        </button>
+
+        <button class="component-btn" data-probe="REGISTERS">
+          <span>REGISTERS (R0..PC)</span>
+          <span class="component-btn-pin">REG-FILE-32</span>
+        </button>
+
+        <button class="component-btn" data-probe="CACHE">
+          <span>CACHE (L1/L2)</span>
+          <span class="component-btn-pin">SRAM-S0</span>
+        </button>
+
+        <button class="component-btn" data-probe="RAM">
+          <span>RAM (MAIN MEMORY)</span>
+          <span class="component-btn-pin">DIMM-A1/B1</span>
+        </button>
+
+        <button class="component-btn" data-probe="BUS">
+          <span>SYSTEM BUS</span>
+          <span class="component-btn-pin">DATA/ADDR/CTRL</span>
+        </button>
+
+        <button class="component-btn" data-probe="I/O">
+          <span>INPUT / OUTPUT</span>
+          <span class="component-btn-pin">UART/PCIe/DMA</span>
+        </button>
+      </div>
+
+      <!-- Detail & Oscilloscope Inspection Display -->
+      <div class="explorer-display-panel" id="probe-inspector">
+        <div class="display-panel-top">
+          <div class="active-component-tag">
+            <div class="active-chip-badge" id="probe-title">ALU</div>
+            <span class="active-ic-code" id="probe-id">CIRCUIT ID: BLK-EXEC-ALU-64</span>
+          </div>
+          <div class="mono" style="font-size: 0.75rem; color: var(--sig-clk);">
+            STATUS: <span id="probe-status" style="font-weight: 700;">SYNCHRONOUS OK</span>
+          </div>
+        </div>
+
+        <div class="explorer-grid-specs">
+          <!-- Card 1: What it does -->
+          <div class="spec-card">
+            <div class="spec-card-title">
+              <span class="solder-pad"></span>
+              <span>What It Does</span>
+            </div>
+            <div class="spec-card-body" id="probe-what">
+              Performs high-speed 64-bit two's complement integer arithmetic (ADD, SUB, MUL, DIV) and bitwise logical operations (AND, OR, XOR, SLL, SRL). Sets processor status flags for condition evaluations.
+            </div>
+          </div>
+
+          <!-- Card 2: Current Hardware State -->
+          <div class="spec-card">
+            <div class="spec-card-title">
+              <span class="solder-pad"></span>
+              <span>Current State</span>
+            </div>
+            <div class="spec-card-body" id="probe-state">
+              <p>Active Opcode: <strong class="copper-text">ADD (0x00)</strong></p>
+              <p>Flags Latch: <span class="mono cyan-text">ZF=0, CF=0, SF=0, OF=0</span></p>
+              <p>Cycle Latency: <strong class="emerald-text">1 Clock Cycle</strong></p>
+            </div>
+          </div>
+
+          <!-- Card 3: Inputs -->
+          <div class="spec-card">
+            <div class="spec-card-title">
+              <span class="solder-pad"></span>
+              <span>Hardware Inputs</span>
+            </div>
+            <div class="spec-card-body">
+              <ul class="pin-signals-list" id="probe-inputs">
+                <li><span class="pin-name">OPERAND_A [63:0]</span> <span class="pin-state cyan-text">0x0000004A</span></li>
+                <li><span class="pin-name">OPERAND_B [63:0]</span> <span class="pin-state cyan-text">0x000000FF</span></li>
+                <li><span class="pin-name">ALU_OP [3:0]</span> <span class="pin-state amber-text">0b0010 (ADD)</span></li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Card 4: Outputs & Data Movement -->
+          <div class="spec-card">
+            <div class="spec-card-title">
+              <span class="solder-pad"></span>
+              <span>Outputs &amp; Data Movement</span>
+            </div>
+            <div class="spec-card-body">
+              <ul class="pin-signals-list" id="probe-outputs">
+                <li><span class="pin-name">ALU_RESULT [63:0]</span> <span class="pin-state emerald-text">0x00000149</span></li>
+                <li><span class="pin-name">ZERO_FLAG (ZF)</span> <span class="pin-state">0 (LOW)</span></li>
+                <li><span class="pin-name">FLOW DIRECTION</span> <span class="pin-state copper-text">ALU &rarr; REG FILE WB</span></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Integrated Logic Waveform Analyzer -->
+        <div class="oscilloscope-screen-wrap">
+          <div class="scope-header">
+            <div class="scope-title">
+              <span class="pulse-dot"></span>
+              <span>4-CHANNEL LOGIC ANALYZER // HARDWARE BUS TRACE</span>
+            </div>
+            <div class="mono" style="font-size: 0.68rem; color: var(--silkscreen-muted);">
+              TIMEBASE: 250ps/div | TRIG: CLK_RISING
+            </div>
+          </div>
+          <canvas class="scope-canvas" id="scopeCanvas" width="700" height="140"></canvas>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       SECTION 5: SCROLL EXPERIENCE (Hardware -> Architecture -> Execution)
+       ========================================================================== -->
+  <section class="narrative-scroll-section">
+    <div class="narrative-container">
+      <div class="section-header" style="text-align: center; margin-bottom: 3.5rem;">
+        <div class="section-kicker" style="justify-content: center;">
+          <span class="solder-pad"></span>
+          <span>Pedagogical System Paradigm</span>
+        </div>
+        <h3 class="section-title">From Silicon Physics to Software Execution</h3>
+        <p class="section-subtitle" style="margin: 0.5rem auto 0 auto;">
+          How raw copper traces and semiconductor logic give rise to deterministic program execution.
+        </p>
+      </div>
+
+      <div class="narrative-steps-grid">
+        <!-- Step 1: Physical Hardware -->
+        <div class="narrative-step-card">
+          <div class="narrative-badge">
+            <span class="solder-pad"></span>
+            <span>PHASE 01 // FOUNDATION</span>
+          </div>
+          <h4 class="narrative-title">Physical Hardware</h4>
+          <p class="narrative-body">
+            Microscopic copper traces, quartz crystals generating 3.4 billion electrical cycles per second, PCB ground planes, and silicon FET gates switching between 0V and +1.1V.
+          </p>
+          <div class="mono" style="font-size: 0.72rem; color: var(--copper-bright); border-top: 1px solid #1c2e22; padding-top: 8px;">
+            ELECTRONICS LAYER: OHMIC TRACES &amp; TRANSISTORS
+          </div>
+        </div>
+
+        <!-- Step 2: Logical Architecture -->
+        <div class="narrative-step-card">
+          <div class="narrative-badge">
+            <span class="solder-pad"></span>
+            <span>PHASE 02 // ABSTRACTION</span>
+          </div>
+          <h4 class="narrative-title">Logical Architecture</h4>
+          <p class="narrative-body">
+            Transistors organized into Boolean logic gates, registers, multiplexers, and state machines that interpret bit sequences as instructions, data addresses, and control words.
+          </p>
+          <div class="mono" style="font-size: 0.72rem; color: var(--sig-addr); border-top: 1px solid #1c2e22; padding-top: 8px;">
+            MICROARCH LAYER: RISC-V / x86 PIPELINES
+          </div>
+        </div>
+
+        <!-- Step 3: Real-Time Execution -->
+        <div class="narrative-step-card">
+          <div class="narrative-badge">
+            <span class="solder-pad"></span>
+            <span>PHASE 03 // RUNTIME</span>
+          </div>
+          <h4 class="narrative-title">Real-Time Execution</h4>
+          <p class="narrative-body">
+            Instructions cascade through fetch, decode, execute, and memory phases. Values flash through data buses, enabling operating systems and software to run without ambiguity.
+          </p>
+          <div class="mono" style="font-size: 0.72rem; color: var(--sig-clk); border-top: 1px solid #1c2e22; padding-top: 8px;">
+            SOFTWARE LAYER: ALGORITHMIC COMPUTATION
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       MINIMAL TECHNICAL FOOTER
+       ========================================================================== -->
+  <footer class="lab-footer">
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <h4>REAL-TIME CPU &amp; SYSTEM ARCHITECTURE VISUALIZATION</h4>
+          <p>“Understand the machine beneath the machine.”</p>
+        </div>
+
+        <ul class="footer-links-grid">
+          <li><a href="#visualizer">Visualizer</a></li>
+          <li><a href="#pipeline">Pipeline</a></li>
+          <li><a href="#memory">Memory</a></li>
+          <li><a href="#architecture">Architecture</a></li>
+          <li><a href="#hero">Documentation</a></li>
+          <li><a href="#hero">About Project</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-bottom">
+        <div>
+          <span>DESIGNED FOR COMPUTER ARCHITECTURE &amp; HARDWARE SYSTEMS EDUCATION</span>
+        </div>
+        <div>
+          <span>REVISION: 4.2.0 // SPEC: 64-BIT RISC-V / x86 HYBRID HARDWARE MODEL</span>
+        </div>
+        <div>
+          <span class="emerald-text">&bull; SIMULATION ONLINE</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ==========================================================================
+       INSPECTION MODAL FOR CLICKING MOTHERBOARD COMPONENTS
+       ========================================================================== -->
+  <div class="inspection-modal" id="modal-component">
+    <div class="modal-pcb-card">
+      <button class="modal-close-btn" id="modal-close-btn">&times; CLOSE [ESC]</button>
+      <div class="subheading-badge" style="margin-bottom: 10px;">
+        <span class="solder-pad"></span>
+        <span id="modal-subtitle">COMPONENT SPECIFICATION</span>
+      </div>
+      <h3 class="section-title" id="modal-title" style="font-size: 1.8rem; margin-bottom: 0.8rem;">ALU Module</h3>
+      <p id="modal-desc" style="color: var(--silkscreen-muted); font-size: 0.95rem; line-height: 1.6; margin-bottom: 1.2rem;">
+        Detailed explanation of this hardware component.
+      </p>
+      <div style="background: #0b1610; border: 1px solid var(--pcb-border); border-radius: 4px; padding: 12px; font-family: var(--font-mono); font-size: 0.75rem;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+          <span class="silkscreen-muted">INTERCONNECT:</span>
+          <span class="copper-text" id="modal-bus">SYSTEM BUS TRUNK A</span>
+        </div>
+        <div style="display: flex; justify-content: space-between;">
+          <span class="silkscreen-muted">CLOCK CYCLES:</span>
+          <span class="emerald-text" id="modal-latency">1 CYCLE SYNCHRONOUS</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       JAVASCRIPT: REAL-TIME SIMULATION ENGINE & OSCILLOSCOPE
+       ========================================================================== -->
+  <script>
+    (function() {
+      'use strict';
+
+      // --------------------------------------------------------------------------
+      // 1. DATA DICTIONARY FOR ARCHITECTURE EXPLORER & MOTHERBOARD PROBING
+      // --------------------------------------------------------------------------
+      const componentData = {
+        'CPU': {
+          title: 'CENTRAL PROCESSING UNIT',
+          id: 'CORE-RISCV64-AM4',
+          status: 'RUNNING // PIPELINE PRIMED',
+          what: 'The primary computational engine that coordinates all instructions, arithmetic calculations, branch judgments, and data transactions between registers and system buses.',
+          state: '<p>Instruction Pointer: <strong class="cyan-text">0x00000402</strong></p><p>Privilege Mode: <strong class="emerald-text">User / Kernel Ring 0</strong></p><p>Micro-Architecture: <strong class="copper-text">5-Stage In-Order RISC</strong></p>',
+          inputs: [
+            { name: 'CLK_IN (SYS_OSC)', val: '3.40 GHz (14.318M x 237)' },
+            { name: 'INSTR_DATA [31:0]', val: '0x01208020 (ADD)' },
+            { name: 'RESET_N', val: '1 (ACTIVE HIGH)' }
+          ],
+          outputs: [
+            { name: 'ADDR_OUT [31:0]', val: '0x0000104A' },
+            { name: 'DATA_OUT [63:0]', val: '0x00000000' },
+            { name: 'MEM_READ# / WRITE#', val: 'READ ACTIVE (0)' }
+          ],
+          bus: 'Internal Die Crossbar + External FSB',
+          latency: 'Pipeline Staged (5 Stages)'
+        },
+        'ALU': {
+          title: 'ARITHMETIC LOGIC UNIT',
+          id: 'BLK-EXEC-ALU-64',
+          status: 'SYNCHRONOUS OK',
+          what: 'Performs 64-bit integer arithmetic (addition, subtraction, multiplication, division) and bitwise boolean logic (AND, OR, XOR, bit shifts). Determines CPU condition status flags.',
+          state: '<p>Active Opcode: <strong class="copper-text">ADD (0x00)</strong></p><p>Flags Latch: <span class="mono cyan-text">ZF=0, CF=0, SF=0, OF=0</span></p><p>Cycle Latency: <strong class="emerald-text">1 Clock Cycle</strong></p>',
+          inputs: [
+            { name: 'OPERAND_A [63:0]', val: '0x0000004A' },
+            { name: 'OPERAND_B [63:0]', val: '0x000000FF' },
+            { name: 'ALU_OP [3:0]', val: '0b0010 (ADD)' }
+          ],
+          outputs: [
+            { name: 'ALU_RESULT [63:0]', val: '0x00000149' },
+            { name: 'ZERO_FLAG (ZF)', val: '0 (LOW)' },
+            { name: 'FLOW DIRECTION', val: 'ALU -> REG FILE WB' }
+          ],
+          bus: 'Internal CPU Execution Bus',
+          latency: '1 Clock Cycle'
+        },
+        'CONTROL UNIT': {
+          title: 'CONTROL UNIT (CTRL)',
+          id: 'MICRO-SEQ-CTRL-01',
+          status: 'DECODING STAGE ACTIVE',
+          what: 'The supervisor of the CPU. Interprets opcodes from memory and generates precise gating micro-control signals to multiplexers, registers, and the ALU.',
+          state: '<p>Current State: <strong class="amber-text">DECODE_STAGE_02</strong></p><p>Microcode Step: <strong class="mono">0x0E</strong></p><p>Branch Prediction: <span class="emerald-text">TAKEN (98% Acc)</span></p>',
+          inputs: [
+            { name: 'INSTRUCTION [31:0]', val: '0x01208020' },
+            { name: 'CONDITION FLAGS', val: 'ZF=0, CF=0' },
+            { name: 'INTERRUPT_REQ (IRQ)', val: '0 (NONE)' }
+          ],
+          outputs: [
+            { name: 'REG_WRITE_ENABLE', val: '1 (ENABLED)' },
+            { name: 'ALU_SRC_MUX', val: '0b01 (REG_B)' },
+            { name: 'MEM_TO_REG', val: '0 (ALU_OUT)' }
+          ],
+          bus: 'Internal Control Bus lines',
+          latency: '1 Clock Cycle'
+        },
+        'REGISTERS': {
+          title: 'REGISTER FILE (GPR)',
+          id: 'REG-FILE-64x32',
+          status: 'DUAL PORT READ / WRITE',
+          what: 'High-speed storage cells built directly into the silicon die. Holds temporary numbers, loop counters, memory base pointers, and the Program Counter (PC).',
+          state: '<p>R0 (Accumulator): <strong class="cyan-text" id="reg-r0-val">0x004A</strong></p><p>R1 (Base Offset): <strong class="cyan-text" id="reg-r1-val">0x00FF</strong></p><p>PC (Program Counter): <strong class="amber-text" id="reg-pc-val">0x0402</strong></p>',
+          inputs: [
+            { name: 'READ_ADDR_1 [4:0]', val: '0x00 (R0)' },
+            { name: 'READ_ADDR_2 [4:0]', val: '0x01 (R1)' },
+            { name: 'WRITE_DATA [63:0]', val: '0x00000149' }
+          ],
+          outputs: [
+            { name: 'REG_OUT_1 [63:0]', val: '0x0000004A' },
+            { name: 'REG_OUT_2 [63:0]', val: '0x000000FF' },
+            { name: 'PC_OUT [31:0]', val: '0x00000402' }
+          ],
+          bus: 'Internal Register Bus',
+          latency: '< 0.3 ns'
+        },
+        'CACHE': {
+          title: 'ON-DIE L1/L2 CACHE',
+          id: 'SRAM-CACHE-MAT-01',
+          status: 'HIT RATIO: 94.2%',
+          what: 'Ultra-fast SRAM integrated right next to the execution cores. Stores copies of frequently accessed RAM data blocks to prevent CPU stalls caused by main memory latency.',
+          state: '<p>Tag Array Status: <strong class="emerald-text">MATCH (HIT)</strong></p><p>Dirty Line: <strong class="mono">CLEAN (0)</strong></p><p>Cache Coherency: <strong class="copper-text">MESI Protocol</strong></p>',
+          inputs: [
+            { name: 'INDEX [8:0]', val: '0x04A' },
+            { name: 'TAG [19:0]', val: '0x00104' },
+            { name: 'LINE OFFSET [5:0]', val: '0x00' }
+          ],
+          outputs: [
+            { name: 'CACHE_DATA [63:0]', val: '0x0000FFFF00001122' },
+            { name: 'HIT / MISS SIGNAL', val: '1 (CACHE HIT)' },
+            { name: 'LATENCY CLOCKS', val: '3 CYCLES' }
+          ],
+          bus: 'Dedicated Cache Bus',
+          latency: '0.9 ns (L1) / 2.8 ns (L2)'
+        },
+        'RAM': {
+          title: 'SYSTEM RANDOM ACCESS MEMORY',
+          id: 'DIMM-DDR5-PC5600',
+          status: 'REFRESH ACTIVE // CAS 36',
+          what: 'Main volatile memory where programs and active datasets reside during execution. Connected across the motherboard via dedicated 64-bit parallel memory traces.',
+          state: '<p>Active Bank: <strong class="copper-text">BANK 04</strong></p><p>Row Address Strobe (RAS): <strong class="mono">0x2A1F</strong></p><p>Data Transfer: <strong class="cyan-text">5600 MT/s</strong></p>',
+          inputs: [
+            { name: 'MEM_ADDR [31:0]', val: '0x7FFF0040' },
+            { name: 'CAS# / RAS# / WE#', val: '0 / 1 / 1 (READ)' },
+            { name: 'CLOCK (DIFF_PAIR)', val: '2800 MHz' }
+          ],
+          outputs: [
+            { name: 'DQ [63:0] (DATA)', val: 'BURST 8 WORDS' },
+            { name: 'DQS (STROBE)', val: 'SYNCHRONIZED' },
+            { name: 'BUS UTILIZATION', val: '42%' }
+          ],
+          bus: '64-Bit Wide Memory Bus',
+          latency: '65 ns'
+        },
+        'BUS': {
+          title: 'SYSTEM BUS INTERCONNECT',
+          id: 'BUS-TRUNK-DATA-ADDR-CTRL',
+          status: 'TRISTATE ARBITRATION ACTIVE',
+          what: 'The shared copper arterial pathways routed across the PCB: Data Bus carries values, Address Bus selects hardware targets, and Control Bus synchronizes read/write commands.',
+          state: '<p>Data Bus Width: <strong class="cyan-text">64 Pins (Bidirectional)</strong></p><p>Address Bus Width: <strong class="amber-text">32 Pins (CPU to Memory)</strong></p><p>Control Bus: <strong class="ruby-text">R/W, ACK, CLK, RESET</strong></p>',
+          inputs: [
+            { name: 'BUS_REQ (CPU)', val: '1 (GRANTED)' },
+            { name: 'BUS_REQ (DMA)', val: '0 (IDLE)' },
+            { name: 'CLOCK PHASE', val: 'RISING EDGE' }
+          ],
+          outputs: [
+            { name: 'BUS_GRANT', val: 'MASTER: CPU' },
+            { name: 'TERMINATION VOLT', val: 'VTT = 0.6V' },
+            { name: 'LINE IMPEDANCE', val: '50Ω CONTROLLED' }
+          ],
+          bus: 'Physical PCB Microstrip Traces',
+          latency: '~0.15 ns per inch'
+        },
+        'I/O': {
+          title: 'INPUT / OUTPUT CONTROLLER',
+          id: 'IO-SOUTHBRIDGE-HOST',
+          status: 'DMA CHANNELS READY',
+          what: 'Handles asynchronous communication between the high-speed CPU core and peripherals like storage drives, display controllers, network interfaces, and serial buses.',
+          state: '<p>Active Peripheral: <strong class="copper-text">NVMe Host / UART</strong></p><p>DMA Controller: <strong class="emerald-text">CHANNEL 02 ACTIVE</strong></p><p>Interrupt Pending: <strong class="mono">NONE</strong></p>',
+          inputs: [
+            { name: 'PCIe_RX [3:0]', val: 'PACKET RECEIVED' },
+            { name: 'UART_RX', val: '0x55 (ASCII)' },
+            { name: 'IRQ_LINE', val: 'DEASSERTED' }
+          ],
+          outputs: [
+            { name: 'PCIe_TX [3:0]', val: 'DMA BURST' },
+            { name: 'INTERRUPT_OUT', val: '0' },
+            { name: 'STATUS_LED', val: 'BLINKING' }
+          ],
+          bus: 'PCIe 4.0 / DMI Bus',
+          latency: '20 ns - 150 ns'
+        }
+      };
+
+      // --------------------------------------------------------------------------
+      // 2. REAL-TIME HARDWARE HUD METRICS & TELEMETRY SIMULATION
+      // --------------------------------------------------------------------------
+      let cpuLoad = 42;
+      let cpuTemp = 51;
+      let instructionCount = 1284;
+      let clockRunning = true;
+      let clockSpeedMode = 'normal'; // 'step', '1hz', 'normal', 'pause'
+
+      const elCpuLoad = document.getElementById('metric-cpu-load');
+      const elBarCpuLoad = document.getElementById('bar-cpu-load');
+      const elClock = document.getElementById('metric-clock');
+      const elTemp = document.getElementById('metric-temp');
+      const elBarTemp = document.getElementById('bar-temp');
+      const elInstr = document.getElementById('metric-instr');
+      const elRegR0 = document.getElementById('hud-reg-r0');
+      const elRegR1 = document.getElementById('hud-reg-r1');
+      const elRegPc = document.getElementById('hud-reg-pc');
+      const elPipelineCycle = document.getElementById('pipeline-cycle-counter');
+      const elCurrOpcode = document.getElementById('curr-opcode');
+
+      const opcodesSample = [
+        'ADD R0, R1, #0x04',
+        'MOV R1, [0x00104A]',
+        'CMP R0, 0x00',
+        'JNZ 0x000412',
+        'LDR R0, [0x7FFF00]',
+        'SUB R1, R0, #0x01',
+        'AND R0, R1, 0xFF',
+        'STR R0, [0x00104E]'
+      ];
+      let opcodeIndex = 0;
+
+      function updateTelemetry() {
+        if (!clockRunning) return;
+
+        // Subtle realistic fluctuations
+        const loadDelta = (Math.random() - 0.48) * 3;
+        cpuLoad = Math.max(28, Math.min(88, Math.round(cpuLoad + loadDelta)));
+        elCpuLoad.textContent = cpuLoad + '%';
+        elBarCpuLoad.style.width = cpuLoad + '%';
+
+        const tempDelta = (Math.random() - 0.5) * 0.4;
+        cpuTemp = Math.max(48, Math.min(62, parseFloat((cpuTemp + tempDelta).toFixed(1))));
+        elTemp.textContent = Math.round(cpuTemp) + '°C';
+        elBarTemp.style.width = cpuTemp + '%';
+
+        // Increment instruction counter
+        instructionCount += Math.floor(Math.random() * 8) + 3;
+        elInstr.textContent = instructionCount.toLocaleString();
+
+        if (elPipelineCycle) {
+          elPipelineCycle.textContent = (8400 + Math.floor(instructionCount * 1.5)).toLocaleString();
+        }
+
+        // Increment simulated registers & opcodes
+        if (Math.random() > 0.4) {
+          const pcVal = 0x0400 + (instructionCount % 256);
+          const r0Val = (0x0040 + (instructionCount % 120)).toString(16).toUpperCase().padStart(4, '0');
+          const r1Val = (0x00A0 + ((instructionCount * 3) % 90)).toString(16).toUpperCase().padStart(4, '0');
+          
+          if (elRegPc) elRegPc.textContent = '0x' + pcVal.toString(16).toUpperCase().padStart(4, '0');
+          if (elRegR0) elRegR0.textContent = '0x' + r0Val;
+          if (elRegR1) elRegR1.textContent = '0x' + r1Val;
+        }
+
+        // Cycle opcodes periodically
+        if (Math.random() > 0.6) {
+          opcodeIndex = (opcodeIndex + 1) % opcodesSample.length;
+          if (elCurrOpcode) {
+            elCurrOpcode.textContent = opcodesSample[opcodeIndex];
+          }
+        }
+      }
+
+      let telemetryInterval = setInterval(updateTelemetry, 850);
+
+      // Speed control buttons
+      const btnStep = document.getElementById('clk-step');
+      const btn1hz = document.getElementById('clk-1hz');
+      const btnNorm = document.getElementById('clk-norm');
+      const btnPause = document.getElementById('clk-pause');
+
+      function setClockButtonActive(activeBtn) {
+        [btnStep, btn1hz, btnNorm, btnPause].forEach(b => {
+          if (b) b.classList.remove('active');
+        });
+        if (activeBtn) activeBtn.classList.add('active');
+      }
+
+      if (btnStep) {
+        btnStep.addEventListener('click', () => {
+          setClockButtonActive(btnStep);
+          clockRunning = true;
+          updateTelemetry();
+          triggerScopeTrigger();
+        });
+      }
+
+      if (btn1hz) {
+        btn1hz.addEventListener('click', () => {
+          setClockButtonActive(btn1hz);
+          clockRunning = true;
+          clearInterval(telemetryInterval);
+          telemetryInterval = setInterval(updateTelemetry, 1800);
+        });
+      }
+
+      if (btnNorm) {
+        btnNorm.addEventListener('click', () => {
+          setClockButtonActive(btnNorm);
+          clockRunning = true;
+          clearInterval(telemetryInterval);
+          telemetryInterval = setInterval(updateTelemetry, 750);
+        });
+      }
+
+      if (btnPause) {
+        btnPause.addEventListener('click', () => {
+          setClockButtonActive(btnPause);
+          clockRunning = false;
+        });
+      }
+
+      // --------------------------------------------------------------------------
+      // 3. ARCHITECTURE EXPLORER PROBE CONTROLLER
+      // --------------------------------------------------------------------------
+      const probeBtns = document.querySelectorAll('.component-btn');
+      const probeTitle = document.getElementById('probe-title');
+      const probeId = document.getElementById('probe-id');
+      const probeStatus = document.getElementById('probe-status');
+      const probeWhat = document.getElementById('probe-what');
+      const probeState = document.getElementById('probe-state');
+      const probeInputs = document.getElementById('probe-inputs');
+      const probeOutputs = document.getElementById('probe-outputs');
+
+      function selectProbe(targetKey) {
+        const data = componentData[targetKey];
+        if (!data) return;
+
+        // Update active class on sidebar buttons
+        probeBtns.forEach(btn => {
+          if (btn.getAttribute('data-probe') === targetKey) {
+            btn.classList.add('active');
+          } else {
+            btn.classList.remove('active');
+          }
+        });
+
+        // Update inspector view
+        if (probeTitle) probeTitle.textContent = data.title;
+        if (probeId) probeId.textContent = 'CIRCUIT ID: ' + data.id;
+        if (probeStatus) probeStatus.textContent = data.status;
+        if (probeWhat) probeWhat.textContent = data.what;
+        if (probeState) probeState.innerHTML = data.state;
+
+        // Populate inputs
+        if (probeInputs) {
+          probeInputs.innerHTML = data.inputs.map(item => `
+            <li>
+              <span class="pin-name">${item.name}</span>
+              <span class="pin-state cyan-text">${item.val}</span>
+            </li>
+          `).join('');
+        }
+
+        // Populate outputs
+        if (probeOutputs) {
+          probeOutputs.innerHTML = data.outputs.map(item => `
+            <li>
+              <span class="pin-name">${item.name}</span>
+              <span class="pin-state emerald-text">${item.val}</span>
+            </li>
+          `).join('');
+        }
+
+        // Highlight corresponding item on the motherboard
+        highlightMotherboardPart(targetKey);
+      }
+
+      probeBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const key = btn.getAttribute('data-probe');
+          selectProbe(key);
+        });
+      });
+
+      // --------------------------------------------------------------------------
+      // 4. INTERACTIVE MOTHERBOARD CLICK & HOVER HIGHLIGHTING
+      // --------------------------------------------------------------------------
+      const pcbComponents = document.querySelectorAll('.pcb-component, .cpu-die-block, .cpu-cache-die, .registers-grid');
+      const modal = document.getElementById('inspection-modal') || document.getElementById('modal-component');
+      const modalTitle = document.getElementById('modal-title');
+      const modalDesc = document.getElementById('modal-desc');
+      const modalBus = document.getElementById('modal-bus');
+      const modalLatency = document.getElementById('modal-latency');
+      const modalClose = document.getElementById('modal-close-btn');
+
+      function highlightMotherboardPart(componentKey) {
+        pcbComponents.forEach(el => {
+          const comp = el.getAttribute('data-component');
+          if (comp && comp.toUpperCase().includes(componentKey.toUpperCase())) {
+            el.style.borderColor = 'var(--sig-data)';
+            el.style.boxShadow = '0 0 20px rgba(0, 212, 255, 0.4)';
+          } else {
+            el.style.borderColor = '';
+            el.style.boxShadow = '';
+          }
+        });
+      }
+
+      pcbComponents.forEach(el => {
+        el.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const compName = el.getAttribute('data-component');
+          if (!compName) return;
+
+          // If component is in our Explorer probe list, sync explorer
+          const matchedKey = Object.keys(componentData).find(k => compName.toUpperCase().includes(k.toUpperCase()));
+          if (matchedKey) {
+            selectProbe(matchedKey);
+          }
+
+          // Open detail modal
+          const compInfo = componentData[matchedKey] || {
+            title: compName,
+            what: 'Integrated circuit component mounted on motherboard PCB.',
+            bus: 'System Interconnect',
+            latency: 'Synchronous clock gating'
+          };
+
+          if (modal && modalTitle && modalDesc) {
+            modalTitle.textContent = compInfo.title;
+            modalDesc.textContent = compInfo.what;
+            if (modalBus) modalBus.textContent = compInfo.bus || 'System Bus Trunk';
+            if (modalLatency) modalLatency.textContent = compInfo.latency || 'Synchronous';
+            modal.classList.add('active');
+          }
+        });
+      });
+
+      if (modalClose && modal) {
+        modalClose.addEventListener('click', () => modal.classList.remove('active'));
+        modal.addEventListener('click', (e) => {
+          if (e.target === modal) modal.classList.remove('active');
+        });
+        window.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') modal.classList.remove('active');
+        });
+      }
+
+      // --------------------------------------------------------------------------
+      // 5. INSTRUCTION PIPELINE HOVER & CLICK INTERACTION
+      // --------------------------------------------------------------------------
+      const pipelineStages = document.querySelectorAll('.pipeline-stage-module');
+      pipelineStages.forEach(stage => {
+        stage.addEventListener('mouseenter', () => {
+          pipelineStages.forEach(s => s.classList.remove('active-stage'));
+          stage.classList.add('active-stage');
+        });
+      });
+
+      // --------------------------------------------------------------------------
+      // 6. REAL-TIME LOGIC ANALYZER / OSCILLOSCOPE CANVAS RENDERING
+      // --------------------------------------------------------------------------
+      const canvas = document.getElementById('scopeCanvas');
+      let ctx = null;
+      if (canvas && canvas.getContext) {
+        ctx = canvas.getContext('2d');
+      }
+
+      let timeOffset = 0;
+
+      function drawScope() {
+        if (!ctx || !canvas) return;
+        const w = canvas.width;
+        const h = canvas.height;
+
+        // Clear canvas with dark oscilloscope CRT phosphor green/charcoal
+        ctx.fillStyle = '#030805';
+        ctx.fillRect(0, 0, w, h);
+
+        // Draw oscilloscope graticule grid
+        ctx.strokeStyle = '#0e2016';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        const gridStep = 25;
+        for (let x = 0; x < w; x += gridStep) {
+          ctx.moveTo(x, 0);
+          ctx.lineTo(x, h);
+        }
+        for (let y = 0; y < h; y += gridStep) {
+          ctx.moveTo(0, y);
+          ctx.lineTo(w, y);
+        }
+        ctx.stroke();
+
+        // Channels definition: 4 signals
+        // CH1: CLK (Emerald)
+        // CH2: DATA_BUS (Cyan)
+        // CH3: ADDR_STROBE (Amber)
+        // CH4: CTRL_RW (Ruby)
+        const channels = [
+          { yBase: 25, color: '#10b981', label: 'CH1: CLK', type: 'clock' },
+          { yBase: 58, color: '#00d4ff', label: 'CH2: DATA', type: 'data' },
+          { yBase: 92, color: '#f59e0b', label: 'CH3: ADDR', type: 'strobe' },
+          { yBase: 124, color: '#ff4757', label: 'CH4: R/W#', type: 'ctrl' }
+        ];
+
+        channels.forEach(ch => {
+          ctx.strokeStyle = ch.color;
+          ctx.lineWidth = 1.8;
+          ctx.beginPath();
+
+          // Label
+          ctx.fillStyle = ch.color;
+          ctx.font = '9px "JetBrains Mono", monospace';
+          ctx.fillText(ch.label, 8, ch.yBase - 8);
+
+          for (let x = 70; x < w; x++) {
+            let val = 0;
+            const t = (x + timeOffset);
+
+            if (ch.type === 'clock') {
+              // Square wave clock
+              val = ((t % 28) > 14) ? 12 : -12;
+            } else if (ch.type === 'data') {
+              // Random transitions at clock edges
+              const period = Math.floor(t / 28);
+              val = ((period % 3 === 0) || (period % 5 === 0)) ? 10 : -10;
+            } else if (ch.type === 'strobe') {
+              // Address strobe occurs every 2 clock periods
+              const cycle = Math.floor(t / 56);
+              val = (cycle % 2 === 0) ? 9 : -9;
+            } else if (ch.type === 'ctrl') {
+              // Pulse low for write
+              const cycle = Math.floor(t / 84);
+              val = (cycle % 3 === 0) ? 9 : -9;
+            }
+
+            const py = ch.yBase - val;
+            if (x === 70) {
+              ctx.moveTo(x, py);
+            } else {
+              ctx.lineTo(x, py);
+            }
+          }
+          ctx.stroke();
+        });
+
+        if (clockRunning) {
+          timeOffset += 1.6;
+        }
+
+        requestAnimationFrame(drawScope);
+      }
+
+      function triggerScopeTrigger() {
+        timeOffset += 14;
+      }
+
+      if (ctx) {
+        requestAnimationFrame(drawScope);
+      }
+
+    })();
+  </script>
+</body>
+</html>
