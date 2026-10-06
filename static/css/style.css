@@ -426,13 +426,11 @@ html, body {
 .hud-controls-help {
   font-size: 11px;
   color: #475569;
-  background: rgba(255, 255, 255, 0.88);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: #ffffff;
   padding: 5px 12px;
   border-radius: var(--radius-sm);
-  border: 1px solid rgba(15, 23, 42, 0.08);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
 }
 
 /* Bottom Right Viewport Toolbar */
@@ -447,10 +445,8 @@ html, body {
 }
 
 .hud-tool-btn {
-  background: rgba(255, 255, 255, 0.88);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(15, 23, 42, 0.12);
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   color: #334155;
   padding: 5px 12px;
   border-radius: var(--radius-sm);
@@ -462,10 +458,10 @@ html, body {
 }
 
 .hud-tool-btn:hover {
-  background: #ffffff;
+  background: #f8fafc;
   color: #0071e3;
   border-color: #0071e3;
-  box-shadow: 0 2px 8px rgba(0, 113, 227, 0.15);
+  box-shadow: 0 2px 8px rgba(0, 113, 227, 0.12);
 }
 
 /* Table Inspector Card (Right Drawer) */
@@ -473,12 +469,10 @@ html, body {
   top: 16px;
   right: 18px;
   width: 300px;
-  background: rgba(255, 255, 255, 0.94);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(15, 23, 42, 0.1);
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: var(--radius-md);
-  box-shadow: 0 20px 40px -8px rgba(15, 23, 42, 0.12), 0 1px 3px rgba(15, 23, 42, 0.05);
+  box-shadow: 0 16px 32px -8px rgba(15, 23, 42, 0.10), 0 1px 3px rgba(15, 23, 42, 0.05);
   z-index: 15;
   overflow: hidden;
   color: #0f172a;
