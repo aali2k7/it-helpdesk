@@ -104,11 +104,11 @@ class DatabaseVisualizer {
     this.scene.background = new THREE.Color(0xf7f8fa);
     this.scene.fog = new THREE.FogExp2(0xf7f8fa, 0.0016);
 
-    // 2. Camera Setup
+    // 2. Camera Setup (Closer, prominent framing)
     const rect = this.container.getBoundingClientRect();
     const aspect = (rect.width || 800) / (rect.height || 500);
     this.camera = new THREE.PerspectiveCamera(40, aspect, 1, 3000);
-    this.initialCameraPos = new THREE.Vector3(0, 80, 140);
+    this.initialCameraPos = new THREE.Vector3(0, 52, 115);
     this.camera.position.copy(this.initialCameraPos);
     this.camera.lookAt(0, 4, 0);
 
@@ -164,54 +164,54 @@ class DatabaseVisualizer {
   }
 
   setupLighting() {
-    const ambientLight = new THREE.AmbientLight(0xffffff, 1.25);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
     this.scene.add(ambientLight);
 
-    const keyLight = new THREE.DirectionalLight(0xffffff, 1.1);
+    const keyLight = new THREE.DirectionalLight(0xffffff, 1.3);
     keyLight.position.set(65, 110, 75);
     this.scene.add(keyLight);
 
-    const fillLight = new THREE.DirectionalLight(0xdbeafe, 0.55);
+    const fillLight = new THREE.DirectionalLight(0xdbeafe, 0.7);
     fillLight.position.set(-70, 70, -70);
     this.scene.add(fillLight);
 
-    const hubPointLight = new THREE.PointLight(0x0071e3, 0.85, 150);
-    hubPointLight.position.set(0, 22, 0);
+    const hubPointLight = new THREE.PointLight(0x0071e3, 1.4, 200);
+    hubPointLight.position.set(0, 25, 0);
     this.scene.add(hubPointLight);
   }
 
   setupFloorGrid() {
     this.floorGroup = new THREE.Group();
 
-    // 1. Frosted White Porcelain Base Plinth Disc
-    const plinthGeo = new THREE.CylinderGeometry(148, 148, 1.2, 64);
+    // 1. Clean Frosted Base Plinth Disc
+    const plinthGeo = new THREE.CylinderGeometry(152, 152, 1.4, 64);
     const plinthMat = new THREE.MeshBasicMaterial({
       color: 0xffffff,
       transparent: true,
-      opacity: 0.94
+      opacity: 0.95
     });
     const plinth = new THREE.Mesh(plinthGeo, plinthMat);
     plinth.position.y = -14.6;
     this.floorGroup.add(plinth);
 
     // 2. Clean Architectural Grid (resting softly on top of the plinth)
-    const grid = new THREE.GridHelper(296, 24, 0x0071e3, 0xe2e8f0);
-    grid.position.y = -13.98;
+    const grid = new THREE.GridHelper(300, 24, 0x0071e3, 0xcbd5e1);
+    grid.position.y = -13.88;
     this.floorGroup.add(grid);
 
-    // 3. Single Minimal Boundary Ring
+    // 3. Crisp Boundary Ring
     const ringGeo = new THREE.BufferGeometry();
     const points = [];
     const segments = 96;
     for (let i = 0; i <= segments; i++) {
       const theta = (i / segments) * Math.PI * 2;
-      points.push(new THREE.Vector3(Math.cos(theta) * 142, -13.95, Math.sin(theta) * 142));
+      points.push(new THREE.Vector3(Math.cos(theta) * 148, -13.85, Math.sin(theta) * 148));
     }
     ringGeo.setFromPoints(points);
     const ringMat = new THREE.LineBasicMaterial({
-      color: 0xcbd5e1,
+      color: 0x94a3b8,
       transparent: true,
-      opacity: 0.65
+      opacity: 0.8
     });
     const ring = new THREE.Line(ringGeo, ringMat);
     this.floorGroup.add(ring);
@@ -446,6 +446,8 @@ class DatabaseVisualizer {
   // ==========================================================
   // NODE CREATION: PORCELAIN WHITE MONOLITH & FLOATING CAPSULE LABEL
   // ==========================================================
+  // NODE CREATION: HIGH-CONTRAST OBSIDIAN MONOLITH & LARGE BILLBOARD
+  // ==========================================================
   createTableNode(table, position) {
     const group = new THREE.Group();
     group.position.set(position.x, position.y, position.z);
@@ -454,30 +456,30 @@ class DatabaseVisualizer {
     const hexColor = this.domainColors[table.name] || '#0071e3';
     const domainColor = new THREE.Color(hexColor);
 
-    // Dimensions
-    const baseW = 20 + Math.log2(count + 1) * 2.8;
-    const baseH = 6.0 + Math.log2(count + 1) * 1.4;
-    const baseD = 16 + Math.log2(count + 1) * 2.4;
+    // Prominent, well-proportioned dimensions
+    const baseW = 26 + Math.log2(count + 1) * 3.2;
+    const baseH = 8.5 + Math.log2(count + 1) * 1.6;
+    const baseD = 20 + Math.log2(count + 1) * 2.8;
 
     // 1. Lower Hardware Pedestal (Matte Slate Unit)
-    const pedGeo = new THREE.BoxGeometry(baseW * 1.04, 1.2, baseD * 1.04);
+    const pedGeo = new THREE.BoxGeometry(baseW * 1.05, 1.4, baseD * 1.05);
     const pedMat = new THREE.MeshStandardMaterial({
-      color: 0xf1f5f9,
-      metalness: 0.1,
-      roughness: 0.3
+      color: 0x090d16,
+      metalness: 0.3,
+      roughness: 0.4
     });
     const pedestal = new THREE.Mesh(pedGeo, pedMat);
-    pedestal.position.y = -baseH / 2 - 0.6;
+    pedestal.position.y = -baseH / 2 - 0.7;
     group.add(pedestal);
 
-    // 2. High-Tech White Porcelain Chassis Body
+    // 2. High-Tech Obsidian Slate Chassis Body (Maximum Tangible Contrast)
     const boxGeo = new THREE.BoxGeometry(baseW, baseH, baseD);
     const boxMat = new THREE.MeshStandardMaterial({
-      color: 0xffffff,
-      roughness: 0.18,
-      metalness: 0.1,
+      color: 0x111827, // Rich Obsidian Slate
+      roughness: 0.28,
+      metalness: 0.35,
       emissive: domainColor,
-      emissiveIntensity: 0.15
+      emissiveIntensity: 0.22
     });
     const mesh = new THREE.Mesh(boxGeo, boxMat);
     mesh.castShadow = true;
@@ -485,33 +487,47 @@ class DatabaseVisualizer {
     mesh.userData = { tableName: table.name };
     group.add(mesh);
 
-    // 3. Crisp Edge Lines (Color Coded to Domain)
+    // 3. Thick Glowing Bevel Edge Lines (Color Coded to Domain)
     const edgesGeo = new THREE.EdgesGeometry(boxGeo);
     const edgesMat = new THREE.LineBasicMaterial({
       color: domainColor,
-      linewidth: 2.0,
+      linewidth: 3.0,
       transparent: true,
-      opacity: 0.85
+      opacity: 0.95
     });
     const edgeLines = new THREE.LineSegments(edgesGeo, edgesMat);
     group.add(edgeLines);
 
-    // 4. Subtle Top Accent Bar
-    const topBarGeo = new THREE.PlaneGeometry(baseW * 0.92, 1.0);
+    // 4. Luminous Top Accent Bar
+    const topBarGeo = new THREE.PlaneGeometry(baseW * 0.92, 1.8);
     const topBarMat = new THREE.MeshBasicMaterial({
       color: domainColor,
       transparent: true,
-      opacity: 0.9,
+      opacity: 0.95,
       side: THREE.DoubleSide
     });
     const topBar = new THREE.Mesh(topBarGeo, topBarMat);
     topBar.rotation.x = -Math.PI / 2;
-    topBar.position.set(0, baseH / 2 + 0.05, -baseD * 0.38);
+    topBar.position.set(0, baseH / 2 + 0.08, -baseD * 0.36);
     group.add(topBar);
 
-    // 5. Billboard Label (High-Contrast Floating Dark Slate Capsule)
+    // 5. Contact Drop-Shadow Disc Under Node on Floor Plinth
+    const shadowGeo = new THREE.CircleGeometry(baseW * 0.75, 32);
+    const shadowMat = new THREE.MeshBasicMaterial({
+      color: 0x0f172a,
+      transparent: true,
+      opacity: 0.25,
+      side: THREE.DoubleSide
+    });
+    const shadowMesh = new THREE.Mesh(shadowGeo, shadowMat);
+    shadowMesh.rotation.x = -Math.PI / 2;
+    shadowMesh.position.set(0, -position.y - 13.84, 0);
+    group.add(shadowMesh);
+
+    // 6. Prominent, Razor-Sharp Billboard Header Plate
     const labelSprite = this.createCanvasLabel(table.name, count, hexColor);
-    labelSprite.position.set(0, baseH / 2 + 6.8, 0);
+    labelSprite.position.set(0, baseH / 2 + 5.2, 0);
+    labelSprite.scale.set(baseW * 1.35, 12.0, 1);
     group.add(labelSprite);
 
     const nodeObj = {
@@ -538,8 +554,8 @@ class DatabaseVisualizer {
 
   createCanvasLabel(tableName, recordCount, accentColor) {
     const canvas = document.createElement('canvas');
-    canvas.width = 540;
-    canvas.height = 144;
+    canvas.width = 640;
+    canvas.height = 160;
     const ctx = canvas.getContext('2d');
 
     this.drawLabelCanvas(ctx, tableName, recordCount, accentColor);
@@ -551,28 +567,27 @@ class DatabaseVisualizer {
     const spriteMat = new THREE.SpriteMaterial({
       map: texture,
       transparent: true,
-      depthTest: false,
+      depthTest: true,
       depthWrite: false
     });
     const sprite = new THREE.Sprite(spriteMat);
-    sprite.scale.set(30, 8.0, 1);
     sprite.userData = { canvas, ctx, texture };
 
     return sprite;
   }
 
   drawLabelCanvas(ctx, tableName, recordCount, accentColor) {
-    ctx.clearRect(0, 0, 540, 144);
+    ctx.clearRect(0, 0, 640, 160);
 
     const color = accentColor || '#0071e3';
 
     // 1. High-Contrast Floating Dark Slate Capsule
-    ctx.fillStyle = '#0f172a';
+    ctx.fillStyle = '#0b0f19';
     ctx.strokeStyle = color;
-    ctx.lineWidth = 3.5;
+    ctx.lineWidth = 4.5;
 
     // Rounded rectangle
-    const x = 10, y = 10, w = 520, h = 124, r = 20;
+    const x = 12, y = 12, w = 616, h = 136, r = 24;
     ctx.beginPath();
     ctx.moveTo(x + r, y);
     ctx.lineTo(x + w - r, y);
@@ -587,29 +602,29 @@ class DatabaseVisualizer {
     ctx.fill();
     ctx.stroke();
 
-    // 2. Subtle Accent Status Dot
+    // 2. Glowing Accent Status Dot
     ctx.fillStyle = color;
     ctx.beginPath();
-    ctx.arc(44, 72, 7, 0, Math.PI * 2);
+    ctx.arc(52, 80, 9, 0, Math.PI * 2);
     ctx.fill();
 
     // 3. Table Name (Crisp White Bold Typography)
     ctx.fillStyle = '#ffffff';
-    ctx.font = '700 34px -apple-system, BlinkMacSystemFont, "Inter", sans-serif';
+    ctx.font = '800 38px -apple-system, BlinkMacSystemFont, "Inter", sans-serif';
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
-    ctx.fillText(tableName.toUpperCase(), 68, 72);
+    ctx.fillText(tableName.toUpperCase(), 78, 80);
 
-    // 4. Compact Row Count Pill on Right
+    // 4. Prominent Row Count Pill on Right
     ctx.fillStyle = '#1e293b';
     ctx.beginPath();
-    ctx.roundRect ? ctx.roundRect(380, 48, 134, 48, 12) : ctx.rect(380, 48, 134, 48);
+    ctx.roundRect ? ctx.roundRect(440, 50, 160, 60, 16) : ctx.rect(440, 50, 160, 60);
     ctx.fill();
 
-    ctx.fillStyle = '#94a3b8';
-    ctx.font = '600 21px "Inter", "SF Mono", monospace';
+    ctx.fillStyle = color;
+    ctx.font = '700 24px "Inter", "SF Mono", monospace';
     ctx.textAlign = 'center';
-    ctx.fillText(`${recordCount} rows`, 447, 72);
+    ctx.fillText(`${recordCount} ROWS`, 520, 80);
   }
 
   updateNodeLabel(node) {
@@ -621,9 +636,9 @@ class DatabaseVisualizer {
 
   updateNodeGeometryScale(node) {
     const count = node.recordCount || 0;
-    const newW = 19 + Math.log2(count + 1) * 2.8;
-    const newH = 6.0 + Math.log2(count + 1) * 1.4;
-    const newD = 16 + Math.log2(count + 1) * 2.4;
+    const newW = 26 + Math.log2(count + 1) * 3.2;
+    const newH = 8.5 + Math.log2(count + 1) * 1.6;
+    const newD = 20 + Math.log2(count + 1) * 2.8;
 
     const scaleX = newW / node.baseDims.w;
     const scaleY = newH / node.baseDims.h;
@@ -674,19 +689,19 @@ class DatabaseVisualizer {
     const points = curve.getPoints(28);
     const geometry = new THREE.BufferGeometry().setFromPoints(points);
 
-    // Elegant thin link line
+    // Vibrant conduit line
     const material = new THREE.LineBasicMaterial({
       color: 0x0071e3,
-      linewidth: 1.6,
+      linewidth: 2.4,
       transparent: true,
-      opacity: 0.65
+      opacity: 0.85
     });
 
     const curveLine = new THREE.Line(geometry, material);
 
-    // Single subtle traveling data packet
-    const pulseMat = new THREE.MeshBasicMaterial({ color: 0x0071e3, transparent: true, opacity: 0.85 });
-    const pulseGeo = new THREE.SphereGeometry(0.9, 8, 8);
+    // Glowing traveling data packet
+    const pulseMat = new THREE.MeshBasicMaterial({ color: 0x0071e3 });
+    const pulseGeo = new THREE.SphereGeometry(1.4, 10, 10);
     const pulseDot = new THREE.Mesh(pulseGeo, pulseMat);
     this.graphGroup.add(pulseDot);
 
@@ -717,14 +732,14 @@ class DatabaseVisualizer {
       const isMatch = clusterName === 'all' || (activeSet && activeSet.has(node.name));
       if (isMatch) {
         node.boxMat.opacity = 1.0;
-        node.boxMat.emissiveIntensity = 0.15;
-        node.edgeMat.opacity = 0.85;
+        node.boxMat.emissiveIntensity = 0.22;
+        node.edgeMat.opacity = 0.95;
         node.labelSprite.material.opacity = 1.0;
       } else {
-        node.boxMat.opacity = 0.2;
-        node.boxMat.emissiveIntensity = 0.02;
-        node.edgeMat.opacity = 0.15;
-        node.labelSprite.material.opacity = 0.2;
+        node.boxMat.opacity = 0.25;
+        node.boxMat.emissiveIntensity = 0.04;
+        node.edgeMat.opacity = 0.2;
+        node.labelSprite.material.opacity = 0.25;
       }
     });
 
@@ -732,10 +747,10 @@ class DatabaseVisualizer {
       const srcMatch = clusterName === 'all' || (activeSet && activeSet.has(l.source));
       const tgtMatch = clusterName === 'all' || (activeSet && activeSet.has(l.target));
       if (srcMatch && tgtMatch) {
-        l.material.opacity = 0.65;
+        l.material.opacity = 0.85;
         l.pulseDot.visible = true;
       } else {
-        l.material.opacity = 0.08;
+        l.material.opacity = 0.12;
         l.pulseDot.visible = false;
       }
     });
@@ -756,9 +771,9 @@ class DatabaseVisualizer {
     const radius = Math.max(sphere.radius, 55);
 
     const fov = this.camera.fov * (Math.PI / 180);
-    const dist = (radius / Math.sin(fov / 2)) * 0.62;
+    const dist = (radius / Math.sin(fov / 2)) * 0.46;
 
-    const targetPos = new THREE.Vector3(center.x, center.y + dist * 0.52, center.z + dist * 0.82);
+    const targetPos = new THREE.Vector3(center.x, center.y + dist * 0.44, center.z + dist * 0.74);
     this.smoothGlideCamera(targetPos, center);
   }
 
@@ -861,15 +876,22 @@ class DatabaseVisualizer {
     }
   }
 
-  selectNode(node) {
-    if (!node) {
+  selectNode(nodeOrName) {
+    let node = nodeOrName;
+    if (typeof nodeOrName === 'string') {
+      node = this.nodes.get(nodeOrName.toLowerCase()) || this.nodes.get(nodeOrName);
+    }
+
+    if (!node || !node.group) {
       this.deselect();
       return;
     }
 
     // Reset old selected node position
     if (this.selectedNode && this.selectedNode !== node) {
-      this.selectedNode.group.position.y = this.selectedNode.baseY;
+      if (this.selectedNode.group) {
+        this.selectedNode.group.position.y = this.selectedNode.baseY;
+      }
     }
 
     this.selectedNode = node;
@@ -909,12 +931,13 @@ class DatabaseVisualizer {
     });
 
     // Smooth photographic camera glide towards target
+    const nodePos = node.position || node.group.position;
     const targetPos = new THREE.Vector3(
-      node.position.x,
-      node.position.y + 32,
-      node.position.z + 54
+      nodePos.x,
+      nodePos.y + 26,
+      nodePos.z + 46
     );
-    this.smoothGlideCamera(targetPos, node.position);
+    this.smoothGlideCamera(targetPos, nodePos);
 
     // Prepare enriched node data
     const nodePayload = Object.assign({}, node.data, {
@@ -929,7 +952,7 @@ class DatabaseVisualizer {
   }
 
   deselect() {
-    if (this.selectedNode) {
+    if (this.selectedNode && this.selectedNode.group) {
       this.selectedNode.group.position.y = this.selectedNode.baseY;
       this.selectedNode = null;
     }
