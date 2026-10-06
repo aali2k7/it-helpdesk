@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Presentation-I: Problem Description - IT Helpdesk Management System</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  @page {
+    size: 16in 9in;
+    margin: 0;
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #f8fafc;
+    color: #0f172a;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .slide {
+    width: 16in;
+    height: 9in;
+    padding: 0.8in 1in 0.6in 1in;
+    position: relative;
+    page-break-after: always;
+    display: flex;
+    flex-direction: column;
+    background: #f8fafc;
+    overflow: hidden;
+  }
+
+  .slide-header {
+    margin-bottom: 0.4in;
+  }
+
+  .eyebrow {
+    font-size: 0.16in;
+    font-weight: 700;
+    color: #2563eb;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.06in;
+    display: flex;
+    align-items: center;
+    gap: 0.08in;
+  }
+
+  .eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 0.18in;
+    height: 0.04in;
+    background: #2563eb;
+    border-radius: 2px;
+  }
+
+  .slide-title {
+    font-size: 0.38in;
+    font-weight: 800;
+    color: #0f172a;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+  }
+
+  .cards-grid {
+    display: grid;
+    gap: 0.35in;
+    flex: 1;
+    margin-bottom: 0.4in;
+  }
+
+  .grid-2 { grid-template-columns: 1fr 1fr; }
+  .grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+  .card {
+    background: #ffffff;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 0.18in;
+    padding: 0.35in;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .card-header {
+    font-size: 0.13in;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 0.08in;
+  }
+
+  .badge-blue { color: #2563eb; }
+  .badge-amber { color: #d97706; }
+  .badge-emerald { color: #059669; }
+  .badge-purple { color: #7c3aed; }
+  .badge-muted { color: #64748b; }
+
+  .card-title {
+    font-size: 0.24in;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 0.18in;
+    line-height: 1.25;
+  }
+
+  .bullet-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.14in;
+    flex: 1;
+  }
+
+  .bullet-list li {
+    font-size: 0.165in;
+    line-height: 1.45;
+    color: #334155;
+    position: relative;
+    padding-left: 0.26in;
+  }
+
+  .bullet-list li::before {
+    content: '•';
+    position: absolute;
+    left: 0.05in;
+    top: -0.02in;
+    color: #2563eb;
+    font-size: 0.26in;
+  }
+
+  .slide-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #e2e8f0;
+    padding-top: 0.12in;
+    font-size: 0.13in;
+    color: #64748b;
+  }
+
+  /* Title Slide Specific */
+  .title-container {
+    background: #ffffff;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 0.22in;
+    padding: 0.65in 0.8in;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.04);
+  }
+
+  .title-eyebrow {
+    font-size: 0.15in;
+    font-weight: 700;
+    color: #2563eb;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.12in;
+  }
+
+  .main-title {
+    font-size: 0.52in;
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1.1;
+    letter-spacing: -0.025em;
+    margin-bottom: 0.16in;
+  }
+
+  .main-subtitle {
+    font-size: 0.22in;
+    font-weight: 500;
+    color: #475569;
+    max-width: 10in;
+    line-height: 1.35;
+  }
+
+  .meta-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.4in;
+    margin-top: 0.4in;
+  }
+
+  .meta-box {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.14in;
+    padding: 0.25in 0.3in;
+  }
+
+  .meta-box.highlight {
+    background: #eff6ff;
+    border-color: #bfdbfe;
+  }
+
+  .meta-label {
+    font-size: 0.12in;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #2563eb;
+    margin-bottom: 0.06in;
+  }
+
+  .meta-name {
+    font-size: 0.24in;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 0.04in;
+  }
+
+  .meta-sub {
+    font-size: 0.15in;
+    color: #475569;
+    line-height: 1.35;
+  }
+</style>
+</head>
+<body>
+
+<!-- SLIDE 1: Title Slide -->
+<div class="slide">
+  <div class="title-container">
+    <div>
+      <div class="title-eyebrow">Database Management Systems (DBMS) Course Project</div>
+      <h1 class="main-title">IT Helpdesk &amp; Asset Support<br>Management System</h1>
+      <p class="main-subtitle">Presentation-I: Problem Description, Domain Context, Objectives &amp; Scope Specification</p>
+    </div>
+
+    <div class="meta-grid">
+      <div class="meta-box highlight">
+        <div class="meta-label">Presented By</div>
+        <div class="meta-name">Md Aali Rahman</div>
+        <div class="meta-sub">
+          Roll Number: <strong>25WU0102156</strong><br>
+          Section: AIML Panthers | Academic Year: 2026<br>
+          Woxsen University, School of Technology
+        </div>
+      </div>
+
+      <div class="meta-box">
+        <div class="meta-label">Academic Guidance</div>
+        <div class="meta-name">Dr. Kiranmayee Adavala</div>
+        <div class="meta-sub">
+          Faculty Guide | School of Technology<br>
+          Course: Database Management Systems<br>
+          Relational Engine: MySQL 8.0+ / 9.x (InnoDB)
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span>Woxsen University • School of Technology</span>
+    <span>Slide 1 of 10</span>
+  </div>
+</div>
+
+<!-- SLIDE 2: Industry Background -->
+<div class="slide">
+  <div class="slide-header">
+    <div class="eyebrow">Industry Background</div>
+    <div class="slide-title">IT Service Operations &amp; Existing Operational Bottlenecks</div>
+  </div>
+  <div class="cards-grid grid-2">
+    <div class="card">
+      <div class="card-header badge-blue">Enterprise Context</div>
+      <div class="card-title">Modern IT Infrastructure</div>
+      <ul class="bullet-list">
+        <li>Educational institutions and enterprises deploy hundreds of diverse computing assets (workstations, laptops, network switches, peripherals).</li>
+        <li>Continuous IT support requests are raised daily by faculty, administrative personnel, researchers, and students.</li>
+        <li>Operations require coordination between multi-tiered support staff, hardware inventory, and manufacturer warranties.</li>
+        <li>Seamless service delivery directly underpins institutional productivity and technical teaching workflows.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-header badge-amber">Current Deficiencies</div>
+      <div class="card-title">Fragmented Management</div>
+      <ul class="bullet-list">
+        <li>Widespread reliance on unstructured emails, spreadsheets, and informal communication channels.</li>
+        <li>Tickets are frequently lost, delayed, or untracked across busy technical shifts.</li>
+        <li>Lack of clear technician assignment leads to duplicate efforts or unattended high-priority outages.</li>
+        <li>Hardware movements occur without updating user ownership or tracking warranty expiries.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span>IT Helpdesk &amp; Asset Support Management System</span>
+    <span>Slide 2 of 10</span>
+  </div>
+</div>
+
+<!-- SLIDE 3: Problem Statement -->
+<div class="slide">
+  <div class="slide-header">
+    <div class="eyebrow">Core Problem</div>
+    <div class="slide-title">Formal Problem Statement &amp; Academic Motivation</div>
+  </div>
+  <div class="cards-grid grid-2">
+    <div class="card">
+      <div class="card-header badge-blue">Problem Formulation</div>
+      <div class="card-title">The Relational Challenge</div>
+      <ul class="bullet-list">
+        <li>The absence of a centralized, normalized relational database for IT service operations causes severe data redundancy, inconsistent state lifecycles, and untracked repair costs.</li>
+        <li>Manual spreadsheets lack ACID compliance, fail to enforce foreign key referential integrity, and provide zero immutable audit trails for ticket status changes.</li>
+        <li>There is no structured differentiation between unplanned incident disruptions and routine service requests.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-header badge-amber">Adverse Consequences</div>
+      <div class="card-title">Institutional Impact</div>
+      <ul class="bullet-list">
+        <li>Prolonged Mean Time to Resolution (MTTR) due to lost ticket historical context.</li>
+        <li>Financial leakage from paying out-of-pocket for equipment repairs that are covered under valid manufacturer warranties.</li>
+        <li>Zero visibility into department-wise IT resource consumption and technician workloads.</li>
+        <li>Compromised audit compliance and operational accountability across technical shifts.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span>IT Helpdesk &amp; Asset Support Management System</span>
+    <span>Slide 3 of 10</span>
+  </div>
+</div>
+
+<!-- SLIDE 4: Proposed Solution -->
+<div class="slide">
+  <div class="slide-header">
+    <div class="eyebrow">Proposed Solution</div>
+    <div class="slide-title">Centralized MySQL IT Helpdesk &amp; Asset Support System</div>
+  </div>
+  <div class="cards-grid grid-2">
+    <div class="card">
+      <div class="card-header badge-emerald">Relational Centralization</div>
+      <div class="card-title">Unified Relational Model</div>
+      <ul class="bullet-list">
+        <li>Engineered with a 14-table Third Normal Form (3NF) relational database in MySQL 8.0+ / 9.x.</li>
+        <li>Enforces strict referential integrity with ON DELETE RESTRICT, CASCADE, and SET NULL constraints.</li>
+        <li>Eliminates data redundancy across departments, users, assets, categories, and technicians.</li>
+        <li>Guarantees ACID transactions for all status updates and asset reassignments.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-header badge-blue">Architectural Pillars</div>
+      <div class="card-title">Key Functional Subsystems</div>
+      <ul class="bullet-list">
+        <li><strong>Decoupled Ticketing:</strong> Clear subtype classification into Incidents (outages) vs Service Requests (provisioning).</li>
+        <li><strong>Hardware Lifecycle &amp; Warranty:</strong> Asset tagging, serial number tracking, and repair expenditure accounting.</li>
+        <li><strong>Immutable Status Audit Trail:</strong> Automatic timestamped tracking of all ticket status progressions.</li>
+        <li><strong>Multi-tier Access:</strong> Both terminal CLI and responsive modern web interface connected to MySQL.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span>IT Helpdesk &amp; Asset Support Management System</span>
+    <span>Slide 4 of 10</span>
+  </div>
+</div>
+
+<!-- SLIDE 5: Objectives -->
+<div class="slide">
+  <div class="slide-header">
+    <div class="eyebrow">Project Goals</div>
+    <div class="slide-title">Project SMART Objectives</div>
+  </div>
+  <div class="cards-grid grid-3">
+    <div class="card">
+      <div class="card-header badge-blue">Ticketing &amp; Queues</div>
+      <div class="card-title">Centralize Support</div>
+      <ul class="bullet-list">
+        <li>Standardize ticket logging across 5 severity levels and 5 operational categories.</li>
+        <li>Provide clear ownership and tracking from initial filing to verified resolution.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-header badge-emerald">Lifecycle Auditing</div>
+      <div class="card-title">Immutable Audit Logs</div>
+      <ul class="bullet-list">
+        <li>Maintain a full chronological status history for every ticket (Open &rarr; In Progress &rarr; Resolved &rarr; Closed).</li>
+        <li>Record transition timestamps and previous states for accountability.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-header badge-amber">Assets &amp; Integrity</div>
+      <div class="card-title">Hardware Governance</div>
+      <ul class="bullet-list">
+        <li>Link physical assets with users, warranty validity, and repair expenditures.</li>
+        <li>Enforce strict relational constraints (PK, FK, UNIQUE, CHECK) across all 14 tables.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span>IT Helpdesk &amp; Asset Support Management System</span>
+    <span>Slide 5 of 10</span>
+  </div>
+</div>
+
+<!-- SLIDE 6: Scope -->
+<div class="slide">
+  <div class="slide-header">
+    <div class="eyebrow">Boundary Definition</div>
+    <div class="slide-title">System Scope &amp; Operational Boundaries</div>
+  </div>
+  <div class="cards-grid grid-2">
+    <div class="card">
+      <div class="card-header badge-emerald">In-Scope Modules</div>
+      <div class="card-title">Core System Scope</div>
+      <ul class="bullet-list">
+        <li>Master department and user records with verified institutional emails.</li>
+        <li>Ticket lifecycle management: categorization, prioritization, assignment.</li>
+        <li>Specialized subtype tracking for Incidents vs Service Requests.</li>
+        <li>Asset inventory with unique asset tags, serial numbers, and warranty contracts.</li>
+        <li>Maintenance expense tracking and total cost calculation per department.</li>
+        <li>Relational reporting: JOIN queries, aggregate workloads, audit timelines.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-header badge-muted">Explicit Exclusions</div>
+      <div class="card-title">Operational Boundaries</div>
+      <ul class="bullet-list">
+        <li>Commercial payment gateway processing (maintenance costs are accounting logs).</li>
+        <li>Automated machine learning ticket auto-triage (reserved for future work).</li>
+        <li>Direct hardware telemetric scanning or IoT board firmware flashing.</li>
+        <li>Public open internet self-registration (user directory is managed by IT admin).</li>
+      </ul>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span>IT Helpdesk &amp; Asset Support Management System</span>
+    <span>Slide 6 of 10</span>
+  </div>
+</div>
+
+<!-- SLIDE 7: Users & Stakeholders -->
+<div class="slide">
+  <div class="slide-header">
+    <div class="eyebrow">Stakeholder Analysis</div>
+    <div class="slide-title">System Users, Roles &amp; Responsibilities</div>
+  </div>
+  <div class="cards-grid grid-3">
+    <div class="card">
+      <div class="card-header badge-blue">Role 1</div>
+      <div class="card-title">End-Users</div>
+      <ul class="bullet-list">
+        <li>Employees, faculty members, and students.</li>
+        <li>Raise new support tickets with title, description, category, and priority.</li>
+        <li>Classify request as an Incident or Service Request.</li>
+        <li>Track real-time resolution progress and view allocated hardware assets.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-header badge-emerald">Role 2</div>
+      <div class="card-title">Support Technicians</div>
+      <ul class="bullet-list">
+        <li>IT engineers categorized by technical specialization.</li>
+        <li>Accept assigned tickets and update status to In Progress.</li>
+        <li>Investigate faults and record official resolution narratives.</li>
+        <li>Inspect asset maintenance history and warranty coverage.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-header badge-amber">Role 3</div>
+      <div class="card-title">Helpdesk Managers</div>
+      <ul class="bullet-list">
+        <li>IT administrators and systems leads.</li>
+        <li>Monitor queue metrics, active tickets, and technician workloads.</li>
+        <li>Register new hardware assets, warranty contracts, and vendors.</li>
+        <li>Log maintenance repair invoices and generate cost reports.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span>IT Helpdesk &amp; Asset Support Management System</span>
+    <span>Slide 7 of 10</span>
+  </div>
+</div>
+
+<!-- SLIDE 8: Functional Requirements -->
+<div class="slide">
+  <div class="slide-header">
+    <div class="eyebrow">Requirements Engineering</div>
+    <div class="slide-title">Major Functional Requirements (FR1 &ndash; FR7)</div>
+  </div>
+  <div class="cards-grid grid-3">
+    <div class="card">
+      <div class="card-header badge-blue">Ticketing Flow</div>
+      <div class="card-title">FR1 &ndash; FR3</div>
+      <ul class="bullet-list">
+        <li><strong>FR1 (Ticket Creation):</strong> Users create tickets with unique ticket_no, category, priority, and subtype.</li>
+        <li><strong>FR2 (Assignment):</strong> Administrators assign pending tickets to specialized support staff.</li>
+        <li><strong>FR3 (Status Lifecycle):</strong> System logs every state change into status_histories with old/new states.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-header badge-emerald">Resolution &amp; Assets</div>
+      <div class="card-title">FR4 &ndash; FR5</div>
+      <ul class="bullet-list">
+        <li><strong>FR4 (Resolution):</strong> Technicians record resolution descriptions and timestamps with unique 1:1 enforcement.</li>
+        <li><strong>FR5 (Asset Tracking):</strong> Hardware assets cataloged with unique asset_tag, serial_no, custodian user, and warranty.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-header badge-amber">Maintenance &amp; SQL</div>
+      <div class="card-title">FR6 &ndash; FR7</div>
+      <ul class="bullet-list">
+        <li><strong>FR6 (Maintenance Logging):</strong> Record asset repair dates, descriptions, and expenses with check constraints.</li>
+        <li><strong>FR7 (Relational Reporting):</strong> Provide multi-table JOINs, workload summaries, and audit trail extractions.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span>IT Helpdesk &amp; Asset Support Management System</span>
+    <span>Slide 8 of 10</span>
+  </div>
+</div>
+
+<!-- SLIDE 9: Expected Benefits -->
+<div class="slide">
+  <div class="slide-header">
+    <div class="eyebrow">Value Proposition</div>
+    <div class="slide-title">Expected Operational Benefits &amp; Impact</div>
+  </div>
+  <div class="cards-grid grid-2">
+    <div class="card">
+      <div class="card-header badge-blue">Operational Efficiency</div>
+      <div class="card-title">Streamlined Workflows</div>
+      <ul class="bullet-list">
+        <li><strong>Faster Turnaround:</strong> Eliminates lost tickets and clarifies technician ownership through automated queues.</li>
+        <li><strong>Automated Accountability:</strong> Complete audit trails deter bottlenecks and track resolution performance.</li>
+        <li><strong>Reduced Redundant Inquiries:</strong> Structured search and categorization prevent duplicate ticket filings.</li>
+        <li><strong>Data Integrity:</strong> Foreign key cascades eliminate orphan records when tickets or assets are modified.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-header badge-emerald">Resource Optimization</div>
+      <div class="card-title">Hardware &amp; Financial Governance</div>
+      <ul class="bullet-list">
+        <li><strong>Zero Lost Equipment:</strong> Accurate asset-to-user mappings prevent misplaced or unreturned laptops.</li>
+        <li><strong>Warranty Protection:</strong> Immediate visibility into vendor warranty dates prevents paying for covered repairs.</li>
+        <li><strong>Budget Forecasting:</strong> Departmental maintenance reports highlight recurring equipment failures.</li>
+        <li><strong>Informed Procurement:</strong> Historical failure logs guide future enterprise hardware purchases.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span>IT Helpdesk &amp; Asset Support Management System</span>
+    <span>Slide 9 of 10</span>
+  </div>
+</div>
+
+<!-- SLIDE 10: Conclusion & Next Steps -->
+<div class="slide">
+  <div class="slide-header">
+    <div class="eyebrow">Review 1 Summary</div>
+    <div class="slide-title">Conclusion &amp; Academic Road Map</div>
+  </div>
+  <div class="cards-grid grid-2">
+    <div class="card">
+      <div class="card-header badge-emerald">Review 1 Accomplishments</div>
+      <div class="card-title">Requirements Baseline</div>
+      <ul class="bullet-list">
+        <li>Comprehensive problem analysis and stakeholder identification completed.</li>
+        <li>Clear boundaries and functional requirements (FR1 &ndash; FR7) established.</li>
+        <li>Conceptual relational entities identified for 14 tables in 3rd Normal Form.</li>
+        <li>Full alignment with DBMS course learning outcomes and project specifications.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-header badge-blue">Subsequent Evaluation Phases</div>
+      <div class="card-title">Presentation-II &amp; III Road Map</div>
+      <ul class="bullet-list">
+        <li><strong>Presentation-II Deliverables:</strong> Complete MySQL DDL schema, 55 relational seed records, ER diagram, and analytical queries.</li>
+        <li><strong>Presentation-III Deliverables:</strong> Live working user interface connected to MySQL demonstrating real-time INSERT, DELETE, and VIEW operations.</li>
+        <li><strong>Final Project Report:</strong> Comprehensive 16-chapter academic documentation.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span>IT Helpdesk &amp; Asset Support Management System</span>
+    <span>Slide 10 of 10</span>
+  </div>
+</div>
+
+</body>
+</html>

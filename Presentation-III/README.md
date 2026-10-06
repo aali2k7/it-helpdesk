@@ -14,6 +14,13 @@
 
 ## 1. Executive Summary & Deliverables
 
+This folder contains the final UI demonstration materials, source code and screenshots:
+
+- **Presentation Slides (Editable PPTX):** [`Presentation-III.pptx`](Presentation-III.pptx)
+- **Presentation Slides (Academic PDF):** [`Presentation-III.pdf`](Presentation-III.pdf)
+- **Standalone Source Bundle:** [`source/`](source/)
+- **Live UI Screen Captures:** [`screenshots/`](screenshots/)
+
 Presentation-III requires demonstrating a fully working user interface connected to the live MySQL database (`it_helpdesk`), supporting:
 1. **Live MySQL Connection:** Real-time database health check and dynamic status indicators.
 2. **VIEW Operations:** Multi-table relational queries displaying tickets, users, assets, incidents, service requests, and maintenance logs.
@@ -28,6 +35,8 @@ Presentation-III requires demonstrating a fully working user interface connected
 ```text
 Presentation-III/
 ├── README.md               # Presentation-III documentation & demonstration guide
+├── Presentation-III.pptx    # Editable 16:9 presentation deck
+├── Presentation-III.pdf     # Academic presentation PDF with embedded UI captures
 ├── presentation.md         # 12-slide structured evaluation presentation outline
 ├── source/                 # Standalone copy of application source code
 │   ├── app.py              # Flask Web Backend & REST API

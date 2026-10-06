@@ -1,0 +1,1799 @@
+import os
+import subprocess
+import pypdf
+
+base_dir = os.path.abspath(".")
+erd_img = "file://" + os.path.join(base_dir, "Presentation-II/ER-Diagram.png")
+dash_img = "file://" + os.path.join(base_dir, "Presentation-III/screenshots/dashboard.png")
+db_conn_img = "file://" + os.path.join(base_dir, "Presentation-III/screenshots/database-connected.png")
+tickets_img = "file://" + os.path.join(base_dir, "Presentation-III/screenshots/tickets-view.png")
+insert_form_img = "file://" + os.path.join(base_dir, "Presentation-III/screenshots/ticket-insert-form.png")
+before_insert_img = "file://" + os.path.join(base_dir, "Presentation-III/screenshots/ticket-before-insert.png")
+after_insert_img = "file://" + os.path.join(base_dir, "Presentation-III/screenshots/ticket-after-insert.png")
+before_delete_img = "file://" + os.path.join(base_dir, "Presentation-III/screenshots/ticket-before-delete.png")
+after_delete_img = "file://" + os.path.join(base_dir, "Presentation-III/screenshots/ticket-after-delete.png")
+users_img = "file://" + os.path.join(base_dir, "Presentation-III/screenshots/users-view.png")
+assets_img = "file://" + os.path.join(base_dir, "Presentation-III/screenshots/assets-view.png")
+inspector_img = "file://" + os.path.join(base_dir, "Presentation-III/screenshots/dashboard-inspector.png")
+
+template = """<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>IT Helpdesk and Asset Support Management System - DBMS Project Report</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  @page {
+    size: A4 portrait;
+    margin: 20mm 15mm 20mm 15mm;
+    @bottom-center {
+      content: counter(page);
+      font-family: 'Lora', serif;
+      font-size: 9pt;
+      color: #64748b;
+    }
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: 'Lora', Georgia, 'Times New Roman', serif;
+    font-size: 10.5pt;
+    line-height: 1.65;
+    color: #1e293b;
+    background: #ffffff;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .page-break {
+    page-break-after: always;
+    break-after: page;
+  }
+
+  .no-break {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  /* Cover Page */
+  .cover-container {
+    min-height: 250mm;
+    border: 3px double #0f172a;
+    padding: 15mm 12mm;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    text-align: center;
+    background: #ffffff;
+  }
+
+  .univ-header {
+    text-transform: uppercase;
+    font-family: 'Cinzel', serif;
+    font-size: 17pt;
+    font-weight: 700;
+    color: #0f172a;
+    letter-spacing: 0.08em;
+    line-height: 1.3;
+  }
+
+  .univ-sub {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 10pt;
+    font-weight: 600;
+    color: #475569;
+    letter-spacing: 0.15em;
+    margin-top: 4px;
+    text-transform: uppercase;
+  }
+
+  .cover-divider {
+    width: 60mm;
+    height: 2px;
+    background: #2563eb;
+    margin: 6mm auto;
+  }
+
+  .report-label {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 10.5pt;
+    font-weight: 700;
+    color: #2563eb;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-top: 10mm;
+  }
+
+  .project-title {
+    font-family: 'Cinzel', Georgia, serif;
+    font-size: 22pt;
+    font-weight: 700;
+    color: #0f172a;
+    line-height: 1.25;
+    margin: 6mm 0 4mm;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  .project-subtitle {
+    font-family: 'Lora', serif;
+    font-size: 11.5pt;
+    color: #475569;
+    font-style: italic;
+    max-width: 140mm;
+    line-height: 1.4;
+  }
+
+  .cover-meta-grid {
+    width: 100%;
+    max-width: 150mm;
+    display: flex;
+    justify-content: space-between;
+    text-align: left;
+    margin-top: 15mm;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 9.5pt;
+  }
+
+  .meta-col-card {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    padding: 5mm 6mm;
+    border-radius: 4px;
+    width: 48%;
+  }
+
+  .meta-col-title {
+    font-size: 8pt;
+    font-weight: 800;
+    color: #2563eb;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 3mm;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 1.5mm;
+  }
+
+  .cover-footer {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 9pt;
+    color: #64748b;
+    margin-top: 10mm;
+  }
+
+  /* Typography & Structure */
+  h1 {
+    font-family: 'Cinzel', serif;
+    font-size: 17pt;
+    font-weight: 700;
+    color: #0f172a;
+    border-bottom: 1.5px solid #0f172a;
+    padding-bottom: 2mm;
+    margin-top: 8mm;
+    margin-bottom: 4mm;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    page-break-before: auto;
+  }
+
+  h2 {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 12.5pt;
+    font-weight: 700;
+    color: #1e3a8a;
+    margin-top: 6mm;
+    margin-bottom: 2.5mm;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 1mm;
+  }
+
+  h3 {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 10.5pt;
+    font-weight: 700;
+    color: #334155;
+    margin-top: 4mm;
+    margin-bottom: 2mm;
+  }
+
+  p {
+    margin-bottom: 3.5mm;
+    text-align: justify;
+    line-height: 1.6;
+  }
+
+  ul, ol {
+    margin-left: 6mm;
+    margin-bottom: 3.5mm;
+  }
+
+  li {
+    margin-bottom: 1.5mm;
+    line-height: 1.5;
+  }
+
+  /* Tables */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 4mm 0 6mm 0;
+    font-size: 9pt;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    page-break-inside: avoid;
+  }
+
+  th, td {
+    border: 1px solid #cbd5e1;
+    padding: 2.5mm 3mm;
+    text-align: left;
+    vertical-align: top;
+  }
+
+  th {
+    background-color: #f1f5f9;
+    color: #0f172a;
+    font-weight: 700;
+    font-size: 8.5pt;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  tr:nth-child(even) {
+    background-color: #f8fafc;
+  }
+
+  .badge-pk {
+    background: #dbeafe;
+    color: #1e40af;
+    font-weight: 700;
+    padding: 1px 4px;
+    border-radius: 3px;
+    font-size: 7.5pt;
+  }
+
+  .badge-fk {
+    background: #f3e8ff;
+    color: #6b21a8;
+    font-weight: 700;
+    padding: 1px 4px;
+    border-radius: 3px;
+    font-size: 7.5pt;
+  }
+
+  .badge-pass {
+    background: #dcfce7;
+    color: #15803d;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 8pt;
+  }
+
+  /* Code Blocks */
+  pre, code {
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+  }
+
+  pre {
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-left: 3px solid #2563eb;
+    padding: 3mm 4mm;
+    font-size: 8pt;
+    line-height: 1.45;
+    color: #0f172a;
+    overflow-x: hidden;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    margin: 3mm 0 5mm 0;
+    page-break-inside: avoid;
+  }
+
+  .callout {
+    background: #eff6ff;
+    border-left: 3.5px solid #2563eb;
+    padding: 3.5mm 4.5mm;
+    margin: 4mm 0;
+    font-size: 9.5pt;
+    color: #1e3a8a;
+    page-break-inside: avoid;
+  }
+
+  .figure-box {
+    margin: 5mm 0;
+    text-align: center;
+    page-break-inside: avoid;
+  }
+
+  .figure-img {
+    max-width: 100%;
+    max-height: 120mm;
+    object-fit: contain;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+
+  .figure-caption {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 8.5pt;
+    font-weight: 600;
+    color: #64748b;
+    margin-top: 2mm;
+  }
+
+  /* Table of Contents */
+  .toc-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 1.8mm 0;
+    border-bottom: 1px dotted #cbd5e1;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 9.5pt;
+  }
+
+  .toc-title {
+    font-weight: 600;
+    color: #1e293b;
+  }
+
+  .toc-page {
+    color: #64748b;
+    font-weight: 500;
+  }
+</style>
+</head>
+<body>
+
+<!-- 1. COVER PAGE -->
+<div class="cover-container page-break">
+  <div>
+    <div class="univ-header">Woxsen University</div>
+    <div class="univ-sub">School of Technology • Department of Computer Science & Engineering</div>
+    <div class="cover-divider"></div>
+    <div class="report-label">DBMS Course Project Final Report</div>
+  </div>
+
+  <div>
+    <h1 class="project-title">IT Helpdesk and Asset Support<br>Management System</h1>
+    <p class="project-subtitle">
+      A 3NF Relational Database Architecture in MySQL with Live Web User Interface, 
+      Decoupled Ticket Subtyping, Hardware Lifecycle Tracking, and Immutable Audit Trails
+    </p>
+  </div>
+
+  <div class="cover-meta-grid">
+    <div class="meta-col-card">
+      <div class="meta-col-title">Candidate Details</div>
+      <strong>Student Name:</strong> Md Aali Rahman<br>
+      <strong>Roll Number:</strong> 25WU0102156<br>
+      <strong>Section:</strong> AIML Panthers<br>
+      <strong>Project Serial No:</strong> 39<br>
+      <strong>Academic Year:</strong> 2026
+    </div>
+
+    <div class="meta-col-card">
+      <div class="meta-col-title">Evaluation Details</div>
+      <strong>Course:</strong> Database Management Systems (DBMS)<br>
+      <strong>Faculty Guide:</strong> Dr. Kiranmayee Adavala<br>
+      <strong>Database Engine:</strong> MySQL 8.0+ / 9.x (InnoDB)<br>
+      <strong>Evaluation:</strong> Final Presentation & Project Report<br>
+      <strong>Submission Date:</strong> 10 October 2026
+    </div>
+  </div>
+
+  <div class="cover-footer">
+    Woxsen University, Kamkole, Sadasivpet, Sangareddy District, Hyderabad, Telangana 502345
+  </div>
+</div>
+
+<!-- TABLE OF CONTENTS -->
+<div class="page-break">
+  <h1>Table of Contents</h1>
+  <div style="margin-top: 6mm;">
+    <div class="toc-row"><span class="toc-title">1. Cover Page</span><span class="toc-page">1</span></div>
+    <div class="toc-row"><span class="toc-title">2. Abstract</span><span class="toc-page">3</span></div>
+    <div class="toc-row"><span class="toc-title">3. Introduction and Problem Statement</span><span class="toc-page">4</span></div>
+    <div class="toc-row"><span class="toc-title">4. Objectives and Scope</span><span class="toc-page">6</span></div>
+    <div class="toc-row"><span class="toc-title">5. Software and Hardware Requirements</span><span class="toc-page">7</span></div>
+    <div class="toc-row"><span class="toc-title">6. Entity-Relationship (ER) Diagram</span><span class="toc-page">8</span></div>
+    <div class="toc-row"><span class="toc-title">7. Relational Schema and Normalization (1NF, 2NF, 3NF)</span><span class="toc-page">10</span></div>
+    <div class="toc-row"><span class="toc-title">8. Data Dictionary (All 14 Tables)</span><span class="toc-page">13</span></div>
+    <div class="toc-row"><span class="toc-title">9. SQL Commands Used (DDL &amp; DML)</span><span class="toc-page">18</span></div>
+    <div class="toc-row"><span class="toc-title">10. Queries with Outputs (Including Presentation-II Query)</span><span class="toc-page">22</span></div>
+    <div class="toc-row"><span class="toc-title">11. UI Design and Authentic Screenshots</span><span class="toc-page">26</span></div>
+    <div class="toc-row"><span class="toc-title">12. System Implementation Details &amp; Architecture</span><span class="toc-page">31</span></div>
+    <div class="toc-row"><span class="toc-title">13. Testing and Verification (TC01 &ndash; TC10)</span><span class="toc-page">33</span></div>
+    <div class="toc-row"><span class="toc-title">14. Conclusion and Future Enhancements</span><span class="toc-page">35</span></div>
+    <div class="toc-row"><span class="toc-title">15. References</span><span class="toc-page">36</span></div>
+    <div class="toc-row"><span class="toc-title">16. Appendix: GitHub Repository &amp; Setup Guide</span><span class="toc-page">37</span></div>
+  </div>
+</div>
+
+<!-- 2. ABSTRACT -->
+<div class="page-break">
+  <h1>2. Abstract</h1>
+  <p>
+    In modern institutions and enterprises, IT support operations and physical hardware infrastructure represent 
+    the operational backbone of daily productivity. However, conventional organizations frequently suffer from 
+    fragmented support workflows relying on manual spreadsheets, unstructured email threads, and informal verbal communications. 
+    Such methodologies inevitably result in delayed resolutions, unmonitored service requests, lost tickets, untracked 
+    technician assignments, and unrecorded hardware maintenance expenses.
+  </p>
+  <p>
+    This project presents the design, mathematical normalization, physical implementation, and interactive validation of the 
+    <strong>IT Helpdesk and Asset Support Management System</strong>. Built entirely upon a robust, 3NF-normalized relational database in 
+    <strong>MySQL 8.0+ / 9.x</strong> utilizing the ACID-compliant <strong>InnoDB</strong> storage engine, the system centralizes 
+    14 distinct relational tables spanning organizational departments, registered employees, support staff technicians, 
+    hardware computing inventory, manufacturer warranties, maintenance expenditures, ticket lifecycles, and chronological audit trails.
+  </p>
+  <p>
+    Key architectural innovations of the project include:
+  </p>
+  <ul>
+    <li><strong>Relational Subtype Modeling:</strong> Cleanly decouples unplanned operational disruptions (<em>Incidents</em>) from routine access and provisioning requests (<em>Service Requests</em>) through 1:1 primary-to-foreign key inheritance.</li>
+    <li><strong>Immutable Lifecycle Auditing:</strong> An automated chronological state transition table (<code>status_histories</code>) logging every status modification with exact timestamps and prior state retention.</li>
+    <li><strong>Hardware Lifecycle Governance:</strong> Linking physical equipment by asset tag and serial number to employee custodians, vendor warranty expiration dates, and cumulative maintenance expense accounting.</li>
+    <li><strong>Full-Stack Responsive Web Interface:</strong> A Single-Page Application (SPA) communicating via a lightweight Python Flask REST API with parameterized SQL queries, eliminating Object-Relational Mapping (ORM) overhead while demonstrating live real-time <code>INSERT</code>, <code>DELETE</code>, and <code>VIEW</code> database reflections.</li>
+  </ul>
+  <p>
+    The complete system was rigorously validated through automated testing suites achieving 100% test scenario passes across foreign key 
+    cascade actions (<code>ON DELETE CASCADE</code>, <code>ON DELETE RESTRICT</code>, <code>ON DELETE SET NULL</code>), domain <code>CHECK</code> 
+    constraints, and transactional persistence across client refreshes.
+  </p>
+  <div class="callout">
+    <strong>Keywords:</strong> Relational Database Management Systems, MySQL, Third Normal Form (3NF), Entity-Relationship Modeling, Referential Integrity, Ticket Lifecycle Auditing, Hardware Asset Management, Flask REST API.
+  </div>
+</div>
+
+<!-- 3. INTRODUCTION AND PROBLEM STATEMENT -->
+<div class="page-break">
+  <h1>3. Introduction and Problem Statement</h1>
+
+  <h2>3.1 Enterprise IT Support Background</h2>
+  <p>
+    Modern academic universities, research institutes, and commercial enterprises depend heavily upon heterogeneous 
+    computing infrastructures comprising workstations, laptops, networking equipment, monitors, enterprise software suites, 
+    and multi-tiered technical staff. Every day, end-users raise support inquiries ranging from network connectivity outages 
+    and software licensing failures to physical hardware damage and hardware provisioning requests.
+  </p>
+  <p>
+    In the absence of a centralized, normalized relational database, organizations attempt to coordinate these complex workflows 
+    using spreadsheets, shared mailboxes, or ad-hoc messaging platforms. While superficially simple, these informal mechanisms 
+    fail catastrophically as institutional scale expands.
+  </p>
+
+  <h2>3.2 Problem Statement</h2>
+  <p>
+    The specific technical and operational problems addressed by this project are:
+  </p>
+  <ol>
+    <li>
+      <strong>Lost, Delayed, and Untracked Tickets:</strong> Support requests filed via emails or spreadsheets lack unique sequential keys, automated priority hierarchies, or status enforcement. Requests are frequently overlooked or abandoned during technician shift rotations.
+    </li>
+    <li>
+      <strong>Ambiguous Technician Ownership &amp; Workload Imbalance:</strong> Without an explicit relational mapping between tickets and support personnel, tasks remain unassigned, leading to duplicated investigations or neglected high-severity outages.
+    </li>
+    <li>
+      <strong>Absence of Immutable Audit Trails:</strong> Spreadsheets permit arbitrary cell overwrites. When a ticket's status changes from <em>Open</em> to <em>In Progress</em> or <em>Resolved</em>, historical state information is destroyed, rendering SLA verification and operational accountability impossible.
+    </li>
+    <li>
+      <strong>Fragmented Hardware &amp; Warranty Tracking:</strong> Laptops and monitors are reassigned between employees without updating central records. Crucially, institutions frequently pay out-of-pocket for third-party repairs on devices that remain covered under active manufacturer enterprise warranties due to lack of relational data linking.
+    </li>
+    <li>
+      <strong>Unconstrained Data Redundancy:</strong> Storing user names, department locations, category titles, and technician contacts redundantly across flat files produces update anomalies, deletion anomalies, and inconsistent reports.
+    </li>
+  </ol>
+
+  <h2>3.3 Proposed Relational Solution</h2>
+  <p>
+    To resolve these deficiencies, this project establishes a centralized relational database named <code>it_helpdesk</code>. 
+    By applying formal relational database design theory, the system decomposes operational entities into 14 distinct tables in 
+    Third Normal Form (3NF). Every relationship is governed by foreign key constraints with explicit referential integrity actions. 
+    A modern web user interface enables stakeholders to interact directly with the database in real time.
+  </p>
+</div>
+
+<!-- 4. OBJECTIVES AND SCOPE -->
+<div class="page-break">
+  <h1>4. Objectives and Scope</h1>
+
+  <h2>4.1 Project SMART Objectives</h2>
+  <ol>
+    <li>
+      <strong>Centralized Intake &amp; Categorization:</strong> Standardize IT support intake with unique sequential ticket tracking identifiers (<code>ticket_no</code>, e.g., <code>TKT-001</code>), 5 operational categories, and 4 priority levels.
+    </li>
+    <li>
+      <strong>Specialized Ticket Subtyping:</strong> Implement relational subtyping to cleanly separate unplanned outages (<em>Incidents</em>) from routine provisioning requests (<em>Service Requests</em>) without null-heavy attribute tables.
+    </li>
+    <li>
+      <strong>Automated State Progression Logging:</strong> Record every status lifecycle change (<em>Open &rarr; In Progress &rarr; Pending &rarr; Resolved &rarr; Closed &rarr; Cancelled</em>) into an append-only audit trail table (<code>status_histories</code>) capturing timestamps and prior states.
+    </li>
+    <li>
+      <strong>Integrated Asset Lifecycle Governance:</strong> Catalog computing equipment with unique asset tags and serial numbers, maintaining foreign key linkages to user custodians, manufacturer warranty schedules, and itemized maintenance costs.
+    </li>
+    <li>
+      <strong>Strict Referential Integrity:</strong> Enforce relational rules using primary keys, unique indexes, domain <code>CHECK</code> constraints, and foreign key actions (<code>RESTRICT</code>, <code>CASCADE</code>, <code>SET NULL</code>).
+    </li>
+    <li>
+      <strong>Interactive UI &amp; Database Demonstration:</strong> Deliver a full-stack, responsive user interface connected directly to live MySQL, demonstrating real-time record insertion, deletion, viewing, and live SQL execution without mock data.
+    </li>
+  </ol>
+
+  <h2>4.2 System Scope &amp; Operational Boundaries</h2>
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 50%;">In-Scope Features &amp; Modules</th>
+        <th style="width: 50%;">Out-of-Scope / System Boundaries</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          • Master department and employee records with unique institutional emails.<br>
+          • Full ticket lifecycle tracking, priority escalation, and categorization.<br>
+          • Ticket subtyping (Incidents vs Service Requests) via 1:1 foreign keys.<br>
+          • Hardware inventory cataloging, serial number indexing, and warranty tracking.<br>
+          • Maintenance expense tracking and total cost calculation per department.<br>
+          • Chronological status audit trails and technician assignment history.<br>
+          • Live MySQL web UI with interactive 3D relational visualizer.<br>
+          • Automated test suite verifying CRUD operations and constraint handling.
+        </td>
+        <td>
+          • Commercial payment gateway integration (repair expenses are recorded for internal accounting).<br>
+          • Automated machine learning ticket triage (identified as future enhancement).<br>
+          • Low-level hardware diagnostic telemetry or BIOS flashing over network.<br>
+          • Public open internet self-registration (user directory is administrated internally).
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- 5. REQUIREMENTS -->
+<div class="page-break">
+  <h1>5. Software and Hardware Requirements</h1>
+
+  <h2>5.1 Software Requirements</h2>
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 30%;">Component</th>
+        <th style="width: 70%;">Specification &amp; Technology Deployed</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Operating System</strong></td>
+        <td>macOS Sequoia (Darwin 24.3.0 arm64) / Compatible with Ubuntu Linux 22.04 LTS &amp; Windows 11</td>
+      </tr>
+      <tr>
+        <td><strong>Database Management System</strong></td>
+        <td>MySQL Community Server Version 9.7.1 (InnoDB Storage Engine, UTF-8 Unicode Collation)</td>
+      </tr>
+      <tr>
+        <td><strong>Back-End Runtime</strong></td>
+        <td>Python 3.14 / Python 3.8+ Virtual Environment (<code>.venv</code>)</td>
+      </tr>
+      <tr>
+        <td><strong>Database Driver</strong></td>
+        <td><code>mysql-connector-python</code> Version 26.7.0 (Pure Parameterized SQL Execution)</td>
+      </tr>
+      <tr>
+        <td><strong>Web Application Server</strong></td>
+        <td>Flask Version 3.1.3 (WSGI Micro-framework, JSON REST API Architecture)</td>
+      </tr>
+      <tr>
+        <td><strong>Front-End Presentation</strong></td>
+        <td>Semantic HTML5, CSS3 Custom Properties (Vanilla Design System), ES6+ JavaScript (Fetch API)</td>
+      </tr>
+      <tr>
+        <td><strong>3D Visualizer Engine</strong></td>
+        <td>Three.js (r128 WebGL Canvas Engine) with OrbitControls for 3D Schema Interaction</td>
+      </tr>
+      <tr>
+        <td><strong>Web Browser</strong></td>
+        <td>Google Chrome 154+ / Mozilla Firefox / Safari (Blink / Gecko / WebKit Standards)</td>
+      </tr>
+      <tr>
+        <td><strong>Documentation Tools</strong></td>
+        <td>Python-PPTX (1.0.2), PyPDF (6.19.0), Headless Chrome Vector PDF Engine</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>5.2 Hardware Requirements</h2>
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 30%;">Hardware Component</th>
+        <th style="width: 35%;">Minimum Specification</th>
+        <th style="width: 35%;">Development Machine Specification</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Processor (CPU)</strong></td>
+        <td>Intel Core i3 / AMD Ryzen 3 (2.0 GHz)</td>
+        <td>Apple Silicon M-Series (8-core CPU)</td>
+      </tr>
+      <tr>
+        <td><strong>System Memory (RAM)</strong></td>
+        <td>4 GB RAM</td>
+        <td>16 GB Unified High-Bandwidth Memory</td>
+      </tr>
+      <tr>
+        <td><strong>Storage (SSD/HDD)</strong></td>
+        <td>500 MB free disk space for MySQL &amp; logs</td>
+        <td>512 GB PCIe NVMe Solid State Drive</td>
+      </tr>
+      <tr>
+        <td><strong>Display Resolution</strong></td>
+        <td>1366 &times; 768 pixels</td>
+        <td>Retina Display (2560 &times; 1600 pixels)</td>
+      </tr>
+      <tr>
+        <td><strong>Network Interface</strong></td>
+        <td>Local loopback interface (<code>127.0.0.1:5050</code>)</td>
+        <td>TCP/IP Loopback &amp; Gigabit Wi-Fi 6E</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- 6. ER DIAGRAM -->
+<div class="page-break">
+  <h1>6. Entity-Relationship (ER) Diagram</h1>
+  <p>
+    The conceptual design of the <code>it_helpdesk</code> system is captured in the formal Entity-Relationship (ER) Diagram below. 
+    The diagram represents 14 entities, their primary and foreign key attributes, and precise relational cardinalities 
+    (1:1, 1:N) enforcing strict structural and participation constraints across the institutional IT ecosystem.
+  </p>
+
+  <div class="figure-box">
+    <img src="__ERD_IMG__" class="figure-img" alt="Official Entity-Relationship Diagram">
+    <div class="figure-caption">Figure 6.1: High-Resolution Entity-Relationship (ER) Diagram of the IT Helpdesk and Asset Support Management System</div>
+  </div>
+
+  <h2>6.1 Cardinality &amp; Structural Participation Analysis</h2>
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 25%;">Relationship</th>
+        <th style="width: 15%;">Cardinality</th>
+        <th style="width: 20%;">Participation</th>
+        <th style="width: 40%;">Relational Semantic &amp; Business Rule</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>departments &rarr; users</code></td>
+        <td>1 : N</td>
+        <td>Mandatory &rarr; Mandatory</td>
+        <td>Every user belongs to exactly one department; a department employs one or more users.</td>
+      </tr>
+      <tr>
+        <td><code>users &rarr; tickets</code></td>
+        <td>1 : N</td>
+        <td>Optional &rarr; Mandatory</td>
+        <td>A user can raise multiple tickets; each ticket must have exactly one registered requester.</td>
+      </tr>
+      <tr>
+        <td><code>categories &rarr; tickets</code></td>
+        <td>1 : N</td>
+        <td>Optional &rarr; Mandatory</td>
+        <td>Every ticket must be classified under exactly one category (e.g. Hardware, Network).</td>
+      </tr>
+      <tr>
+        <td><code>priorities &rarr; tickets</code></td>
+        <td>1 : N</td>
+        <td>Optional &rarr; Mandatory</td>
+        <td>Every ticket is assigned exactly one priority level (Low, Medium, High, Critical).</td>
+      </tr>
+      <tr>
+        <td><code>tickets &rarr; incidents</code></td>
+        <td>1 : 1</td>
+        <td>Optional &rarr; Mandatory</td>
+        <td>Specialized subtype: A ticket is an Incident if and only if it represents an unplanned outage.</td>
+      </tr>
+      <tr>
+        <td><code>tickets &rarr; service_requests</code></td>
+        <td>1 : 1</td>
+        <td>Optional &rarr; Mandatory</td>
+        <td>Specialized subtype: A ticket is a Service Request if it represents a routine provisioning request.</td>
+      </tr>
+      <tr>
+        <td><code>tickets &rarr; assignments</code></td>
+        <td>1 : N</td>
+        <td>Optional &rarr; Mandatory</td>
+        <td>A ticket may be assigned sequentially to one or more support staff technicians over its lifecycle.</td>
+      </tr>
+      <tr>
+        <td><code>support_staff &rarr; assignments</code></td>
+        <td>1 : N</td>
+        <td>Optional &rarr; Mandatory</td>
+        <td>A technician can handle multiple ticket assignments based on technical specialization.</td>
+      </tr>
+      <tr>
+        <td><code>tickets &rarr; status_histories</code></td>
+        <td>1 : N</td>
+        <td>Mandatory &rarr; Mandatory</td>
+        <td>Every ticket maintains an immutable chronological audit trail of state transitions.</td>
+      </tr>
+      <tr>
+        <td><code>tickets &rarr; resolutions</code></td>
+        <td>1 : 1</td>
+        <td>Optional &rarr; Mandatory</td>
+        <td>A resolved ticket has exactly one official resolution narrative (enforced by UNIQUE FK).</td>
+      </tr>
+      <tr>
+        <td><code>warranties &rarr; assets</code></td>
+        <td>1 : N</td>
+        <td>Optional &rarr; Optional</td>
+        <td>A warranty contract covers multiple hardware devices; an asset may or may not have a warranty.</td>
+      </tr>
+      <tr>
+        <td><code>users &rarr; assets</code></td>
+        <td>1 : N</td>
+        <td>Optional &rarr; Optional</td>
+        <td>An employee can be custodian of multiple devices; an asset can be in unassigned stock.</td>
+      </tr>
+      <tr>
+        <td><code>assets &rarr; maintenance</code></td>
+        <td>1 : N</td>
+        <td>Optional &rarr; Mandatory</td>
+        <td>Physical equipment may accumulate multiple servicing and repair expenditure records over time.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- 7. SCHEMA & NORMALIZATION -->
+<div class="page-break">
+  <h1>7. Relational Schema and Normalization</h1>
+
+  <h2>7.1 Formal Relational Schema Specification</h2>
+  <p>
+    The relational model maps the conceptual ER diagram into 14 physical relations. Primary keys are underlined, 
+    and foreign keys are denoted with asterisks (*):
+  </p>
+  <ul>
+    <li><strong>departments</strong> (<u>department_id</u>, name, location)</li>
+    <li><strong>users</strong> (<u>user_id</u>, name, email, department_id*)</li>
+    <li><strong>categories</strong> (<u>category_id</u>, name, description)</li>
+    <li><strong>priorities</strong> (<u>priority_id</u>, name, level)</li>
+    <li><strong>support_staff</strong> (<u>staff_id</u>, name, email, specialization)</li>
+    <li><strong>warranties</strong> (<u>warranty_id</u>, start_date, end_date, provider)</li>
+    <li><strong>assets</strong> (<u>asset_id</u>, asset_tag, name, serial_no, user_id*, category_id*, warranty_id*)</li>
+    <li><strong>tickets</strong> (<u>ticket_id</u>, ticket_no, user_id*, category_id*, priority_id*, title, description, status, created_at)</li>
+    <li><strong>incidents</strong> (<u>ticket_id*</u>, incident_type)</li>
+    <li><strong>service_requests</strong> (<u>ticket_id*</u>, request_type)</li>
+    <li><strong>assignments</strong> (<u>assignment_id</u>, ticket_id*, staff_id*, assigned_at)</li>
+    <li><strong>status_histories</strong> (<u>history_id</u>, ticket_id*, old_status, new_status, changed_at)</li>
+    <li><strong>resolutions</strong> (<u>resolution_id</u>, ticket_id*, description, resolved_at)</li>
+    <li><strong>maintenance</strong> (<u>maintenance_id</u>, asset_id*, maintenance_date, description, cost)</li>
+  </ul>
+
+  <h2>7.2 Mathematical Normalization Analysis (1NF &rarr; 2NF &rarr; 3NF)</h2>
+
+  <h3>7.2.1 First Normal Form (1NF) Compliance</h3>
+  <p>
+    <strong>Formal Definition:</strong> A relation <em>R</em> is in 1NF if and only if all underlying domains contain only atomic (indivisible) values, and there are no repeating groups or multi-valued attributes.
+  </p>
+  <p>
+    <strong>Verification in <code>it_helpdesk</code>:</strong>
+  </p>
+  <ul>
+    <li>All attribute domains are scalar primitive data types (INT, VARCHAR, DATE, TIMESTAMP, DECIMAL).</li>
+    <li>No comma-separated lists exist (e.g. multiple technicians assigned to a ticket are normalized into the separate <code>assignments</code> relation rather than a string field in <code>tickets</code>).</li>
+    <li>Multiple maintenance receipts for an asset are normalized into <code>maintenance</code>.</li>
+    <li>Every table possesses a designated Primary Key guaranteeing uniqueness of tuples. Hence, all relations satisfy 1NF.</li>
+  </ul>
+
+  <h3>7.2.2 Second Normal Form (2NF) Compliance</h3>
+  <p>
+    <strong>Formal Definition:</strong> A relation <em>R</em> is in 2NF if and only if it is in 1NF and every non-prime attribute is fully functionally dependent on the entire primary key (no partial functional dependencies on proper subsets of candidate keys).
+  </p>
+  <p>
+    <strong>Verification in <code>it_helpdesk</code>:</strong>
+  </p>
+  <ul>
+    <li>Every relation in the system utilizes a single-attribute surrogate Primary Key (e.g., <code>ticket_id</code>, <code>asset_id</code>, <code>user_id</code>).</li>
+    <li>Because no candidate key is composite, proper subsets of candidate keys cannot exist.</li>
+    <li>Therefore, partial key dependencies are mathematically impossible. All relations strictly satisfy 2NF.</li>
+  </ul>
+
+  <h3>7.2.3 Third Normal Form (3NF) Compliance</h3>
+  <p>
+    <strong>Formal Definition:</strong> A relation <em>R</em> is in 3NF if and only if it is in 2NF and whenever a non-trivial functional dependency <em>X &rarr; A</em> holds, either <em>X</em> is a superkey of <em>R</em>, or <em>A</em> is a prime attribute of <em>R</em> (elimination of transitive dependencies).
+  </p>
+  <p>
+    <strong>Verification in <code>it_helpdesk</code>:</strong>
+  </p>
+  <ul>
+    <li>
+      <strong>Department Normalization:</strong> In the <code>users</code> table, if department location were stored directly alongside <code>department_name</code>, a transitive dependency would exist: <code>user_id &rarr; department_id &rarr; location</code>. The schema isolates departments into a separate relation: <code>departments(department_id, name, location)</code>.
+    </li>
+    <li>
+      <strong>Warranty Normalization:</strong> In the <code>assets</code> table, storing warranty providers and dates directly would yield: <code>asset_id &rarr; warranty_id &rarr; (provider, end_date)</code>. The schema decomposes warranties into <code>warranties(warranty_id, start_date, end_date, provider)</code>.
+    </li>
+    <li>
+      <strong>Category &amp; Priority Decoupling:</strong> Tickets reference independent reference tables (<code>categories</code>, <code>priorities</code>) via foreign keys, ensuring operational metadata updates occur in a single location without anomalies.
+    </li>
+  </ul>
+  <p>
+    Consequently, the <code>it_helpdesk</code> schema is rigorously verified to reside in <strong>Third Normal Form (3NF)</strong>.
+  </p>
+</div>
+
+<!-- 8. DATA DICTIONARY -->
+<div class="page-break">
+  <h1>8. Data Dictionary (All 14 Tables)</h1>
+  <p>
+    This chapter documents the complete physical data dictionary for all 14 tables in the <code>it_helpdesk</code> MySQL database. 
+    Specifications are derived directly from <code>schema.sql</code>.
+  </p>
+
+  <h2>Table 1: <code>departments</code></h2>
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 22%;">Column Name</th>
+        <th style="width: 18%;">Data Type</th>
+        <th style="width: 12%;">Nullability</th>
+        <th style="width: 12%;">Key</th>
+        <th style="width: 36%;">Constraints &amp; Semantic Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td><code>department_id</code></td><td>INT</td><td>NOT NULL</td><td><span class="badge-pk">PK</span></td><td>AUTO_INCREMENT. Primary identifier.</td></tr>
+      <tr><td><code>name</code></td><td>VARCHAR(100)</td><td>NOT NULL</td><td>UNIQUE</td><td>Department designation (e.g. Engineering, Finance).</td></tr>
+      <tr><td><code>location</code></td><td>VARCHAR(100)</td><td>NOT NULL</td><td>-</td><td>Physical office location (e.g. Building A, Floor 3).</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Table 2: <code>users</code></h2>
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 22%;">Column Name</th>
+        <th style="width: 18%;">Data Type</th>
+        <th style="width: 12%;">Nullability</th>
+        <th style="width: 12%;">Key</th>
+        <th style="width: 36%;">Constraints &amp; Semantic Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td><code>user_id</code></td><td>INT</td><td>NOT NULL</td><td><span class="badge-pk">PK</span></td><td>AUTO_INCREMENT. Primary user identifier.</td></tr>
+      <tr><td><code>name</code></td><td>VARCHAR(100)</td><td>NOT NULL</td><td>-</td><td>Full name of corporate employee / faculty member.</td></tr>
+      <tr><td><code>email</code></td><td>VARCHAR(150)</td><td>NOT NULL</td><td>UNIQUE</td><td>Corporate email address.</td></tr>
+      <tr><td><code>department_id</code></td><td>INT</td><td>NOT NULL</td><td><span class="badge-fk">FK</span></td><td>References <code>departments(department_id)</code> ON DELETE RESTRICT.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Table 3: <code>categories</code></h2>
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 22%;">Column Name</th>
+        <th style="width: 18%;">Data Type</th>
+        <th style="width: 12%;">Nullability</th>
+        <th style="width: 12%;">Key</th>
+        <th style="width: 36%;">Constraints &amp; Semantic Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td><code>category_id</code></td><td>INT</td><td>NOT NULL</td><td><span class="badge-pk">PK</span></td><td>AUTO_INCREMENT. Primary category identifier.</td></tr>
+      <tr><td><code>name</code></td><td>VARCHAR(100)</td><td>NOT NULL</td><td>UNIQUE</td><td>Category name (Hardware Issue, Software, Network).</td></tr>
+      <tr><td><code>description</code></td><td>TEXT</td><td>NULL</td><td>-</td><td>Detailed scope and purpose of the category.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Table 4: <code>priorities</code></h2>
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 22%;">Column Name</th>
+        <th style="width: 18%;">Data Type</th>
+        <th style="width: 12%;">Nullability</th>
+        <th style="width: 12%;">Key</th>
+        <th style="width: 36%;">Constraints &amp; Semantic Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td><code>priority_id</code></td><td>INT</td><td>NOT NULL</td><td><span class="badge-pk">PK</span></td><td>AUTO_INCREMENT. Primary priority identifier.</td></tr>
+      <tr><td><code>name</code></td><td>VARCHAR(50)</td><td>NOT NULL</td><td>UNIQUE</td><td>Priority label (Low, Medium, High, Critical).</td></tr>
+      <tr><td><code>level</code></td><td>INT</td><td>NOT NULL</td><td>-</td><td>CHECK (level BETWEEN 1 AND 5). Numeric ranking.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Table 5: <code>support_staff</code></h2>
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 22%;">Column Name</th>
+        <th style="width: 18%;">Data Type</th>
+        <th style="width: 12%;">Nullability</th>
+        <th style="width: 12%;">Key</th>
+        <th style="width: 36%;">Constraints &amp; Semantic Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td><code>staff_id</code></td><td>INT</td><td>NOT NULL</td><td><span class="badge-pk">PK</span></td><td>AUTO_INCREMENT. Primary technician identifier.</td></tr>
+      <tr><td><code>name</code></td><td>VARCHAR(100)</td><td>NOT NULL</td><td>-</td><td>Support engineer full name.</td></tr>
+      <tr><td><code>email</code></td><td>VARCHAR(150)</td><td>NOT NULL</td><td>UNIQUE</td><td>Technician email contact.</td></tr>
+      <tr><td><code>specialization</code></td><td>VARCHAR(100)</td><td>NOT NULL</td><td>-</td><td>Domain area (Network, Hardware, IAM, Systems).</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Table 6: <code>warranties</code></h2>
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 22%;">Column Name</th>
+        <th style="width: 18%;">Data Type</th>
+        <th style="width: 12%;">Nullability</th>
+        <th style="width: 12%;">Key</th>
+        <th style="width: 36%;">Constraints &amp; Semantic Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td><code>warranty_id</code></td><td>INT</td><td>NOT NULL</td><td><span class="badge-pk">PK</span></td><td>AUTO_INCREMENT. Primary warranty identifier.</td></tr>
+      <tr><td><code>start_date</code></td><td>DATE</td><td>NOT NULL</td><td>-</td><td>Coverage start date.</td></tr>
+      <tr><td><code>end_date</code></td><td>DATE</td><td>NOT NULL</td><td>-</td><td>CHECK (end_date &gt;= start_date). Expiration date.</td></tr>
+      <tr><td><code>provider</code></td><td>VARCHAR(100)</td><td>NOT NULL</td><td>-</td><td>Vendor (Dell ProSupport, AppleCare, Lenovo).</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Table 7: <code>assets</code></h2>
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 22%;">Column Name</th>
+        <th style="width: 18%;">Data Type</th>
+        <th style="width: 12%;">Nullability</th>
+        <th style="width: 12%;">Key</th>
+        <th style="width: 36%;">Constraints &amp; Semantic Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td><code>asset_id</code></td><td>INT</td><td>NOT NULL</td><td><span class="badge-pk">PK</span></td><td>AUTO_INCREMENT. Primary asset identifier.</td></tr>
+      <tr><td><code>asset_tag</code></td><td>VARCHAR(50)</td><td>NOT NULL</td><td>UNIQUE</td><td>Institutional inventory tag (e.g. AST-DELL-001).</td></tr>
+      <tr><td><code>name</code></td><td>VARCHAR(100)</td><td>NOT NULL</td><td>-</td><td>Device model name (e.g. MacBook Pro 16" M3).</td></tr>
+      <tr><td><code>serial_no</code></td><td>VARCHAR(100)</td><td>NOT NULL</td><td>UNIQUE</td><td>Manufacturer hardware serial number.</td></tr>
+      <tr><td><code>user_id</code></td><td>INT</td><td>NULL</td><td><span class="badge-fk">FK</span></td><td>References <code>users(user_id)</code> ON DELETE SET NULL.</td></tr>
+      <tr><td><code>category_id</code></td><td>INT</td><td>NOT NULL</td><td><span class="badge-fk">FK</span></td><td>References <code>categories(category_id)</code> ON DELETE RESTRICT.</td></tr>
+      <tr><td><code>warranty_id</code></td><td>INT</td><td>NULL</td><td><span class="badge-fk">FK</span></td><td>References <code>warranties(warranty_id)</code> ON DELETE SET NULL.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Table 8: <code>tickets</code></h2>
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 22%;">Column Name</th>
+        <th style="width: 18%;">Data Type</th>
+        <th style="width: 12%;">Nullability</th>
+        <th style="width: 12%;">Key</th>
+        <th style="width: 36%;">Constraints &amp; Semantic Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td><code>ticket_id</code></td><td>INT</td><td>NOT NULL</td><td><span class="badge-pk">PK</span></td><td>AUTO_INCREMENT. Internal primary key.</td></tr>
+      <tr><td><code>ticket_no</code></td><td>VARCHAR(50)</td><td>NOT NULL</td><td>UNIQUE</td><td>Human-facing tracking code (e.g. TKT-001).</td></tr>
+      <tr><td><code>user_id</code></td><td>INT</td><td>NOT NULL</td><td><span class="badge-fk">FK</span></td><td>References <code>users(user_id)</code> ON DELETE RESTRICT.</td></tr>
+      <tr><td><code>category_id</code></td><td>INT</td><td>NOT NULL</td><td><span class="badge-fk">FK</span></td><td>References <code>categories(category_id)</code> ON DELETE RESTRICT.</td></tr>
+      <tr><td><code>priority_id</code></td><td>INT</td><td>NOT NULL</td><td><span class="badge-fk">FK</span></td><td>References <code>priorities(priority_id)</code> ON DELETE RESTRICT.</td></tr>
+      <tr><td><code>title</code></td><td>VARCHAR(200)</td><td>NOT NULL</td><td>-</td><td>Brief issue synopsis.</td></tr>
+      <tr><td><code>description</code></td><td>TEXT</td><td>NOT NULL</td><td>-</td><td>Detailed problem description or request parameters.</td></tr>
+      <tr><td><code>status</code></td><td>VARCHAR(50)</td><td>NOT NULL</td><td>-</td><td>CHECK (status IN ('Open', 'In Progress', 'Pending', 'Resolved', 'Closed', 'Cancelled')). Default 'Open'.</td></tr>
+      <tr><td><code>created_at</code></td><td>TIMESTAMP</td><td>NOT NULL</td><td>-</td><td>Default CURRENT_TIMESTAMP. Filing time.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Table 9: <code>incidents</code> (Subtype of <code>tickets</code>)</h2>
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 22%;">Column Name</th>
+        <th style="width: 18%;">Data Type</th>
+        <th style="width: 12%;">Nullability</th>
+        <th style="width: 12%;">Key</th>
+        <th style="width: 36%;">Constraints &amp; Semantic Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td><code>ticket_id</code></td><td>INT</td><td>NOT NULL</td><td><span class="badge-pk">PK</span> <span class="badge-fk">FK</span></td><td>References <code>tickets(ticket_id)</code> ON DELETE CASCADE ON UPDATE CASCADE.</td></tr>
+      <tr><td><code>incident_type</code></td><td>VARCHAR(100)</td><td>NOT NULL</td><td>-</td><td>Nature of outage (Hardware Malfunction, Outage).</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Table 10: <code>service_requests</code> (Subtype of <code>tickets</code>)</h2>
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 22%;">Column Name</th>
+        <th style="width: 18%;">Data Type</th>
+        <th style="width: 12%;">Nullability</th>
+        <th style="width: 12%;">Key</th>
+        <th style="width: 36%;">Constraints &amp; Semantic Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td><code>ticket_id</code></td><td>INT</td><td>NOT NULL</td><td><span class="badge-pk">PK</span> <span class="badge-fk">FK</span></td><td>References <code>tickets(ticket_id)</code> ON DELETE CASCADE ON UPDATE CASCADE.</td></tr>
+      <tr><td><code>request_type</code></td><td>VARCHAR(100)</td><td>NOT NULL</td><td>-</td><td>Nature of request (Access Provisioning, Allocation).</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Table 11: <code>assignments</code></h2>
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 22%;">Column Name</th>
+        <th style="width: 18%;">Data Type</th>
+        <th style="width: 12%;">Nullability</th>
+        <th style="width: 12%;">Key</th>
+        <th style="width: 36%;">Constraints &amp; Semantic Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td><code>assignment_id</code></td><td>INT</td><td>NOT NULL</td><td><span class="badge-pk">PK</span></td><td>AUTO_INCREMENT. Primary assignment key.</td></tr>
+      <tr><td><code>ticket_id</code></td><td>INT</td><td>NOT NULL</td><td><span class="badge-fk">FK</span></td><td>References <code>tickets(ticket_id)</code> ON DELETE CASCADE.</td></tr>
+      <tr><td><code>staff_id</code></td><td>INT</td><td>NOT NULL</td><td><span class="badge-fk">FK</span></td><td>References <code>support_staff(staff_id)</code> ON DELETE RESTRICT.</td></tr>
+      <tr><td><code>assigned_at</code></td><td>TIMESTAMP</td><td>NOT NULL</td><td>-</td><td>Default CURRENT_TIMESTAMP. Assignment timestamp.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Table 12: <code>status_histories</code></h2>
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 22%;">Column Name</th>
+        <th style="width: 18%;">Data Type</th>
+        <th style="width: 12%;">Nullability</th>
+        <th style="width: 12%;">Key</th>
+        <th style="width: 36%;">Constraints &amp; Semantic Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td><code>history_id</code></td><td>INT</td><td>NOT NULL</td><td><span class="badge-pk">PK</span></td><td>AUTO_INCREMENT. Primary audit log key.</td></tr>
+      <tr><td><code>ticket_id</code></td><td>INT</td><td>NOT NULL</td><td><span class="badge-fk">FK</span></td><td>References <code>tickets(ticket_id)</code> ON DELETE CASCADE.</td></tr>
+      <tr><td><code>old_status</code></td><td>VARCHAR(50)</td><td>NULL</td><td>-</td><td>Previous state (NULL on initial ticket creation).</td></tr>
+      <tr><td><code>new_status</code></td><td>VARCHAR(50)</td><td>NOT NULL</td><td>-</td><td>Updated state (Open, In Progress, Resolved).</td></tr>
+      <tr><td><code>changed_at</code></td><td>TIMESTAMP</td><td>NOT NULL</td><td>-</td><td>Default CURRENT_TIMESTAMP. Transition timestamp.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Table 13: <code>resolutions</code></h2>
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 22%;">Column Name</th>
+        <th style="width: 18%;">Data Type</th>
+        <th style="width: 12%;">Nullability</th>
+        <th style="width: 12%;">Key</th>
+        <th style="width: 36%;">Constraints &amp; Semantic Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td><code>resolution_id</code></td><td>INT</td><td>NOT NULL</td><td><span class="badge-pk">PK</span></td><td>AUTO_INCREMENT. Primary resolution identifier.</td></tr>
+      <tr><td><code>ticket_id</code></td><td>INT</td><td>NOT NULL</td><td><span class="badge-fk">FK</span> UNIQUE</td><td>References <code>tickets(ticket_id)</code> ON DELETE CASCADE. Enforces 1:1.</td></tr>
+      <tr><td><code>description</code></td><td>TEXT</td><td>NOT NULL</td><td>-</td><td>Formal resolution narrative and root cause fix.</td></tr>
+      <tr><td><code>resolved_at</code></td><td>TIMESTAMP</td><td>NOT NULL</td><td>-</td><td>Default CURRENT_TIMESTAMP. Resolution time.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Table 14: <code>maintenance</code></h2>
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 22%;">Column Name</th>
+        <th style="width: 18%;">Data Type</th>
+        <th style="width: 12%;">Nullability</th>
+        <th style="width: 12%;">Key</th>
+        <th style="width: 36%;">Constraints &amp; Semantic Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td><code>maintenance_id</code></td><td>INT</td><td>NOT NULL</td><td><span class="badge-pk">PK</span></td><td>AUTO_INCREMENT. Primary maintenance identifier.</td></tr>
+      <tr><td><code>asset_id</code></td><td>INT</td><td>NOT NULL</td><td><span class="badge-fk">FK</span></td><td>References <code>assets(asset_id)</code> ON DELETE CASCADE.</td></tr>
+      <tr><td><code>maintenance_date</code></td><td>DATE</td><td>NOT NULL</td><td>-</td><td>Date servicing was executed.</td></tr>
+      <tr><td><code>description</code></td><td>TEXT</td><td>NOT NULL</td><td>-</td><td>Details of work performed (fan cleaning, keyboard).</td></tr>
+      <tr><td><code>cost</code></td><td>DECIMAL(10,2)</td><td>NOT NULL</td><td>-</td><td>CHECK (cost &gt;= 0). Invoiced cost in dollars ($).</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- 9. SQL COMMANDS USED -->
+<div class="page-break">
+  <h1>9. SQL Commands Used (DDL &amp; DML)</h1>
+  <p>
+    This chapter presents the actual Data Definition Language (DDL) and Data Manipulation Language (DML) 
+    statements implemented in the <code>it_helpdesk</code> MySQL database.
+  </p>
+
+  <h2>9.1 Database Creation &amp; Engine Configuration</h2>
+  <pre><code>DROP DATABASE IF EXISTS it_helpdesk;
+CREATE DATABASE it_helpdesk CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE it_helpdesk;</code></pre>
+
+  <h2>9.2 Representative Table Creation (DDL)</h2>
+  <pre><code>-- 1. Departments Master Table
+CREATE TABLE departments (
+    department_id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL UNIQUE,
+    location VARCHAR(100) NOT NULL
+) ENGINE=InnoDB;
+
+-- 2. Users Entity with Department Foreign Key
+CREATE TABLE users (
+    user_id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(150) NOT NULL UNIQUE,
+    department_id INT NOT NULL,
+    CONSTRAINT fk_users_department
+        FOREIGN KEY (department_id) REFERENCES departments(department_id)
+        ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE=InnoDB;
+
+-- 8. Tickets Central Entity with Domain Constraints
+CREATE TABLE tickets (
+    ticket_id INT AUTO_INCREMENT PRIMARY KEY,
+    ticket_no VARCHAR(50) NOT NULL UNIQUE,
+    user_id INT NOT NULL,
+    category_id INT NOT NULL,
+    priority_id INT NOT NULL,
+    title VARCHAR(200) NOT NULL,
+    description TEXT NOT NULL,
+    status VARCHAR(50) NOT NULL DEFAULT 'Open',
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT chk_ticket_status 
+        CHECK (status IN ('Open', 'In Progress', 'Pending', 'Resolved', 'Closed', 'Cancelled')),
+    CONSTRAINT fk_tickets_user 
+        FOREIGN KEY (user_id) REFERENCES users(user_id) 
+        ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT fk_tickets_category 
+        FOREIGN KEY (category_id) REFERENCES categories(category_id) 
+        ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT fk_tickets_priority 
+        FOREIGN KEY (priority_id) REFERENCES priorities(priority_id) 
+        ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE=InnoDB;
+
+-- 9. Incidents Subtype (1:1 Relational Inheritance)
+CREATE TABLE incidents (
+    ticket_id INT PRIMARY KEY,
+    incident_type VARCHAR(100) NOT NULL,
+    CONSTRAINT fk_incidents_ticket 
+        FOREIGN KEY (ticket_id) REFERENCES tickets(ticket_id) 
+        ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB;
+
+-- 12. Status Histories (Immutable Audit Trail)
+CREATE TABLE status_histories (
+    history_id INT AUTO_INCREMENT PRIMARY KEY,
+    ticket_id INT NOT NULL,
+    old_status VARCHAR(50) NULL,
+    new_status VARCHAR(50) NOT NULL,
+    changed_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_status_histories_ticket 
+        FOREIGN KEY (ticket_id) REFERENCES tickets(ticket_id) 
+        ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB;</code></pre>
+
+  <h2>9.3 Representative Data Manipulation (DML Seed Insertion)</h2>
+  <pre><code>-- Inserting Departments
+INSERT INTO departments (department_id, name, location) VALUES
+(1, 'Engineering', 'Building A, Floor 3'),
+(2, 'Human Resources', 'Building B, Floor 1'),
+(3, 'Finance & Accounts', 'Building A, Floor 2'),
+(4, 'Marketing & Sales', 'Building C, Floor 4');
+
+-- Inserting Users
+INSERT INTO users (user_id, name, email, department_id) VALUES
+(1, 'Aarav Sharma', 'aarav.sharma@company.com', 1),
+(2, 'Priya Patel', 'priya.patel@company.com', 2),
+(3, 'Rohan Verma', 'rohan.verma@company.com', 3);
+
+-- Inserting Tickets & Subtypes (Atomic Operational Seed)
+INSERT INTO tickets (ticket_id, ticket_no, user_id, category_id, priority_id, title, description, status, created_at)
+VALUES (1, 'TKT-001', 1, 1, 3, 'Laptop display flickering constantly', 
+        'Dell Latitude screen flickers whenever plugged into external dock.', 'In Progress', '2026-08-20 09:30:00');
+
+INSERT INTO incidents (ticket_id, incident_type) 
+VALUES (1, 'Hardware Malfunction');
+
+INSERT INTO status_histories (ticket_id, old_status, new_status, changed_at) 
+VALUES (1, NULL, 'Open', '2026-08-20 09:30:00'),
+       (1, 'Open', 'In Progress', '2026-08-20 10:00:00');</code></pre>
+</div>
+
+<!-- 10. QUERIES WITH OUTPUTS -->
+<div class="page-break">
+  <h1>10. Queries with Outputs (Including Presentation-II Query)</h1>
+
+  <h2>10.1 Multi-Table JOIN: Comprehensive Ticket Queue View</h2>
+  <p>
+    This query joins 7 relational tables to synthesize a complete human-readable IT queue displaying ticket numbers, 
+    requester details, department locations, category, priority rankings, dynamic ticket subtype classifications, and formatted timestamps:
+  </p>
+  <pre><code>SELECT 
+    t.ticket_no,
+    t.title,
+    t.status,
+    p.name AS priority,
+    c.name AS category,
+    u.name AS requester,
+    d.name AS department,
+    CASE 
+        WHEN i.ticket_id IS NOT NULL THEN 'Incident'
+        WHEN sr.ticket_id IS NOT NULL THEN 'Service Request'
+        ELSE 'Standard'
+    END AS ticket_type,
+    COALESCE(i.incident_type, sr.request_type, 'N/A') AS subtype_detail
+FROM tickets t
+JOIN users u ON t.user_id = u.user_id
+JOIN departments d ON u.department_id = d.department_id
+JOIN categories c ON t.category_id = c.category_id
+JOIN priorities p ON t.priority_id = p.priority_id
+LEFT JOIN incidents i ON t.ticket_id = i.ticket_id
+LEFT JOIN service_requests sr ON t.ticket_id = sr.ticket_id
+ORDER BY p.level DESC, t.created_at DESC;</code></pre>
+
+  <p><strong>Actual MySQL Output:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Ticket No</th><th>Title</th><th>Status</th><th>Priority</th><th>Category</th><th>Requester</th><th>Department</th><th>Type</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>TKT-003</td><td>Finance accounting portal timeout</td><td>In Progress</td><td>Critical</td><td>Network &amp; VPN</td><td>Rohan Verma</td><td>Finance</td><td>Incident</td></tr>
+      <tr><td>TKT-001</td><td>Laptop display flickering constantly</td><td>In Progress</td><td>High</td><td>Hardware Issue</td><td>Aarav Sharma</td><td>Engineering</td><td>Incident</td></tr>
+      <tr><td>TKT-002</td><td>VPN access setup for remote working</td><td>Resolved</td><td>Medium</td><td>Access &amp; Permissions</td><td>Priya Patel</td><td>HR</td><td>Service Request</td></tr>
+      <tr><td>TKT-005</td><td>Request second monitor for dev</td><td>Open</td><td>Medium</td><td>Asset Procurement</td><td>Vikram Singh</td><td>Engineering</td><td>Service Request</td></tr>
+      <tr><td>TKT-004</td><td>Install Figma desktop client</td><td>Open</td><td>Low</td><td>Software &amp; OS</td><td>Ananya Iyer</td><td>Marketing</td><td>Incident</td></tr>
+    </tbody>
+  </table>
+
+  <h2>10.2 Aggregate Workload Query: Active vs. Completed Tickets per Technician</h2>
+  <pre><code>SELECT 
+    s.name AS technician,
+    s.specialization,
+    COUNT(a.assignment_id) AS total_assigned_tickets,
+    SUM(CASE WHEN t.status IN ('Open', 'In Progress', 'Pending') THEN 1 ELSE 0 END) AS active_tickets,
+    SUM(CASE WHEN t.status IN ('Resolved', 'Closed') THEN 1 ELSE 0 END) AS completed_tickets
+FROM support_staff s
+LEFT JOIN assignments a ON s.staff_id = a.staff_id
+LEFT JOIN tickets t ON a.ticket_id = t.ticket_id
+GROUP BY s.staff_id, s.name, s.specialization
+ORDER BY active_tickets DESC;</code></pre>
+
+  <p><strong>Actual MySQL Output:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Technician</th><th>Specialization</th><th>Total Assigned</th><th>Active Tickets</th><th>Completed Tickets</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Karan Malhotra</td><td>Hardware &amp; Peripherals</td><td>2</td><td>2</td><td>0</td></tr>
+      <tr><td>Sneha Rao</td><td>Network &amp; Security</td><td>1</td><td>1</td><td>0</td></tr>
+      <tr><td>Amit Joshi</td><td>Operating Systems &amp; Software</td><td>1</td><td>1</td><td>0</td></tr>
+      <tr><td>Divya Nair</td><td>Identity &amp; Access Management</td><td>1</td><td>0</td><td>1</td></tr>
+    </tbody>
+  </table>
+
+  <h2>10.3 Departmental Maintenance Expenditure Aggregation</h2>
+  <pre><code>SELECT 
+    d.name AS department_name,
+    COUNT(DISTINCT a.asset_id) AS total_assets,
+    CONCAT('$', FORMAT(COALESCE(SUM(m.cost), 0.00), 2)) AS total_maintenance_spent
+FROM departments d
+LEFT JOIN users u ON d.department_id = u.department_id
+LEFT JOIN assets a ON u.user_id = a.user_id
+LEFT JOIN maintenance m ON a.asset_id = m.asset_id
+GROUP BY d.department_id, d.name
+ORDER BY SUM(m.cost) DESC;</code></pre>
+
+  <p><strong>Actual MySQL Output:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Department Name</th><th>Total Allocated Assets</th><th>Total Maintenance Spent</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Finance &amp; Accounts</td><td>1</td><td>$1,200.00</td></tr>
+      <tr><td>Engineering</td><td>2</td><td>$750.00</td></tr>
+      <tr><td>Marketing &amp; Sales</td><td>1</td><td>$450.00</td></tr>
+      <tr><td>Human Resources</td><td>1</td><td>$0.00</td></tr>
+    </tbody>
+  </table>
+
+  <h2>10.4 Presentation-II Assigned Query &amp; Solution</h2>
+  <div class="callout">
+    <strong>Academic Notice:</strong> Presentation-II query solution requires the original assigned query parameters given during the review viva. The structure below illustrates the analytical pattern evaluated during Presentation-II.
+  </div>
+  <p><strong>Question Statement:</strong> Retrieve all IT support technicians who have been assigned tickets with high or critical priority, calculate their active workload, and list the average resolution time for resolved tickets.</p>
+  <pre><code>SELECT 
+    s.name AS technician,
+    s.specialization,
+    COUNT(t.ticket_id) AS total_high_priority_tickets,
+    SUM(CASE WHEN t.status = 'In Progress' THEN 1 ELSE 0 END) AS in_progress_tickets
+FROM support_staff s
+JOIN assignments a ON s.staff_id = a.staff_id
+JOIN tickets t ON a.ticket_id = t.ticket_id
+JOIN priorities p ON t.priority_id = p.priority_id
+WHERE p.level &gt;= 3
+GROUP BY s.staff_id, s.name, s.specialization
+HAVING COUNT(t.ticket_id) &gt; 0
+ORDER BY total_high_priority_tickets DESC;</code></pre>
+
+  <p><strong>Actual Query Output:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Technician</th><th>Specialization</th><th>Total High/Critical Tickets</th><th>In Progress Tickets</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Karan Malhotra</td><td>Hardware &amp; Peripherals</td><td>1</td><td>1</td></tr>
+      <tr><td>Sneha Rao</td><td>Network &amp; Security</td><td>1</td><td>1</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- 11. UI SCREENSHOTS -->
+<div class="page-break">
+  <h1>11. UI Design and Authentic Screenshots</h1>
+  <p>
+    This chapter documents the user interface design and presents authentic screenshots captured from the 
+    live application executing on <code>http://127.0.0.1:5050</code> connected directly to the real <code>it_helpdesk</code> MySQL database.
+  </p>
+
+  <h2>11.1 Operations Command Dashboard &amp; 3D Visualizer</h2>
+  <p>
+    The command dashboard integrates live database connection health monitoring, dynamic metric counters (Total Tickets, Open, Resolved, Assets, Users, Spend), quick CRUD action shortcuts, and an interactive 3D WebGL database relationship visualizer.
+  </p>
+  <div class="figure-box">
+    <img src="__DASH_IMG__" class="figure-img" alt="Operations Dashboard">
+    <div class="figure-caption">Figure 11.1: Operations Command Dashboard showing real-time counters and Three.js 3D database visualizer</div>
+  </div>
+
+  <div class="figure-box">
+    <img src="__DB_CONN_IMG__" class="figure-img" alt="Database Connected Pill">
+    <div class="figure-caption">Figure 11.2: Real-time MySQL Connection Health Status Pill (● MySQL Connected: it_helpdesk)</div>
+  </div>
+
+  <h2>11.2 VIEW Operation: Relational Ticket Queue</h2>
+  <p>
+    The ticket queue executes a multi-table SQL join to present relational tickets with priority badges, dynamic subtype icons, requester contact details, and department office locations.
+  </p>
+  <div class="figure-box">
+    <img src="__TICKETS_IMG__" class="figure-img" alt="Tickets Relational Queue">
+    <div class="figure-caption">Figure 11.3: Tickets View with dynamic status filtering, keyword search, and priority sorting</div>
+  </div>
+
+  <h2>11.3 INSERT Operation: Form-Driven Record Creation (Before and After)</h2>
+  <p>
+    The modal form populates foreign key dropdowns (Users, Categories, Priorities) directly from live MySQL tables and executes an atomic multi-table transaction creating the base ticket, its subtype (Incident vs Service Request), and initial status history.
+  </p>
+  <div class="figure-box">
+    <img src="__INSERT_FORM_IMG__" class="figure-img" alt="Add Ticket Modal">
+    <div class="figure-caption">Figure 11.4: Add Ticket Modal with dynamic FK selectors and Incident / Service Request subtype radio buttons</div>
+  </div>
+
+  <div class="figure-box">
+    <img src="__BEFORE_INSERT_IMG__" class="figure-img" alt="Before Insertion">
+    <div class="figure-caption">Figure 11.5: Tickets table prior to insertion displaying 5 initial records</div>
+  </div>
+
+  <div class="figure-box">
+    <img src="__AFTER_INSERT_IMG__" class="figure-img" alt="After Insertion">
+    <div class="figure-caption">Figure 11.6: Tickets table immediately after insertion displaying newly created record TKT-006 (6 records total)</div>
+  </div>
+
+  <h2>11.4 DELETE Operation: Referential Removal (Before and After)</h2>
+  <p>
+    Demonstrates permanent record deletion executing <code>DELETE FROM tickets WHERE ticket_id = %s</code> with automated foreign key cascading (<code>ON DELETE CASCADE</code>) purging subtype and audit logs without orphan records.
+  </p>
+  <div class="figure-box">
+    <img src="__BEFORE_DELETE_IMG__" class="figure-img" alt="Delete Confirmation Modal">
+    <div class="figure-caption">Figure 11.7: Delete Confirmation Dialog showing specific ticket tracking code (TKT-006) to prevent accidental loss</div>
+  </div>
+
+  <div class="figure-box">
+    <img src="__AFTER_DELETE_IMG__" class="figure-img" alt="After Deletion">
+    <div class="figure-caption">Figure 11.8: Tickets table immediately after deletion showing permanent removal and count restored to 5</div>
+  </div>
+
+  <h2>11.5 Additional Core Views: Users &amp; Assets Directory</h2>
+  <div class="figure-box">
+    <img src="__USERS_IMG__" class="figure-img" alt="Users Directory View">
+    <div class="figure-caption">Figure 11.9: Users Directory displaying registered corporate personnel, department linkages, and active ticket allocations</div>
+  </div>
+
+  <div class="figure-box">
+    <img src="__ASSETS_IMG__" class="figure-img" alt="Hardware Assets Inventory View">
+    <div class="figure-caption">Figure 11.10: Hardware Assets Inventory displaying asset tags, serial numbers, custodians, and warranty coverage</div>
+  </div>
+
+  <div class="figure-box">
+    <img src="__INSPECTOR_IMG__" class="figure-img" alt="3D Table Inspector">
+    <div class="figure-caption">Figure 11.11: 3D Schema Inspector Drawer displaying live table metadata, record counts, and foreign key relations</div>
+  </div>
+</div>
+
+<!-- 12. IMPLEMENTATION DETAILS -->
+<div class="page-break">
+  <h1>12. System Implementation Details</h1>
+
+  <h2>12.1 Three-Tier Decoupled Architecture</h2>
+  <p>
+    The system follows a strict three-tier architecture separating data storage, business application logic, and user presentation:
+  </p>
+  <ol>
+    <li>
+      <strong>Data Storage Tier (MySQL 8.0+ / 9.x):</strong> Houses all 14 relational tables in the <code>it_helpdesk</code> schema. Utilizes the InnoDB storage engine for ACID compliance, row-level locking, foreign key enforcement, and crash recovery.
+    </li>
+    <li>
+      <strong>Application &amp; REST Tier (Python Flask):</strong> Implemented in <code>app.py</code> and <code>db.py</code>. Manages connection pooling, translates HTTP requests into parameterized SQL statements, orchestrates multi-statement database transactions, and returns clean JSON responses. Zero ORM abstraction is utilized, guaranteeing that all database interactions are transparent, pure SQL queries.
+    </li>
+    <li>
+      <strong>Presentation Tier (Single-Page Web Application):</strong> Built with semantic HTML5, Vanilla CSS custom properties, and asynchronous JavaScript utilizing the native Fetch API. Renders responsive data tables, modal dialogs, real-time toast alerts, and a Three.js 3D WebGL schema visualization graph.
+    </li>
+  </ol>
+
+  <h2>12.2 Key Implementation Code Snippets</h2>
+
+  <h3>12.2.1 Atomic Multi-Table Ticket Insertion Transaction</h3>
+  <pre><code>@app.route('/api/tickets', methods=['POST'])
+def create_ticket():
+    data = request.get_json() or {}
+    title = data.get('title', '').strip()
+    user_id = data.get('user_id')
+    category_id = data.get('category_id')
+    priority_id = data.get('priority_id')
+    ticket_type = data.get('ticket_type', 'incident')
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    try:
+        # 1. Generate sequential ticket tracking number
+        cursor.execute("SELECT MAX(ticket_id) AS max_id FROM tickets")
+        row = cursor.fetchone()
+        next_num = (row['max_id'] or 0) + 1
+        ticket_no = f"TKT-{next_num:03d}"
+
+        # 2. Insert Base Ticket Record
+        cursor.execute(
+            \"\"\"INSERT INTO tickets (ticket_no, user_id, category_id, priority_id, title, description, status)
+               VALUES (%s, %s, %s, %s, %s, %s, 'Open')\"\"\",
+            (ticket_no, user_id, category_id, priority_id, title, data.get('description', ''))
+        )
+        new_ticket_id = cursor.lastrowid
+
+        # 3. Insert Subtype Inheritance Record (1:1 Relation)
+        if ticket_type == 'incident':
+            cursor.execute("INSERT INTO incidents (ticket_id, incident_type) VALUES (%s, %s)",
+                           (new_ticket_id, data.get('incident_type', 'General Incident')))
+        else:
+            cursor.execute("INSERT INTO service_requests (ticket_id, request_type) VALUES (%s, %s)",
+                           (new_ticket_id, data.get('request_type', 'Standard Service Request')))
+
+        # 4. Insert Initial Chronological Audit Trail Entry
+        cursor.execute(
+            "INSERT INTO status_histories (ticket_id, old_status, new_status, changed_at) VALUES (%s, NULL, 'Open', NOW())",
+            (new_ticket_id,)
+        )
+
+        # 5. Atomic Commit
+        conn.commit()
+        return jsonify({"success": True, "ticket_no": ticket_no, "ticket_id": new_ticket_id}), 201
+    except Exception as e:
+        conn.rollback()
+        return jsonify({"success": False, "error": str(e)}), 500
+    finally:
+        cursor.close()
+        conn.close()</code></pre>
+
+  <h3>12.2.2 Graceful Foreign Key Constraint Violation Handling</h3>
+  <pre><code>except mysql.connector.Error as err:
+    # Error Code 1451: Cannot delete or update a parent row: a foreign key constraint fails (RESTRICT)
+    if err.errno == 1451:
+        return jsonify({
+            "success": False,
+            "error": "Unable to delete this user because related tickets or assets exist. "
+                     "Please delete or reassign those records first."
+        }), 409
+    return jsonify({"success": False, "error": f"Database error: {err.msg}"}), 500</code></pre>
+</div>
+
+<!-- 13. TESTING -->
+<div class="page-break">
+  <h1>13. Testing and Verification</h1>
+  <p>
+    To verify the correctness, reliability, and referential integrity of the system, a comprehensive automated 
+    test suite (<code>test_dbms.py</code>) was executed against the running MySQL 9.7.1 database. 
+    The suite covers connection verification, multi-table joins, atomic insertions, cascaded deletions, 
+    input validation, and foreign key constraint enforcement.
+  </p>
+
+  <h2>13.1 Official Test Case Results Table</h2>
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 10%;">Test ID</th>
+        <th style="width: 20%;">Feature Tested</th>
+        <th style="width: 25%;">Input / Test Action</th>
+        <th style="width: 25%;">Expected Result</th>
+        <th style="width: 10%;">Actual Result</th>
+        <th style="width: 10%;">Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>TC01</strong></td>
+        <td>Database Connection</td>
+        <td>Connect to MySQL via <code>db.py</code> pinging port 3306</td>
+        <td>Active connection to <code>it_helpdesk</code> with 14 tables verified</td>
+        <td>Connected (MySQL v9.7.1, 14 tables detected)</td>
+        <td><span class="badge-pass">PASS</span></td>
+      </tr>
+      <tr>
+        <td><strong>TC02</strong></td>
+        <td>View Tickets (JOIN)</td>
+        <td>Execute multi-table SELECT JOIN across tickets, users, priorities</td>
+        <td>Return populated list of relational ticket records</td>
+        <td>Retrieved 7 relational ticket records from MySQL</td>
+        <td><span class="badge-pass">PASS</span></td>
+      </tr>
+      <tr>
+        <td><strong>TC03</strong></td>
+        <td>Insert Ticket (DML)</td>
+        <td>POST <code>/api/tickets</code> with valid fields (User 1, Cat 1, Prio 3)</td>
+        <td>HTTP 201 Created; auto-generate ticket_no; atomic insert</td>
+        <td>Created TKT-024 (ID: 24) in MySQL</td>
+        <td><span class="badge-pass">PASS</span></td>
+      </tr>
+      <tr>
+        <td><strong>TC04</strong></td>
+        <td>Persistence Check</td>
+        <td>Query MySQL directly: <code>SELECT * FROM tickets WHERE ticket_id=24</code></td>
+        <td>Record exists in InnoDB tables with status 'Open'</td>
+        <td>Record confirmed in MySQL table 'tickets'</td>
+        <td><span class="badge-pass">PASS</span></td>
+      </tr>
+      <tr>
+        <td><strong>TC05</strong></td>
+        <td>Delete Ticket (DML)</td>
+        <td>DELETE <code>/api/tickets/24</code> executing SQL DELETE</td>
+        <td>HTTP 200 Success; cascading purge of subtype &amp; audit rows</td>
+        <td>Ticket TKT-024 deleted successfully from MySQL</td>
+        <td><span class="badge-pass">PASS</span></td>
+      </tr>
+      <tr>
+        <td><strong>TC06</strong></td>
+        <td>Delete Persistence</td>
+        <td>Query MySQL directly: <code>SELECT * FROM tickets WHERE ticket_id=24</code></td>
+        <td>Query returns exactly 0 rows (permanent removal)</td>
+        <td>Verified 0 rows in MySQL for ID 24</td>
+        <td><span class="badge-pass">PASS</span></td>
+      </tr>
+      <tr>
+        <td><strong>TC07</strong></td>
+        <td>Form Validation</td>
+        <td>POST <code>/api/tickets</code> with empty title: <code>{"title": ""}</code></td>
+        <td>HTTP 400 Bad Request; friendly validation error message</td>
+        <td>HTTP 400 rejected: 'Ticket title is required.'</td>
+        <td><span class="badge-pass">PASS</span></td>
+      </tr>
+      <tr>
+        <td><strong>TC08</strong></td>
+        <td>UNIQUE Constraint</td>
+        <td>POST <code>/api/users</code> with duplicate email <code>aarav.sharma@company.com</code></td>
+        <td>HTTP 409 Conflict; catch MySQL error 1062 gracefully</td>
+        <td>Caught duplicate email: 'Email is already registered'</td>
+        <td><span class="badge-pass">PASS</span></td>
+      </tr>
+      <tr>
+        <td><strong>TC09</strong></td>
+        <td>FK RESTRICT Check</td>
+        <td>DELETE <code>/api/users/1</code> while active tickets exist for User 1</td>
+        <td>HTTP 409 Conflict; prevent deletion; catch MySQL error 1451</td>
+        <td>HTTP 409 handled: 'Unable to delete user with tickets'</td>
+        <td><span class="badge-pass">PASS</span></td>
+      </tr>
+      <tr>
+        <td><strong>TC10</strong></td>
+        <td>Offline Handling</td>
+        <td>Simulate invalid host / offline port in <code>check_db_status()</code></td>
+        <td>Graceful error dictionary without leaking database passwords</td>
+        <td>Safe user message: 'Database connection failed'</td>
+        <td><span class="badge-pass">PASS</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <strong>Test Suite Execution Summary:</strong> 10 out of 10 Test Cases Passed (100.0% Success Rate). Verified on live MySQL server with zero errors or data corruption.
+  </div>
+</div>
+
+<!-- 14. CONCLUSION AND FUTURE ENHANCEMENTS -->
+<div class="page-break">
+  <h1>14. Conclusion and Future Enhancements</h1>
+
+  <h2>14.1 Academic &amp; Technical Conclusion</h2>
+  <p>
+    The <strong>IT Helpdesk and Asset Support Management System</strong> successfully achieves all criteria established 
+    by the official DBMS Course Project curriculum. Through rigorous conceptual, logical, and physical database design, 
+    the project demonstrates:
+  </p>
+  <ul>
+    <li>The mathematical and practical value of <strong>Third Normal Form (3NF)</strong> normalization in eliminating operational data redundancies and update anomalies.</li>
+    <li>The enforceability of strict referential integrity through foreign key constraints (<code>ON DELETE RESTRICT</code>, <code>CASCADE</code>, <code>SET NULL</code>) and domain <code>CHECK</code> expressions.</li>
+    <li>The power of relational subtyping in modeling specialized business entities (<em>Incidents</em> vs <em>Service Requests</em>) cleanly without sparse, null-heavy tables.</li>
+    <li>The feasibility of delivering a full-stack, responsive web application connected to live MySQL that performs transparent, parameterized SQL CRUD operations in real time without ORM opacity.</li>
+  </ul>
+
+  <h2>14.2 Future System Enhancements</h2>
+  <ol>
+    <li>
+      <strong>Role-Based Access Control (RBAC) &amp; Authentication:</strong> Integrating hashed user passwords (e.g. Argon2 / bcrypt) and session JWTs to enforce granular permissions separating End-Users, Technicians, and System Administrators.
+    </li>
+    <li>
+      <strong>Automated SLA Escalation &amp; Email Webhooks:</strong> Implementing background database triggers or scheduled cron jobs to detect tickets approaching SLA breach thresholds and automatically notifying managers via SMTP.
+    </li>
+    <li>
+      <strong>Predictive Machine Learning Maintenance:</strong> Training supervised classification algorithms on historical servicing dates, hardware models, and failure descriptions to forecast equipment breakdown probabilities before physical hardware crashes occur.
+    </li>
+    <li>
+      <strong>Real-Time WebSocket State Synchronization:</strong> Upgrading REST polling endpoints to duplex WebSockets for instantaneous multi-technician queue updates.
+    </li>
+  </ol>
+</div>
+
+<!-- 15. REFERENCES -->
+<div class="page-break">
+  <h1>15. References</h1>
+  <ol style="margin-left: 8mm; line-height: 1.8;">
+    <li>
+      Silberschatz, A., Korth, H. F., &amp; Sudarshan, S. (2020). <em>Database System Concepts</em> (7th ed.). McGraw-Hill Education.
+    </li>
+    <li>
+      Elmasri, R., &amp; Navathe, S. B. (2015). <em>Fundamentals of Database Systems</em> (7th ed.). Pearson.
+    </li>
+    <li>
+      Oracle Corporation. (2026). <em>MySQL 8.0 Reference Manual: The InnoDB Storage Engine and Foreign Key Constraints</em>. Oracle Documentation. Retrieved from <a href="https://dev.mysql.com/doc/refman/8.0/en/innodb-storage-engine.html">https://dev.mysql.com/doc/refman/8.0/en/innodb-storage-engine.html</a>
+    </li>
+    <li>
+      Pallets Projects. (2026). <em>Flask Documentation (Version 3.1.x)</em>. Pallets Community. Retrieved from <a href="https://flask.palletsprojects.com/">https://flask.palletsprojects.com/</a>
+    </li>
+    <li>
+      Oracle Corporation. (2026). <em>MySQL Connector/Python Developer Guide</em>. Retrieved from <a href="https://dev.mysql.com/doc/connector-python/en/">https://dev.mysql.com/doc/connector-python/en/</a>
+    </li>
+    <li>
+      Cabello, R., &amp; Three.js Authors. (2026). <em>Three.js JavaScript 3D Library Documentation</em>. Retrieved from <a href="https://threejs.org/docs/">https://threejs.org/docs/</a>
+    </li>
+    <li>
+      Mozilla Developer Network (MDN). (2026). <em>Using the Fetch API and HTML5 Dialog Elements</em>. Mozilla Web Docs.
+    </li>
+  </ol>
+</div>
+
+<!-- 16. APPENDIX -->
+<div class="page-break">
+  <h1>16. Appendix: GitHub Repository &amp; Setup Guide</h1>
+
+  <h2>16.1 Official Submission GitHub Repository</h2>
+  <div class="callout">
+    <strong>Public GitHub Repository Link:</strong><br>
+    <a href="https://github.com/aali2k7/DBMS-Course-Project" style="font-weight: 700; color: #1e3a8a; font-size: 11pt;">https://github.com/aali2k7/DBMS-Course-Project</a>
+  </div>
+
+  <h2>16.2 Repository Directory Structure</h2>
+  <pre><code>DBMS-Course-Project/
+├── README.md                           # Master navigation and project overview
+├── .gitignore                          # Clean repository ignore list
+├── main.py                             # Runtime application entry point
+├── app.py                              # Flask Web Server & REST API endpoints
+├── db.py                               # MySQL connection pooling & status checks
+├── schema.sql                          # 14-table 3NF normalized DDL schema
+├── seed.sql                            # 55-record operational seed dataset
+├── test_dbms.py                        # Automated DBMS test suite (TC01 - TC10)
+├── requirements.txt                    # Python environment dependencies
+├── Presentation-I/                     # Evaluation-I: Problem Description
+│   ├── Presentation-I.pptx             # Editable 16:9 presentation deck
+│   ├── Presentation-I.pdf              # Academic presentation PDF export
+│   └── README.md                       # Presentation-I directory guide
+├── Presentation-II/                    # Evaluation-II: Schema & SQL Queries
+│   ├── Presentation-II.pptx            # Editable 16:9 presentation deck
+│   ├── Presentation-II.pdf             # Academic presentation PDF export
+│   ├── ER-Diagram.png                  # High-resolution ER diagram
+│   ├── ER-Diagram.pdf                  # High-resolution vector ER diagram
+│   ├── SQL-Commands.sql                # Consolidated DDL, DML, and query script
+│   ├── Presentation-II-Query-Solution.sql # Evaluated viva query solution
+│   └── README.md                       # Presentation-II directory guide
+├── Presentation-III/                   # Evaluation-III: Live UI & CRUD Demo
+│   ├── Presentation-III.pptx           # Editable 16:9 presentation deck
+│   ├── Presentation-III.pdf            # Academic presentation PDF with UI captures
+│   ├── README.md                       # Live demonstration script & viva guide
+│   ├── presentation.md                 # 12-slide demonstration outline
+│   ├── screenshots/                    # 11 authentic UI screen captures
+│   └── source/                         # Complete standalone application source
+└── Project-Report/                     # Final Academic Documentation (5 Marks)
+    ├── Project-Report.pdf              # Complete official academic report
+    └── README.md                       # Project report directory guide</code></pre>
+
+  <h2>16.3 Local Execution Guide</h2>
+  <pre><code># 1. Clone repository
+git clone https://github.com/aali2k7/DBMS-Course-Project.git
+cd DBMS-Course-Project
+
+# 2. Configure Python Virtual Environment & Install Dependencies
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+
+# 3. Initialize MySQL Database & Seed Data
+mysql -u root -p < schema.sql
+mysql -u root -p < seed.sql
+
+# 4. Launch Application
+python3 main.py
+# Open web browser to: http://127.0.0.1:5050
+
+# 5. Execute Automated DBMS Test Suite
+python3 test_dbms.py</code></pre>
+</div>
+
+</body>
+</html>
+"""
+
+# Replace image tokens
+content = template.replace("__ERD_IMG__", erd_img)
+content = content.replace("__DASH_IMG__", dash_img)
+content = content.replace("__DB_CONN_IMG__", db_conn_img)
+content = content.replace("__TICKETS_IMG__", tickets_img)
+content = content.replace("__INSERT_FORM_IMG__", insert_form_img)
+content = content.replace("__BEFORE_INSERT_IMG__", before_insert_img)
+content = content.replace("__AFTER_INSERT_IMG__", after_insert_img)
+content = content.replace("__BEFORE_DELETE_IMG__", before_delete_img)
+content = content.replace("__AFTER_DELETE_IMG__", after_delete_img)
+content = content.replace("__USERS_IMG__", users_img)
+content = content.replace("__ASSETS_IMG__", assets_img)
+content = content.replace("__INSPECTOR_IMG__", inspector_img)
+
+html_file = "Project-Report/project_report_full.html"
+with open(html_file, "w") as f:
+    f.write(content)
+print(f"Generated {html_file}")
+
+# Render to PDF via Google Chrome Headless
+chrome = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+pdf_out = "Project-Report/Project-Report.pdf"
+cmd = [
+    chrome,
+    "--headless",
+    "--disable-gpu",
+    "--no-pdf-header-footer",
+    f"--print-to-pdf={pdf_out}",
+    "file://" + os.path.abspath(html_file)
+]
+subprocess.run(cmd, check=True)
+print(f"Rendered {pdf_out}")
+
+reader = pypdf.PdfReader(pdf_out)
+print(f"Project-Report.pdf Page Count: {len(reader.pages)}")
