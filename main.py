@@ -862,4 +862,28 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    import sys
+    if "--cli" in sys.argv or "-c" in sys.argv:
+        main()
+    else:
+        # Default mode for Presentation-III: Launch the Web UI & REST Server
+        from app import app as flask_app
+        from db import check_db_status
+        port = int(os.environ.get("FLASK_PORT", 5050))
+        debug = os.environ.get("FLASK_DEBUG", "False").lower() in ("true", "1")
+        print("\n" + "=" * 65)
+        print("   IT HELPDESK & ASSET SUPPORT MANAGEMENT SYSTEM")
+        print("   Course: DBMS | Presentation-III UI Demo")
+        print("   Student: Md Aali Rahman (25WU0102156)")
+        print("=" * 65)
+        status = check_db_status()
+        if status.get("connected"):
+            print(f"   [DATABASE] Connected to MySQL '{status['database']}' on {status['host']}:{status['port']}")
+            print(f"   [TABLES]   {status['tables_count']} relational tables verified")
+        else:
+            print(f"   [WARNING]  Database offline: {status.get('error')}")
+        print(f"   [WEB UI]   Running on http://127.0.0.1:{port}")
+        print("   [NOTE]     To run the legacy terminal menu, pass '--cli'")
+        print("=" * 65 + "\n")
+        flask_app.run(host="0.0.0.0", port=port, debug=debug)
+

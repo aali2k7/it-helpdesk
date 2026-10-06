@@ -1192,17 +1192,17 @@
     }
 
     /* ==========================================================================
-       SLIDE 5: INTERACTIVE ENTITY RELATIONSHIP DIAGRAM
+       SLIDE 6: INTERACTIVE ENTITY RELATIONSHIP DIAGRAM (14 MySQL Tables)
        ========================================================================== */
     .s5-erd-board {
       background: #ffffff;
       border: 1px solid var(--border-subtle);
       border-radius: var(--radius-md);
-      padding: 12px 14px;
+      padding: 8px 10px;
       box-shadow: var(--shadow-card);
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px 8px;
       position: relative;
     }
 
@@ -1218,53 +1218,51 @@
 
     .erd-connector-path {
       fill: none;
-      stroke: var(--accent-blue);
-      stroke-width: 2.2px;
+      stroke: #2563eb;
+      stroke-width: 1.8px;
       stroke-linecap: round;
-      stroke-dasharray: 6 4;
-      animation: erdLineFlow 0.85s linear infinite;
-    }
-
-    @keyframes erdLineFlow {
-      to {
-        stroke-dashoffset: -20;
-      }
+      filter: drop-shadow(0 1px 2px rgba(37, 99, 235, 0.3));
     }
 
     .erd-table {
       background: #ffffff;
-      border: 1px solid var(--border-medium);
-      border-radius: var(--radius-sm);
+      border: 1px solid #cbd5e1;
+      border-radius: 5px;
       overflow: hidden;
-      box-shadow: var(--shadow-subtle);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
       display: flex;
       flex-direction: column;
       cursor: pointer;
       position: relative;
       z-index: 2;
-      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
-                  border-color 0.22s ease,
-                  box-shadow 0.25s ease,
-                  opacity 0.25s ease,
-                  filter 0.25s ease;
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+                  border-color 0.18s ease,
+                  box-shadow 0.2s ease,
+                  opacity 0.2s ease,
+                  filter 0.2s ease;
+    }
+
+    .erd-table-span2 {
+      grid-column: span 2;
     }
 
     .erd-table:hover {
       border-color: var(--accent-blue);
-      box-shadow: var(--shadow-card);
+      box-shadow: 0 4px 10px rgba(37, 99, 235, 0.1);
+      transform: translateY(-1px);
     }
 
     /* Interactive States for ERD */
     .s5-erd-board.has-erd-focus .erd-table:not(.is-selected):not(.is-related) {
-      opacity: 0.28;
-      filter: grayscale(0.5);
-      transform: scale(0.985);
+      opacity: 0.20;
+      filter: grayscale(0.75);
+      transform: scale(0.99);
     }
 
     .erd-table.is-selected {
-      border: 2px solid var(--accent-blue);
-      box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.2), 0 8px 20px rgba(15, 23, 42, 0.12);
-      transform: scale(1.02);
+      border: 2px solid #1d4ed8;
+      box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.2), 0 8px 18px rgba(15, 23, 42, 0.12);
+      transform: scale(1.015);
       z-index: 20;
       background: #ffffff;
       opacity: 1 !important;
@@ -1272,8 +1270,8 @@
     }
 
     .erd-table.is-related {
-      border: 1.8px solid var(--accent-indigo);
-      box-shadow: 0 0 0 2px rgba(67, 56, 202, 0.16), 0 5px 14px rgba(15, 23, 42, 0.08);
+      border: 2px solid #6366f1;
+      box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.18), 0 6px 14px rgba(15, 23, 42, 0.08);
       transform: scale(1.01);
       z-index: 18;
       background: #ffffff;
@@ -1282,17 +1280,17 @@
     }
 
     .erd-head {
-      background: #f1f5f9;
-      border-bottom: 1px solid var(--border-medium);
-      padding: 5px 9px;
+      background: #f8fafc;
+      border-bottom: 1px solid #e2e8f0;
+      padding: 3.5px 7px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      transition: background 0.2s ease;
+      transition: background 0.18s ease;
     }
 
     .erd-table.is-selected .erd-head {
-      background: var(--accent-navy);
+      background: #0f172a;
       color: #ffffff;
     }
 
@@ -1301,54 +1299,70 @@
     }
 
     .erd-table.is-related .erd-head {
-      background: var(--accent-indigo-soft);
-      border-bottom-color: var(--accent-indigo-border);
+      background: #eef2ff;
+      border-bottom-color: #c7d2fe;
     }
 
     .erd-title {
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 800;
-      letter-spacing: 0.05em;
-      color: var(--accent-navy);
+      letter-spacing: 0.04em;
+      color: #0f172a;
       text-transform: uppercase;
-      transition: color 0.2s ease;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      transition: color 0.18s ease;
     }
 
     .erd-badge {
-      font-size: 9.5px;
+      font-size: 8.5px;
       font-weight: 700;
       color: var(--text-muted);
       background: #ffffff;
-      padding: 1px 5px;
+      padding: 1px 4px;
       border-radius: 3px;
-      border: 1px solid var(--border-subtle);
+      border: 1px solid #e2e8f0;
     }
 
     .erd-table.is-selected .erd-badge {
       background: rgba(255, 255, 255, 0.2);
       color: #ffffff;
-      border-color: rgba(255, 255, 255, 0.4);
+      border-color: rgba(255, 255, 255, 0.35);
     }
 
     .erd-table.is-related .erd-badge {
       background: #ffffff;
-      color: var(--accent-indigo);
-      border-color: var(--accent-indigo-border);
+      color: #4f46e5;
+      border-color: #c7d2fe;
     }
 
     .erd-body {
-      padding: 3px 0;
+      padding: 2px 0;
       background: #ffffff;
+    }
+
+    .erd-body-split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      padding: 0;
+    }
+
+    .split-col {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .erd-body-split > .split-col:first-child {
+      border-right: 1px solid #f1f5f9;
     }
 
     .erd-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 3px 9px;
-      font-size: 11px;
+      padding: 1.5px 6px;
+      font-size: 9.5px;
       border-bottom: 1px solid #f8fafc;
-      transition: background 0.2s ease;
+      transition: background 0.15s ease;
     }
 
     .erd-row:last-child {
@@ -1371,95 +1385,173 @@
 
     .erd-table.is-related .erd-row.fk {
       background: #ede9fe;
-      color: var(--accent-indigo);
+      color: #6b21a8;
       font-weight: 700;
     }
 
     .col-name {
       display: flex;
       align-items: center;
-      gap: 5px;
+      gap: 3.5px;
       color: var(--text-primary);
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      font-size: 10.5px;
+      font-size: 9.5px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .tag-pk {
-      font-size: 8.5px;
+      font-size: 7.5px;
       font-weight: 800;
-      color: #1d4ed8;
+      color: #1e40af;
       background: #dbeafe;
-      padding: 1px 4px;
+      padding: 0.5px 3px;
       border-radius: 2px;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.03em;
+      flex-shrink: 0;
     }
 
     .tag-fk {
-      font-size: 8.5px;
+      font-size: 7.5px;
       font-weight: 800;
       color: #6b21a8;
       background: #f3e8ff;
-      padding: 1px 4px;
+      padding: 0.5px 3px;
       border-radius: 2px;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.03em;
+      flex-shrink: 0;
+    }
+
+    .tag-rel {
+      font-size: 10px;
+      font-weight: 900;
+      color: #1d4ed8;
+      background: #eff6ff;
+      padding: 0.5px 3.5px;
+      border-radius: 2px;
+      display: inline-block;
     }
 
     .col-type {
-      font-size: 10px;
+      font-size: 8.5px;
       color: var(--text-muted);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
       font-weight: 500;
+      flex-shrink: 0;
+      margin-left: 3px;
     }
 
     .erd-legend-bar {
-      grid-column: span 4;
+      grid-column: span 5;
       display: flex;
       align-items: center;
       justify-content: space-between;
       background: #f8fafc;
-      border: 1px solid var(--border-subtle);
-      border-radius: 6px;
-      padding: 7px 14px;
-      font-size: 11.5px;
-      color: var(--text-secondary);
+      border: 1px solid #e2e8f0;
+      border-radius: 5px;
+      padding: 5px 10px;
+      font-size: 10.5px;
       position: relative;
       z-index: 20;
+      margin-top: 1px;
+      gap: 10px;
+    }
+
+    .legend-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .erd-badge-footer {
+      font-size: 10px;
+      font-weight: 700;
+      color: #0f172a;
+      letter-spacing: 0.02em;
+      background: #e2e8f0;
+      padding: 2px 6px;
+      border-radius: 3px;
     }
 
     .legend-items {
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 8px;
     }
 
     .legend-item {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 4px;
+      font-size: 10px;
       font-weight: 600;
+      color: #475569;
     }
 
     .erd-status-display {
-      font-weight: 700;
-      color: var(--accent-navy);
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
+      overflow: hidden;
+      flex: 1;
+      justify-content: flex-end;
+      min-width: 0;
+    }
+
+    .erd-status-box {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      text-align: left;
+      overflow: hidden;
+      min-width: 0;
+      flex: 1;
+      max-width: 680px;
+    }
+
+    #erdStatusText {
+      font-size: 10.5px;
+      font-weight: 700;
+      color: #0f172a;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      width: 100%;
+      display: block;
+    }
+
+    #erdStatusSub {
+      font-size: 9px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      color: #1d4ed8;
+      font-weight: 600;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      width: 100%;
+      margin-top: 1px;
+      display: block;
     }
 
     .btn-erd-reset {
-      font-size: 10px;
+      font-size: 9.5px;
       font-weight: 700;
       color: #ffffff;
-      background: var(--accent-navy);
-      border: none;
+      background: #1e293b;
+      border: 1px solid #0f172a;
       padding: 2px 7px;
-      border-radius: 4px;
+      border-radius: 3px;
       cursor: pointer;
       display: none;
+      white-space: nowrap;
+      transition: background 0.15s ease;
     }
 
     .btn-erd-reset:hover {
       background: var(--accent-blue);
+      border-color: #1d4ed8;
     }
 
     /* ==========================================================================
@@ -2296,15 +2388,16 @@
               <div class="domain-box">
                 <div class="domain-header">
                   <span class="domain-title">Ticketing &amp; Support Operations</span>
-                  <span class="domain-tag">7 Entities</span>
+                  <span class="domain-tag">8 Entities</span>
                 </div>
                 <div class="entities-chip-group">
                   <span class="entity-chip"><span class="chip-dot purple"></span>Tickets</span>
+                  <span class="entity-chip"><span class="chip-dot purple"></span>Incidents</span>
                   <span class="entity-chip"><span class="chip-dot purple"></span>Service Requests</span>
                   <span class="entity-chip"><span class="chip-dot purple"></span>Priorities</span>
-                  <span class="entity-chip"><span class="chip-dot purple"></span>Technicians</span>
+                  <span class="entity-chip"><span class="chip-dot purple"></span>Support Staff</span>
                   <span class="entity-chip"><span class="chip-dot purple"></span>Assignments</span>
-                  <span class="entity-chip"><span class="chip-dot purple"></span>Status History</span>
+                  <span class="entity-chip"><span class="chip-dot purple"></span>Status Histories</span>
                   <span class="entity-chip"><span class="chip-dot purple"></span>Resolutions</span>
                 </div>
               </div>
@@ -2353,7 +2446,7 @@
                 <div class="relation-node">
                   <span class="relation-source">Assignment</span>
                   <span class="relation-arrow">&rarr;</span>
-                  <span class="relation-target">Technician</span>
+                  <span class="relation-target">Support Staff</span>
                 </div>
                 <div class="relation-node">
                   <span class="relation-source">Ticket</span>
@@ -2377,31 +2470,37 @@
       </section>
 
       <!-- ================================================================
-           SLIDE 6: INTERACTIVE ENTITY RELATIONSHIP DIAGRAM
+           SLIDE 6: INTERACTIVE ENTITY RELATIONSHIP DIAGRAM (14 Tables)
            ================================================================ -->
       <section class="slide" id="slide-6" data-slide="6">
-        <div class="slide-header" style="margin-bottom: 8px;">
-          <span class="eyebrow anim-eyebrow">Interactive Schema &bull; 3NF Design</span>
+        <div class="slide-header" style="margin-bottom: 6px;">
+          <span class="eyebrow anim-eyebrow">Interactive Relational Schema &bull; 3NF Database Design</span>
           <div style="display: flex; align-items: center; justify-content: space-between;">
-            <h2 class="slide-title anim-title" style="font-size: 25px;">Entity Relationship Diagram</h2>
+            <h2 class="slide-title anim-title" style="font-size: 24px;">Entity Relationship Diagram</h2>
             <span class="interactive-guide-pill anim-desc">
               <svg class="icon" viewBox="0 0 24 24" style="width:12px;height:12px;color:var(--accent-blue);"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-              Click any entity to trace relationships &bull; Click empty space to reset
+              Click any table to trace PK &rarr; FK relationships &bull; Click empty space to reset
             </span>
           </div>
-          <p class="slide-desc anim-desc" style="font-size: 13px; margin-top: 2px;">
-            Interactive exploration of table structures, primary keys (PK), foreign keys (FK), and referential links.
+          <p class="slide-desc anim-desc" style="font-size: 12.5px; margin-top: 2px;">
+            Faithful visualization of all 14 MySQL tables in <code style="font-family:monospace;font-size:11px;background:#e2e8f0;padding:1px 5px;border-radius:3px;">it_helpdesk</code> schema with constraints, referential integrity, and exact data types.
           </p>
         </div>
 
         <div class="s5-erd-board anim-stagger-1" id="erdBoard">
           <!-- Dynamic SVG connector lines container -->
-          <svg class="erd-svg-overlay" id="erdSvgOverlay"></svg>
+          <svg class="erd-svg-overlay" id="erdSvgOverlay">
+            <defs>
+              <marker id="erd-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#2563eb"></path>
+              </marker>
+            </defs>
+          </svg>
 
-          <!-- Row 1: Col 1 - DEPARTMENT -->
-          <div class="erd-table" data-entity="DEPARTMENT">
+          <!-- Row 1: Col 1 - DEPARTMENTS -->
+          <div class="erd-table" data-entity="DEPARTMENTS">
             <div class="erd-head">
-              <span class="erd-title">DEPARTMENT</span>
+              <span class="erd-title">DEPARTMENTS</span>
               <span class="erd-badge">Lookup</span>
             </div>
             <div class="erd-body">
@@ -2410,16 +2509,20 @@
                 <span class="col-type">INT</span>
               </div>
               <div class="erd-row">
-                <span class="col-name">department_name</span>
-                <span class="col-type">VARCHAR</span>
+                <span class="col-name">name</span>
+                <span class="col-type">VARCHAR(100)</span>
+              </div>
+              <div class="erd-row">
+                <span class="col-name">location</span>
+                <span class="col-type">VARCHAR(100)</span>
               </div>
             </div>
           </div>
 
-          <!-- Row 1: Col 2 - USER -->
-          <div class="erd-table" data-entity="USER">
+          <!-- Row 1: Col 2 - USERS -->
+          <div class="erd-table" data-entity="USERS">
             <div class="erd-head">
-              <span class="erd-title">USER</span>
+              <span class="erd-title">USERS</span>
               <span class="erd-badge">Entity</span>
             </div>
             <div class="erd-body">
@@ -2429,11 +2532,11 @@
               </div>
               <div class="erd-row">
                 <span class="col-name">name</span>
-                <span class="col-type">VARCHAR</span>
+                <span class="col-type">VARCHAR(100)</span>
               </div>
               <div class="erd-row">
                 <span class="col-name">email</span>
-                <span class="col-type">VARCHAR</span>
+                <span class="col-type">VARCHAR(150)</span>
               </div>
               <div class="erd-row fk">
                 <span class="col-name"><span class="tag-fk">FK</span> department_id</span>
@@ -2442,10 +2545,10 @@
             </div>
           </div>
 
-          <!-- Row 1: Col 3 - CATEGORY -->
-          <div class="erd-table" data-entity="CATEGORY">
+          <!-- Row 1: Col 3 - CATEGORIES -->
+          <div class="erd-table" data-entity="CATEGORIES">
             <div class="erd-head">
-              <span class="erd-title">CATEGORY</span>
+              <span class="erd-title">CATEGORIES</span>
               <span class="erd-badge">Lookup</span>
             </div>
             <div class="erd-body">
@@ -2454,68 +2557,20 @@
                 <span class="col-type">INT</span>
               </div>
               <div class="erd-row">
-                <span class="col-name">category_name</span>
-                <span class="col-type">VARCHAR</span>
+                <span class="col-name">name</span>
+                <span class="col-type">VARCHAR(100)</span>
+              </div>
+              <div class="erd-row">
+                <span class="col-name">description</span>
+                <span class="col-type">TEXT</span>
               </div>
             </div>
           </div>
 
-          <!-- Row 1: Col 4 - ASSET -->
-          <div class="erd-table" data-entity="ASSET">
+          <!-- Row 1: Col 4 - PRIORITIES -->
+          <div class="erd-table" data-entity="PRIORITIES">
             <div class="erd-head">
-              <span class="erd-title">ASSET</span>
-              <span class="erd-badge">Core Asset</span>
-            </div>
-            <div class="erd-body">
-              <div class="erd-row pk">
-                <span class="col-name"><span class="tag-pk">PK</span> asset_id</span>
-                <span class="col-type">INT</span>
-              </div>
-              <div class="erd-row">
-                <span class="col-name">asset_tag, name</span>
-                <span class="col-type">VARCHAR</span>
-              </div>
-              <div class="erd-row fk">
-                <span class="col-name"><span class="tag-fk">FK</span> category_id</span>
-                <span class="col-type">INT</span>
-              </div>
-              <div class="erd-row fk">
-                <span class="col-name"><span class="tag-fk">FK</span> department_id</span>
-                <span class="col-type">INT</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Row 2: Col 1 - TICKET -->
-          <div class="erd-table" data-entity="TICKET">
-            <div class="erd-head">
-              <span class="erd-title">TICKET</span>
-              <span class="erd-badge">Core Desk</span>
-            </div>
-            <div class="erd-body">
-              <div class="erd-row pk">
-                <span class="col-name"><span class="tag-pk">PK</span> ticket_id</span>
-                <span class="col-type">INT</span>
-              </div>
-              <div class="erd-row">
-                <span class="col-name">ticket_number, title</span>
-                <span class="col-type">VARCHAR</span>
-              </div>
-              <div class="erd-row">
-                <span class="col-name">description, status</span>
-                <span class="col-type">TEXT/ENUM</span>
-              </div>
-              <div class="erd-row fk">
-                <span class="col-name"><span class="tag-fk">FK</span> user_id, priority_id</span>
-                <span class="col-type">INT</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Row 2: Col 2 - PRIORITY -->
-          <div class="erd-table" data-entity="PRIORITY">
-            <div class="erd-head">
-              <span class="erd-title">PRIORITY</span>
+              <span class="erd-title">PRIORITIES</span>
               <span class="erd-badge">Lookup</span>
             </div>
             <div class="erd-body">
@@ -2524,38 +2579,152 @@
                 <span class="col-type">INT</span>
               </div>
               <div class="erd-row">
-                <span class="col-name">priority_name</span>
-                <span class="col-type">VARCHAR</span>
+                <span class="col-name">name</span>
+                <span class="col-type">VARCHAR(50)</span>
+              </div>
+              <div class="erd-row">
+                <span class="col-name">level</span>
+                <span class="col-type">INT (1-5)</span>
               </div>
             </div>
           </div>
 
-          <!-- Row 2: Col 3 - TECHNICIAN -->
-          <div class="erd-table" data-entity="TECHNICIAN">
+          <!-- Row 1: Col 5 - SUPPORT_STAFF -->
+          <div class="erd-table" data-entity="SUPPORT_STAFF">
             <div class="erd-head">
-              <span class="erd-title">TECHNICIAN</span>
+              <span class="erd-title">SUPPORT_STAFF</span>
               <span class="erd-badge">Staff</span>
             </div>
             <div class="erd-body">
               <div class="erd-row pk">
-                <span class="col-name"><span class="tag-pk">PK</span> technician_id</span>
+                <span class="col-name"><span class="tag-pk">PK</span> staff_id</span>
                 <span class="col-type">INT</span>
               </div>
               <div class="erd-row">
                 <span class="col-name">name</span>
-                <span class="col-type">VARCHAR</span>
+                <span class="col-type">VARCHAR(100)</span>
               </div>
               <div class="erd-row">
                 <span class="col-name">email</span>
-                <span class="col-type">VARCHAR</span>
+                <span class="col-type">VARCHAR(150)</span>
+              </div>
+              <div class="erd-row">
+                <span class="col-name">specialization</span>
+                <span class="col-type">VARCHAR(100)</span>
               </div>
             </div>
           </div>
 
-          <!-- Row 2: Col 4 - ASSIGNMENT -->
-          <div class="erd-table" data-entity="ASSIGNMENT">
+          <!-- Row 2: Col 1 - WARRANTIES -->
+          <div class="erd-table" data-entity="WARRANTIES">
             <div class="erd-head">
-              <span class="erd-title">ASSIGNMENT</span>
+              <span class="erd-title">WARRANTIES</span>
+              <span class="erd-badge">Lifecycle</span>
+            </div>
+            <div class="erd-body">
+              <div class="erd-row pk">
+                <span class="col-name"><span class="tag-pk">PK</span> warranty_id</span>
+                <span class="col-type">INT</span>
+              </div>
+              <div class="erd-row">
+                <span class="col-name">provider</span>
+                <span class="col-type">VARCHAR(100)</span>
+              </div>
+              <div class="erd-row">
+                <span class="col-name">start_date</span>
+                <span class="col-type">DATE</span>
+              </div>
+              <div class="erd-row">
+                <span class="col-name">end_date</span>
+                <span class="col-type">DATE</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Row 2: Col 2 - ASSETS -->
+          <div class="erd-table" data-entity="ASSETS">
+            <div class="erd-head">
+              <span class="erd-title">ASSETS</span>
+              <span class="erd-badge">Core Asset</span>
+            </div>
+            <div class="erd-body">
+              <div class="erd-row pk">
+                <span class="col-name"><span class="tag-pk">PK</span> asset_id</span>
+                <span class="col-type">INT</span>
+              </div>
+              <div class="erd-row">
+                <span class="col-name">asset_tag</span>
+                <span class="col-type">VARCHAR(50)</span>
+              </div>
+              <div class="erd-row">
+                <span class="col-name">name</span>
+                <span class="col-type">VARCHAR(100)</span>
+              </div>
+              <div class="erd-row fk">
+                <span class="col-name"><span class="tag-fk">FK</span> user_id</span>
+                <span class="col-type">INT</span>
+              </div>
+              <div class="erd-row fk">
+                <span class="col-name"><span class="tag-fk">FK</span> category_id</span>
+                <span class="col-type">INT</span>
+              </div>
+              <div class="erd-row fk">
+                <span class="col-name"><span class="tag-fk">FK</span> warranty_id</span>
+                <span class="col-type">INT</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Row 2: Col 3 & 4 - TICKETS (Spans 2 columns) -->
+          <div class="erd-table erd-table-span2" data-entity="TICKETS">
+            <div class="erd-head">
+              <span class="erd-title">TICKETS</span>
+              <span class="erd-badge">Core Desk</span>
+            </div>
+            <div class="erd-body erd-body-split">
+              <div class="split-col">
+                <div class="erd-row pk">
+                  <span class="col-name"><span class="tag-pk">PK</span> ticket_id</span>
+                  <span class="col-type">INT</span>
+                </div>
+                <div class="erd-row">
+                  <span class="col-name">ticket_no</span>
+                  <span class="col-type">VARCHAR(50)</span>
+                </div>
+                <div class="erd-row">
+                  <span class="col-name">title</span>
+                  <span class="col-type">VARCHAR(200)</span>
+                </div>
+                <div class="erd-row">
+                  <span class="col-name">status</span>
+                  <span class="col-type">VARCHAR(50)</span>
+                </div>
+              </div>
+              <div class="split-col">
+                <div class="erd-row fk">
+                  <span class="col-name"><span class="tag-fk">FK</span> user_id</span>
+                  <span class="col-type">INT</span>
+                </div>
+                <div class="erd-row fk">
+                  <span class="col-name"><span class="tag-fk">FK</span> category_id</span>
+                  <span class="col-type">INT</span>
+                </div>
+                <div class="erd-row fk">
+                  <span class="col-name"><span class="tag-fk">FK</span> priority_id</span>
+                  <span class="col-type">INT</span>
+                </div>
+                <div class="erd-row">
+                  <span class="col-name">created_at</span>
+                  <span class="col-type">TIMESTAMP</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Row 2: Col 5 - ASSIGNMENTS -->
+          <div class="erd-table" data-entity="ASSIGNMENTS">
+            <div class="erd-head">
+              <span class="erd-title">ASSIGNMENTS</span>
               <span class="erd-badge">Bridge</span>
             </div>
             <div class="erd-body">
@@ -2568,79 +2737,17 @@
                 <span class="col-type">INT</span>
               </div>
               <div class="erd-row fk">
-                <span class="col-name"><span class="tag-fk">FK</span> technician_id</span>
-                <span class="col-type">INT</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Row 3: Col 1 - STATUS_HISTORY -->
-          <div class="erd-table" data-entity="STATUS_HISTORY">
-            <div class="erd-head">
-              <span class="erd-title">STATUS_HISTORY</span>
-              <span class="erd-badge">Audit</span>
-            </div>
-            <div class="erd-body">
-              <div class="erd-row pk">
-                <span class="col-name"><span class="tag-pk">PK</span> history_id</span>
-                <span class="col-type">INT</span>
-              </div>
-              <div class="erd-row fk">
-                <span class="col-name"><span class="tag-fk">FK</span> ticket_id</span>
+                <span class="col-name"><span class="tag-fk">FK</span> staff_id</span>
                 <span class="col-type">INT</span>
               </div>
               <div class="erd-row">
-                <span class="col-name">old_status, new_status</span>
-                <span class="col-type">VARCHAR</span>
+                <span class="col-name">assigned_at</span>
+                <span class="col-type">TIMESTAMP</span>
               </div>
             </div>
           </div>
 
-          <!-- Row 3: Col 2 - RESOLUTION -->
-          <div class="erd-table" data-entity="RESOLUTION">
-            <div class="erd-head">
-              <span class="erd-title">RESOLUTION</span>
-              <span class="erd-badge">Audit</span>
-            </div>
-            <div class="erd-body">
-              <div class="erd-row pk">
-                <span class="col-name"><span class="tag-pk">PK</span> resolution_id</span>
-                <span class="col-type">INT</span>
-              </div>
-              <div class="erd-row fk">
-                <span class="col-name"><span class="tag-fk">FK</span> ticket_id</span>
-                <span class="col-type">INT</span>
-              </div>
-              <div class="erd-row">
-                <span class="col-name">resolution_details</span>
-                <span class="col-type">TEXT</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Row 3: Col 3 - WARRANTY -->
-          <div class="erd-table" data-entity="WARRANTY">
-            <div class="erd-head">
-              <span class="erd-title">WARRANTY</span>
-              <span class="erd-badge">Lifecycle</span>
-            </div>
-            <div class="erd-body">
-              <div class="erd-row pk">
-                <span class="col-name"><span class="tag-pk">PK</span> warranty_id</span>
-                <span class="col-type">INT</span>
-              </div>
-              <div class="erd-row fk">
-                <span class="col-name"><span class="tag-fk">FK</span> asset_id</span>
-                <span class="col-type">INT</span>
-              </div>
-              <div class="erd-row">
-                <span class="col-name">expiry_date</span>
-                <span class="col-type">DATE</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Row 3: Col 4 - MAINTENANCE -->
+          <!-- Row 3: Col 1 - MAINTENANCE -->
           <div class="erd-table" data-entity="MAINTENANCE">
             <div class="erd-head">
               <span class="erd-title">MAINTENANCE</span>
@@ -2659,24 +2766,116 @@
                 <span class="col-name">maintenance_date</span>
                 <span class="col-type">DATE</span>
               </div>
+              <div class="erd-row">
+                <span class="col-name">cost</span>
+                <span class="col-type">DECIMAL(10,2)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Row 3: Col 2 - INCIDENTS -->
+          <div class="erd-table" data-entity="INCIDENTS">
+            <div class="erd-head">
+              <span class="erd-title">INCIDENTS</span>
+              <span class="erd-badge">Subtype</span>
+            </div>
+            <div class="erd-body">
+              <div class="erd-row pk">
+                <span class="col-name"><span class="tag-pk">PK</span><span class="tag-fk">FK</span> ticket_id</span>
+                <span class="col-type">INT</span>
+              </div>
+              <div class="erd-row">
+                <span class="col-name">incident_type</span>
+                <span class="col-type">VARCHAR(100)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Row 3: Col 3 - SERVICE_REQUESTS -->
+          <div class="erd-table" data-entity="SERVICE_REQUESTS">
+            <div class="erd-head">
+              <span class="erd-title">SERVICE_REQUESTS</span>
+              <span class="erd-badge">Subtype</span>
+            </div>
+            <div class="erd-body">
+              <div class="erd-row pk">
+                <span class="col-name"><span class="tag-pk">PK</span><span class="tag-fk">FK</span> ticket_id</span>
+                <span class="col-type">INT</span>
+              </div>
+              <div class="erd-row">
+                <span class="col-name">request_type</span>
+                <span class="col-type">VARCHAR(100)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Row 3: Col 4 - STATUS_HISTORIES -->
+          <div class="erd-table" data-entity="STATUS_HISTORIES">
+            <div class="erd-head">
+              <span class="erd-title">STATUS_HISTORIES</span>
+              <span class="erd-badge">Audit</span>
+            </div>
+            <div class="erd-body">
+              <div class="erd-row pk">
+                <span class="col-name"><span class="tag-pk">PK</span> history_id</span>
+                <span class="col-type">INT</span>
+              </div>
+              <div class="erd-row fk">
+                <span class="col-name"><span class="tag-fk">FK</span> ticket_id</span>
+                <span class="col-type">INT</span>
+              </div>
+              <div class="erd-row">
+                <span class="col-name">new_status</span>
+                <span class="col-type">VARCHAR(50)</span>
+              </div>
+              <div class="erd-row">
+                <span class="col-name">changed_at</span>
+                <span class="col-type">TIMESTAMP</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Row 3: Col 5 - RESOLUTIONS -->
+          <div class="erd-table" data-entity="RESOLUTIONS">
+            <div class="erd-head">
+              <span class="erd-title">RESOLUTIONS</span>
+              <span class="erd-badge">Audit</span>
+            </div>
+            <div class="erd-body">
+              <div class="erd-row pk">
+                <span class="col-name"><span class="tag-pk">PK</span> resolution_id</span>
+                <span class="col-type">INT</span>
+              </div>
+              <div class="erd-row fk">
+                <span class="col-name"><span class="tag-fk">FK</span> ticket_id</span>
+                <span class="col-type">INT [UQ]</span>
+              </div>
+              <div class="erd-row">
+                <span class="col-name">description</span>
+                <span class="col-type">TEXT</span>
+              </div>
+              <div class="erd-row">
+                <span class="col-name">resolved_at</span>
+                <span class="col-type">TIMESTAMP</span>
+              </div>
             </div>
           </div>
 
           <!-- Legend Bar -->
           <div class="erd-legend-bar">
-            <div class="legend-items">
-              <div class="legend-item">
-                <span class="tag-pk">PK</span> Primary Key
-              </div>
-              <div class="legend-item">
-                <span class="tag-fk">FK</span> Foreign Key Reference
-              </div>
-              <div class="legend-item" style="color: var(--text-secondary);">
-                &bull; Strict Referential Integrity (<span style="font-family:monospace;font-size:10.5px;">CASCADE / RESTRICT</span>)
+            <div class="legend-left">
+              <span class="erd-badge-footer">14 Tables &bull; PK/FK Relationships &bull; 3NF Relational Design</span>
+              <div class="legend-items">
+                <div class="legend-item"><span class="tag-pk">PK</span> = Primary Key</div>
+                <div class="legend-item"><span class="tag-fk">FK</span> = Foreign Key</div>
+                <div class="legend-item"><span class="tag-rel">&rarr;</span> = Foreign Key relationship</div>
               </div>
             </div>
             <div class="erd-status-display">
-              <span id="erdStatusText">Click any entity to trace relationships</span>
+              <div id="erdStatusBox" class="erd-status-box">
+                <span id="erdStatusText">Click any table to trace PK &rarr; FK relationships</span>
+                <span id="erdStatusSub"></span>
+              </div>
               <button class="btn-erd-reset" id="btnErdReset" title="Reset ERD focus">Reset View</button>
             </div>
           </div>
@@ -3070,56 +3269,97 @@
       });
 
       // ======================================================================
-      // SLIDE 5: INTERACTIVE ER DIAGRAM (Relational Line Tracing & Isolation)
+      // SLIDE 6: INTERACTIVE ENTITY RELATIONSHIP DIAGRAM (14 Tables, 3NF MySQL)
       // ======================================================================
       const erdBoard = document.getElementById('erdBoard');
       const erdTables = document.querySelectorAll('.erd-table');
       const erdSvgOverlay = document.getElementById('erdSvgOverlay');
       const erdStatusText = document.getElementById('erdStatusText');
+      const erdStatusSub = document.getElementById('erdStatusSub');
       const btnErdReset = document.getElementById('btnErdReset');
 
-      // Comprehensive Entity Relationship Map (Foreign Key dependencies)
-      const erdRelations = {
-        'DEPARTMENT': ['USER', 'ASSET'],
-        'USER': ['DEPARTMENT', 'TICKET'],
-        'CATEGORY': ['ASSET'],
-        'ASSET': ['DEPARTMENT', 'CATEGORY', 'WARRANTY', 'MAINTENANCE'],
-        'TICKET': ['USER', 'PRIORITY', 'ASSIGNMENT', 'STATUS_HISTORY', 'RESOLUTION'],
-        'PRIORITY': ['TICKET'],
-        'TECHNICIAN': ['ASSIGNMENT'],
-        'ASSIGNMENT': ['TICKET', 'TECHNICIAN'],
-        'STATUS_HISTORY': ['TICKET'],
-        'RESOLUTION': ['TICKET'],
-        'WARRANTY': ['ASSET'],
-        'MAINTENANCE': ['ASSET']
-      };
+      // Canonical MySQL Schema Foreign Key Mappings (from schema.sql)
+      const SCHEMA_RELATIONSHIPS = [
+        { child: 'USERS', fk: 'department_id', parent: 'DEPARTMENTS', pk: 'department_id' },
+        { child: 'ASSETS', fk: 'user_id', parent: 'USERS', pk: 'user_id' },
+        { child: 'ASSETS', fk: 'category_id', parent: 'CATEGORIES', pk: 'category_id' },
+        { child: 'ASSETS', fk: 'warranty_id', parent: 'WARRANTIES', pk: 'warranty_id' },
+        { child: 'TICKETS', fk: 'user_id', parent: 'USERS', pk: 'user_id' },
+        { child: 'TICKETS', fk: 'category_id', parent: 'CATEGORIES', pk: 'category_id' },
+        { child: 'TICKETS', fk: 'priority_id', parent: 'PRIORITIES', pk: 'priority_id' },
+        { child: 'INCIDENTS', fk: 'ticket_id', parent: 'TICKETS', pk: 'ticket_id' },
+        { child: 'SERVICE_REQUESTS', fk: 'ticket_id', parent: 'TICKETS', pk: 'ticket_id' },
+        { child: 'ASSIGNMENTS', fk: 'ticket_id', parent: 'TICKETS', pk: 'ticket_id' },
+        { child: 'ASSIGNMENTS', fk: 'staff_id', parent: 'SUPPORT_STAFF', pk: 'staff_id' },
+        { child: 'STATUS_HISTORIES', fk: 'ticket_id', parent: 'TICKETS', pk: 'ticket_id' },
+        { child: 'RESOLUTIONS', fk: 'ticket_id', parent: 'TICKETS', pk: 'ticket_id' },
+        { child: 'MAINTENANCE', fk: 'asset_id', parent: 'ASSETS', pk: 'asset_id' }
+      ];
 
       let activeErdEntity = null;
 
       function clearErdLines() {
-        if (erdSvgOverlay) erdSvgOverlay.innerHTML = '';
+        if (!erdSvgOverlay) return;
+        const defs = erdSvgOverlay.querySelector('defs');
+        erdSvgOverlay.innerHTML = '';
+        if (defs) erdSvgOverlay.appendChild(defs);
       }
 
-      function drawErdLinkLine(sourceEl, targetEl) {
-        if (!erdBoard || !erdSvgOverlay || !sourceEl || !targetEl) return;
+      function drawDirectedRelationLine(childEl, parentEl) {
+        if (!erdBoard || !erdSvgOverlay || !childEl || !parentEl) return;
 
         const boardRect = erdBoard.getBoundingClientRect();
-        const srcRect = sourceEl.getBoundingClientRect();
-        const tgtRect = targetEl.getBoundingClientRect();
+        const cRect = childEl.getBoundingClientRect();
+        const pRect = parentEl.getBoundingClientRect();
 
-        // Calculate center points relative to the ERD board
-        const x1 = srcRect.left - boardRect.left + srcRect.width / 2;
-        const y1 = srcRect.top - boardRect.top + srcRect.height / 2;
-        const x2 = tgtRect.left - boardRect.left + tgtRect.width / 2;
-        const y2 = tgtRect.top - boardRect.top + tgtRect.height / 2;
+        // Calculate card center coordinates relative to board
+        const c1 = {
+          x: cRect.left - boardRect.left + cRect.width / 2,
+          y: cRect.top - boardRect.top + cRect.height / 2
+        };
+        const c2 = {
+          x: pRect.left - boardRect.left + pRect.width / 2,
+          y: pRect.top - boardRect.top + pRect.height / 2
+        };
 
-        // Quadratic curve offset for elegant visual curvature
-        const midX = (x1 + x2) / 2;
-        const midY = (y1 + y2) / 2 - (Math.abs(x2 - x1) > 100 ? 12 : 0);
+        const dx = c2.x - c1.x;
+        const dy = c2.y - c1.y;
+        if (dx === 0 && dy === 0) return;
+
+        // Perimeter intersection for child (origin)
+        const hw1 = cRect.width / 2;
+        const hh1 = cRect.height / 2;
+        const s1 = Math.min(
+          Math.abs(dx) > 0 ? hw1 / Math.abs(dx) : Infinity,
+          Math.abs(dy) > 0 ? hh1 / Math.abs(dy) : Infinity
+        );
+        const startX = c1.x + dx * s1;
+        const startY = c1.y + dy * s1;
+
+        // Perimeter intersection for parent (destination)
+        const hw2 = pRect.width / 2;
+        const hh2 = pRect.height / 2;
+        const s2 = Math.min(
+          Math.abs(dx) > 0 ? hw2 / Math.abs(dx) : Infinity,
+          Math.abs(dy) > 0 ? hh2 / Math.abs(dy) : Infinity
+        );
+        const endX = c2.x - dx * s2;
+        const endY = c2.y - dy * s2;
+
+        // Slight curvature perpendicular to line for visual clarity
+        const midX = (startX + endX) / 2;
+        const midY = (startY + endY) / 2;
+        const dist = Math.hypot(endX - startX, endY - startY) || 1;
+        const curveOffset = Math.min(14, dist * 0.05);
+        const nx = -(endY - startY) / dist;
+        const ny = (endX - startX) / dist;
+        const ctrlX = midX + nx * curveOffset;
+        const ctrlY = midY + ny * curveOffset;
 
         const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        path.setAttribute('d', `M ${x1} ${y1} Q ${midX} ${midY} ${x2} ${y2}`);
+        path.setAttribute('d', `M ${startX.toFixed(1)} ${startY.toFixed(1)} Q ${ctrlX.toFixed(1)} ${ctrlY.toFixed(1)} ${endX.toFixed(1)} ${endY.toFixed(1)}`);
         path.setAttribute('class', 'erd-connector-path');
+        path.setAttribute('marker-end', 'url(#erd-arrow)');
         erdSvgOverlay.appendChild(path);
       }
 
@@ -3130,33 +3370,58 @@
         erdBoard.classList.add('has-erd-focus');
         clearErdLines();
 
-        const relatedList = erdRelations[entityName] || [];
-        let sourceCard = null;
-        const targetCards = [];
+        // Find all foreign key relationships involving entityName
+        const activeRels = SCHEMA_RELATIONSHIPS.filter(
+          r => r.child === entityName || r.parent === entityName
+        );
 
+        // Identify all uniquely connected entities
+        const connectedSet = new Set();
+        activeRels.forEach(r => {
+          connectedSet.add(r.child === entityName ? r.parent : r.child);
+        });
+        const connectedList = Array.from(connectedSet);
+
+        // Update card visual states
         erdTables.forEach(table => {
           const name = table.getAttribute('data-entity');
           table.classList.remove('is-selected', 'is-related');
 
           if (name === entityName) {
             table.classList.add('is-selected');
-            sourceCard = table;
-          } else if (relatedList.includes(name)) {
+          } else if (connectedSet.has(name)) {
             table.classList.add('is-related');
-            targetCards.push(table);
           }
         });
 
-        // Draw curved connector lines from selected entity to all directly related entities
-        if (sourceCard) {
-          targetCards.forEach(targetCard => {
-            drawErdLinkLine(sourceCard, targetCard);
-          });
-        }
+        // Draw directed relationship lines for every active link
+        activeRels.forEach(rel => {
+          const childCard = document.querySelector(`.erd-table[data-entity="${rel.child}"]`);
+          const parentCard = document.querySelector(`.erd-table[data-entity="${rel.parent}"]`);
+          if (childCard && parentCard) {
+            drawDirectedRelationLine(childCard, parentCard);
+          }
+        });
 
-        // Update Legend Status Bar
+        // Update Legend Status Bar with relationship summary and exact FK directions
         if (erdStatusText) {
-          erdStatusText.textContent = `Tracing: ${entityName} → Connected to ${relatedList.length} entities (${relatedList.join(', ')})`;
+          if (connectedList.length > 0) {
+            erdStatusText.textContent = `${entityName} → connected to ${connectedList.join(', ')}`;
+          } else {
+            erdStatusText.textContent = `${entityName} (Independent Table)`;
+          }
+          erdStatusText.title = erdStatusText.textContent;
+        }
+        if (erdStatusSub) {
+          if (activeRels.length > 0) {
+            const dirStrings = activeRels.map(
+              r => `${r.child.toLowerCase()}.${r.fk} → ${r.parent.toLowerCase()}.${r.pk}`
+            );
+            erdStatusSub.textContent = dirStrings.join('   •   ');
+          } else {
+            erdStatusSub.textContent = 'No foreign key constraints attached';
+          }
+          erdStatusSub.title = erdStatusSub.textContent;
         }
         if (btnErdReset) {
           btnErdReset.style.display = 'inline-block';
@@ -3171,7 +3436,12 @@
         clearErdLines();
 
         if (erdStatusText) {
-          erdStatusText.textContent = 'Click any entity to trace relationships';
+          erdStatusText.textContent = 'Click any table to trace PK → FK relationships';
+          erdStatusText.title = '';
+        }
+        if (erdStatusSub) {
+          erdStatusSub.textContent = '';
+          erdStatusSub.title = '';
         }
         if (btnErdReset) {
           btnErdReset.style.display = 'none';
@@ -3192,7 +3462,6 @@
 
       if (erdBoard) {
         erdBoard.addEventListener('click', (e) => {
-          // If clicked in whitespace inside ERD board, reset focus
           if (e.target === erdBoard || e.target === erdSvgOverlay) {
             resetErdFocus();
           }

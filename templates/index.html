@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IT Helpdesk & Asset Support Management System | DBMS Project</title>
+  <meta name="description" content="DBMS Course Project User Interface for IT Helpdesk and Asset Support Management System connected to MySQL. Student: Md Aali Rahman (25WU0102156), Woxsen University.">
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="app-container">
+  <!-- SIDEBAR NAVIGATION -->
+  <aside class="app-sidebar">
+    <div class="sidebar-header">
+      <div class="brand-icon">⚡</div>
+      <div class="brand-text">
+        <h1>IT HELPDESK</h1>
+        <span>& Asset Support</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <span class="nav-section-title">Operations</span>
+      <a class="nav-item active" data-view="dashboard" id="nav-dashboard">
+        <span class="nav-icon">📊</span>
+        <span>Dashboard</span>
+      </a>
+      <a class="nav-item" data-view="tickets" id="nav-tickets">
+        <span class="nav-icon">🎫</span>
+        <span>Tickets</span>
+        <span class="nav-badge" id="badge-open-tickets">0</span>
+      </a>
+      <a class="nav-item" data-view="incidents" id="nav-incidents">
+        <span class="nav-icon">🚨</span>
+        <span>Incidents</span>
+      </a>
+      <a class="nav-item" data-view="service-requests" id="nav-service-requests">
+        <span class="nav-icon">📋</span>
+        <span>Service Requests</span>
+      </a>
+
+      <span class="nav-section-title">Inventory & People</span>
+      <a class="nav-item" data-view="assets" id="nav-assets">
+        <span class="nav-icon">💻</span>
+        <span>Assets</span>
+        <span class="nav-badge" id="badge-total-assets">0</span>
+      </a>
+      <a class="nav-item" data-view="users" id="nav-users">
+        <span class="nav-icon">👥</span>
+        <span>Users</span>
+      </a>
+      <a class="nav-item" data-view="staff" id="nav-staff">
+        <span class="nav-icon">🛠️</span>
+        <span>Support Staff</span>
+      </a>
+      <a class="nav-item" data-view="departments" id="nav-departments">
+        <span class="nav-icon">🏢</span>
+        <span>Departments</span>
+      </a>
+      <a class="nav-item" data-view="maintenance" id="nav-maintenance">
+        <span class="nav-icon">🔧</span>
+        <span>Maintenance</span>
+      </a>
+
+      <span class="nav-section-title">Viva & Evaluation</span>
+      <a class="nav-item" data-view="sql" id="nav-sql">
+        <span class="nav-icon">🔍</span>
+        <span>SQL Verification</span>
+      </a>
+      <a class="nav-item" href="/er-diagram" target="_blank" id="nav-er-diagram">
+        <span class="nav-icon">📐</span>
+        <span>ER Diagram ↗</span>
+      </a>
+      <a class="nav-item" href="/presentation" target="_blank" id="nav-presentation">
+        <span class="nav-icon">📽️</span>
+        <span>Presentation ↗</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="student-tag">
+        <span class="student-name">Md Aali Rahman</span>
+        <span class="student-roll">Roll: 25WU0102156</span>
+        <span class="student-inst">Woxsen Univ • AIML Panthers</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN APPLICATION CONTENT -->
+  <main class="app-main">
+    <!-- TOP HEADER -->
+    <header class="app-header">
+      <div class="header-title-box">
+        <h2>IT Helpdesk & Asset Support Management System</h2>
+        <div class="header-subtitle">
+          <span>DBMS Course Project</span>
+          <span>•</span>
+          <span>Presentation-III User Interface Demo</span>
+          <span>•</span>
+          <span id="active-time" style="font-family: var(--font-mono); font-size: 11px;">7 Oct 2026</span>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <!-- Live Database Status Indicator -->
+        <div id="dbStatusPill" class="db-status-pill connected" title="Database status checked via MySQL query">
+          <span class="status-dot"></span>
+          <span id="dbStatusText">Checking MySQL...</span>
+        </div>
+        <button id="btnRefreshDb" class="btn btn-secondary btn-sm" title="Re-test live MySQL connection">
+          🔄 Ping DB
+        </button>
+      </div>
+    </header>
+
+    <!-- VIEW VIEWPORT -->
+    <div class="view-viewport">
+
+      <!-- ====================================================
+           VIEW 1: DASHBOARD
+           ==================================================== -->
+      <section id="view-dashboard" class="view-panel active">
+        <div class="panel-header">
+          <div class="panel-header-left">
+            <h3>Operations Dashboard</h3>
+            <p>Real-time analytics and quick operations directly against MySQL.</p>
+          </div>
+          <div class="panel-actions">
+            <button class="btn btn-primary" onclick="openTicketModal()">
+              <span>+</span> New Ticket
+            </button>
+            <button class="btn btn-secondary" onclick="loadDashboard()">
+              <span>🔄</span> Refresh
+            </button>
+          </div>
+        </div>
+
+        <!-- Metric Cards -->
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div class="metric-icon-box metric-icon-blue">🎫</div>
+            <div class="metric-info">
+              <h4>Total Tickets</h4>
+              <div class="metric-value" id="stat-total-tickets">0</div>
+            </div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-icon-box metric-icon-amber">⏳</div>
+            <div class="metric-info">
+              <h4>Active / Open</h4>
+              <div class="metric-value" id="stat-open-tickets">0</div>
+            </div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-icon-box metric-icon-green">✅</div>
+            <div class="metric-info">
+              <h4>Resolved</h4>
+              <div class="metric-value" id="stat-resolved-tickets">0</div>
+            </div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-icon-box metric-icon-cyan">💻</div>
+            <div class="metric-info">
+              <h4>Total Assets</h4>
+              <div class="metric-value" id="stat-total-assets">0</div>
+            </div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-icon-box metric-icon-purple">👥</div>
+            <div class="metric-info">
+              <h4>Registered Users</h4>
+              <div class="metric-value" id="stat-total-users">0</div>
+            </div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-icon-box metric-icon-red">💰</div>
+            <div class="metric-info">
+              <h4>Maintenance Cost</h4>
+              <div class="metric-value" id="stat-total-maint">$0.00</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Actions Bar -->
+        <div class="quick-actions-bar">
+          <div class="quick-actions-title">
+            <span>⚡ Quick Actions</span>
+          </div>
+          <div class="quick-actions-btns">
+            <button class="btn btn-primary btn-sm" onclick="openTicketModal()">+ Add Ticket</button>
+            <button class="btn btn-secondary btn-sm" onclick="openUserModal()">+ Add User</button>
+            <button class="btn btn-secondary btn-sm" onclick="openAssetModal()">+ Register Asset</button>
+            <button class="btn btn-secondary btn-sm" onclick="switchView('tickets')">View All Tickets</button>
+            <button class="btn btn-secondary btn-sm" onclick="switchView('assets')">View Assets</button>
+            <button class="btn btn-secondary btn-sm" onclick="switchView('sql')">Live SQL Queries</button>
+          </div>
+        </div>
+
+        <!-- Recent Tickets Table -->
+        <div class="table-card">
+          <div class="panel-header" style="padding: 16px 20px; margin-bottom: 0; border-bottom: 1px solid var(--border-subtle);">
+            <div class="panel-header-left">
+              <h4 style="font-size: 15px; font-weight: 600;">Recent Tickets Queue</h4>
+            </div>
+            <div class="panel-actions">
+              <button class="btn btn-secondary btn-sm" onclick="switchView('tickets')">View All &rarr;</button>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table" id="dashboard-recent-table">
+              <thead>
+                <tr>
+                  <th>Ticket #</th>
+                  <th>Title</th>
+                  <th>Requester</th>
+                  <th>Category</th>
+                  <th>Priority</th>
+                  <th>Status</th>
+                  <th>Logged Date</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="dashboard-recent-tbody">
+                <tr><td colspan="8" class="empty-state">Loading recent records from MySQL...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================
+           VIEW 2: TICKETS (CRUD: VIEW, INSERT, DELETE)
+           ==================================================== -->
+      <section id="view-tickets" class="view-panel">
+        <div class="panel-header">
+          <div class="panel-header-left">
+            <h3>Helpdesk Tickets Management</h3>
+            <p>Query, filter, inspect audit logs, insert new records, and delete tickets with real-time MySQL persistence.</p>
+          </div>
+          <div class="panel-actions">
+            <button class="btn btn-primary" onclick="openTicketModal()" id="btn-add-ticket-main">
+              <span>+</span> Add Ticket
+            </button>
+            <button class="btn btn-secondary" onclick="loadTickets()">
+              <span>🔄</span> Refresh
+            </button>
+          </div>
+        </div>
+
+        <!-- Filter & Search Toolbar -->
+        <div class="filter-toolbar">
+          <div class="filter-group">
+            <div class="search-input-box">
+              <span class="search-icon">🔍</span>
+              <input type="text" id="tickets-search" placeholder="Search ticket #, title, user, category..." oninput="debounceTicketsSearch()">
+            </div>
+            <select class="select-control" id="tickets-filter-status" onchange="loadTickets()">
+              <option value="all">All Statuses</option>
+              <option value="Open">Open</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Pending">Pending</option>
+              <option value="Resolved">Resolved</option>
+              <option value="Closed">Closed</option>
+              <option value="Cancelled">Cancelled</option>
+            </select>
+            <select class="select-control" id="tickets-filter-category" onchange="loadTickets()">
+              <option value="">All Categories</option>
+            </select>
+            <select class="select-control" id="tickets-filter-type" onchange="loadTickets()">
+              <option value="">All Types</option>
+              <option value="Incident">Incidents Only</option>
+              <option value="Service Request">Service Requests Only</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Tickets Data Table -->
+        <div class="table-card">
+          <div class="table-responsive">
+            <table class="data-table" id="tickets-table">
+              <thead>
+                <tr>
+                  <th>Ticket #</th>
+                  <th>Title</th>
+                  <th>Type & Subtype</th>
+                  <th>Requester</th>
+                  <th>Department</th>
+                  <th>Priority</th>
+                  <th>Status</th>
+                  <th>Created At</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="tickets-tbody">
+                <tr><td colspan="9" class="empty-state">Loading tickets from MySQL...</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="table-footer">
+            <span id="tickets-count-label">Showing 0 tickets</span>
+            <span>Database: <strong class="mono-pill">it_helpdesk.tickets</strong></span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================
+           VIEW 3: USERS (VIEW, INSERT, DELETE)
+           ==================================================== -->
+      <section id="view-users" class="view-panel">
+        <div class="panel-header">
+          <div class="panel-header-left">
+            <h3>Registered Users Directory</h3>
+            <p>End-users and staff mapped to organizational departments.</p>
+          </div>
+          <div class="panel-actions">
+            <button class="btn btn-primary" onclick="openUserModal()">
+              <span>+</span> Add User
+            </button>
+            <button class="btn btn-secondary" onclick="loadUsers()">
+              <span>🔄</span> Refresh
+            </button>
+          </div>
+        </div>
+
+        <div class="table-card">
+          <div class="table-responsive">
+            <table class="data-table" id="users-table">
+              <thead>
+                <tr>
+                  <th>User ID</th>
+                  <th>Full Name</th>
+                  <th>Email</th>
+                  <th>Department</th>
+                  <th>Location</th>
+                  <th>Open Tickets</th>
+                  <th>Allocated Assets</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="users-tbody">
+                <tr><td colspan="8" class="empty-state">Loading users from MySQL...</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="table-footer">
+            <span id="users-count-label">Showing 0 users</span>
+            <span>Table: <strong class="mono-pill">it_helpdesk.users</strong></span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================
+           VIEW 4: ASSETS (VIEW, INSERT, DELETE)
+           ==================================================== -->
+      <section id="view-assets" class="view-panel">
+        <div class="panel-header">
+          <div class="panel-header-left">
+            <h3>Hardware Asset Inventory</h3>
+            <p>Track computing equipment, serial numbers, user assignments, and manufacturer warranties.</p>
+          </div>
+          <div class="panel-actions">
+            <button class="btn btn-primary" onclick="openAssetModal()">
+              <span>+</span> Register Asset
+            </button>
+            <button class="btn btn-secondary" onclick="loadAssets()">
+              <span>🔄</span> Refresh
+            </button>
+          </div>
+        </div>
+
+        <div class="table-card">
+          <div class="table-responsive">
+            <table class="data-table" id="assets-table">
+              <thead>
+                <tr>
+                  <th>Asset Tag</th>
+                  <th>Asset Name</th>
+                  <th>Serial Number</th>
+                  <th>Category</th>
+                  <th>Assigned User</th>
+                  <th>Warranty</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="assets-tbody">
+                <tr><td colspan="8" class="empty-state">Loading hardware assets from MySQL...</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="table-footer">
+            <span id="assets-count-label">Showing 0 assets</span>
+            <span>Table: <strong class="mono-pill">it_helpdesk.assets</strong></span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================
+           VIEW 5: INCIDENTS (SUBTYPE VIEW)
+           ==================================================== -->
+      <section id="view-incidents" class="view-panel">
+        <div class="panel-header">
+          <div class="panel-header-left">
+            <h3>Incidents Queue</h3>
+            <p>Unplanned system disruptions, hardware malfunctions, and network outages.</p>
+          </div>
+          <div class="panel-actions">
+            <button class="btn btn-primary" onclick="openTicketModalWithSubtype('Incident')">
+              <span>+</span> Log Incident
+            </button>
+            <button class="btn btn-secondary" onclick="loadIncidents()">
+              <span>🔄</span> Refresh
+            </button>
+          </div>
+        </div>
+
+        <div class="table-card">
+          <div class="table-responsive">
+            <table class="data-table" id="incidents-table">
+              <thead>
+                <tr>
+                  <th>Ticket #</th>
+                  <th>Incident Type</th>
+                  <th>Summary</th>
+                  <th>Requester</th>
+                  <th>Priority</th>
+                  <th>Status</th>
+                  <th>Logged Date</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="incidents-tbody">
+                <tr><td colspan="8" class="empty-state">Loading incidents from MySQL...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================
+           VIEW 6: SERVICE REQUESTS (SUBTYPE VIEW)
+           ==================================================== -->
+      <section id="view-service-requests" class="view-panel">
+        <div class="panel-header">
+          <div class="panel-header-left">
+            <h3>Service Requests Queue</h3>
+            <p>Standard user provisioning, software installations, access rights, and hardware allocations.</p>
+          </div>
+          <div class="panel-actions">
+            <button class="btn btn-primary" onclick="openTicketModalWithSubtype('Service Request')">
+              <span>+</span> New Service Request
+            </button>
+            <button class="btn btn-secondary" onclick="loadServiceRequests()">
+              <span>🔄</span> Refresh
+            </button>
+          </div>
+        </div>
+
+        <div class="table-card">
+          <div class="table-responsive">
+            <table class="data-table" id="service-requests-table">
+              <thead>
+                <tr>
+                  <th>Ticket #</th>
+                  <th>Request Type</th>
+                  <th>Summary</th>
+                  <th>Requester</th>
+                  <th>Priority</th>
+                  <th>Status</th>
+                  <th>Logged Date</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="service-requests-tbody">
+                <tr><td colspan="8" class="empty-state">Loading service requests from MySQL...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================
+           VIEW 7: SUPPORT STAFF
+           ==================================================== -->
+      <section id="view-staff" class="view-panel">
+        <div class="panel-header">
+          <div class="panel-header-left">
+            <h3>Support Staff & Technicians</h3>
+            <p>IT engineers and specialists handling ticket investigations and resolutions.</p>
+          </div>
+          <div class="panel-actions">
+            <button class="btn btn-secondary" onclick="loadStaff()">
+              <span>🔄</span> Refresh
+            </button>
+          </div>
+        </div>
+
+        <div class="table-card">
+          <div class="table-responsive">
+            <table class="data-table" id="staff-table">
+              <thead>
+                <tr>
+                  <th>Staff ID</th>
+                  <th>Technician Name</th>
+                  <th>Email</th>
+                  <th>Specialization</th>
+                  <th>Active Tickets</th>
+                  <th>Total Handled</th>
+                </tr>
+              </thead>
+              <tbody id="staff-tbody">
+                <tr><td colspan="6" class="empty-state">Loading support staff from MySQL...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================
+           VIEW 8: DEPARTMENTS
+           ==================================================== -->
+      <section id="view-departments" class="view-panel">
+        <div class="panel-header">
+          <div class="panel-header-left">
+            <h3>Departments</h3>
+            <p>Organizational divisions and facilities.</p>
+          </div>
+          <div class="panel-actions">
+            <button class="btn btn-secondary" onclick="loadDepartments()">
+              <span>🔄</span> Refresh
+            </button>
+          </div>
+        </div>
+
+        <div class="table-card">
+          <div class="table-responsive">
+            <table class="data-table" id="departments-table">
+              <thead>
+                <tr>
+                  <th>Dept ID</th>
+                  <th>Department Name</th>
+                  <th>Office Location</th>
+                  <th>Staff & Users Count</th>
+                  <th>Allocated Assets</th>
+                </tr>
+              </thead>
+              <tbody id="departments-tbody">
+                <tr><td colspan="5" class="empty-state">Loading departments from MySQL...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================
+           VIEW 9: MAINTENANCE
+           ==================================================== -->
+      <section id="view-maintenance" class="view-panel">
+        <div class="panel-header">
+          <div class="panel-header-left">
+            <h3>Hardware Maintenance Records</h3>
+            <p>Repair logs, servicing dates, actions taken, and recorded expenditures.</p>
+          </div>
+          <div class="panel-actions">
+            <button class="btn btn-secondary" onclick="loadMaintenance()">
+              <span>🔄</span> Refresh
+            </button>
+          </div>
+        </div>
+
+        <div class="table-card">
+          <div class="table-responsive">
+            <table class="data-table" id="maintenance-table">
+              <thead>
+                <tr>
+                  <th>Log ID</th>
+                  <th>Asset Tag</th>
+                  <th>Asset Name</th>
+                  <th>Maintenance Date</th>
+                  <th>Description</th>
+                  <th>Servicing Cost ($)</th>
+                </tr>
+              </thead>
+              <tbody id="maintenance-tbody">
+                <tr><td colspan="6" class="empty-state">Loading maintenance records from MySQL...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================
+           VIEW 10: SQL VERIFICATION PLAYGROUND (FOR FACULTY)
+           ==================================================== -->
+      <section id="view-sql" class="view-panel">
+        <div class="panel-header">
+          <div class="panel-header-left">
+            <h3>Live SQL Verification & Relational Reporting</h3>
+            <p>Execute actual multi-table JOINs, aggregations, and audit queries directly against MySQL for evaluation.</p>
+          </div>
+        </div>
+
+        <div class="sql-query-card">
+          <label style="font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px; display: block;">
+            Select Demonstration Query:
+          </label>
+          <div style="display: flex; gap: 12px; margin-bottom: 12px; flex-wrap: wrap;">
+            <select class="select-control" id="sql-query-select" style="flex: 1; min-width: 320px;" onchange="updateSqlDisplay()">
+              <option value="audit_trail">1. Complete Ticket Audit Trail (status_histories & tickets JOIN)</option>
+              <option value="staff_workload">2. Active Support Staff Workload (GROUP BY & Aggregations)</option>
+              <option value="department_maint">3. Maintenance Costs per Department (Multi-Table JOIN)</option>
+              <option value="expiring_warranties">4. Expiring Hardware Warranties (DATE calculation)</option>
+              <option value="ticket_subtypes">5. Ticket Subtypes: Incidents vs Service Requests (Inheritance)</option>
+            </select>
+            <button class="btn btn-primary" onclick="executeSelectedSqlQuery()" id="btn-run-sql">
+              ▶ Execute Live Query in MySQL
+            </button>
+          </div>
+
+          <div class="sql-code-block" id="sql-display-code">-- SQL query will appear here</div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
+            <span id="sql-query-desc" style="font-size: 12px; color: var(--text-secondary);">Query description</span>
+            <span id="sql-query-stats" style="font-size: 11px; font-family: var(--font-mono); color: var(--accent-green);">Ready</span>
+          </div>
+        </div>
+
+        <!-- Query Output Table -->
+        <div class="table-card" id="sql-results-card" style="display: none;">
+          <div class="panel-header" style="padding: 12px 18px; margin-bottom: 0; border-bottom: 1px solid var(--border-subtle);">
+            <div class="panel-header-left">
+              <h4 style="font-size: 14px; font-weight: 600;">MySQL Query Output Results</h4>
+            </div>
+            <div class="panel-actions">
+              <span id="sql-row-count-badge" class="mono-pill">0 rows</span>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table" id="sql-results-table">
+              <thead id="sql-results-thead"></thead>
+              <tbody id="sql-results-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<!-- ==========================================================
+     MODAL 1: ADD NEW TICKET (INSERT OPERATION)
+     ========================================================== -->
+<dialog id="modal-ticket" class="custom-modal">
+  <div class="modal-header">
+    <h3>Create New Helpdesk Ticket</h3>
+    <button class="btn-close" onclick="closeModal('modal-ticket')">&times;</button>
+  </div>
+  <form id="form-create-ticket" onsubmit="handleCreateTicket(event)">
+    <div class="modal-body">
+      <!-- Requester & Priority -->
+      <div class="form-row">
+        <div class="form-group">
+          <label>Requester (User) <span class="req">*</span></label>
+          <select class="form-control" id="ticket-input-user" required>
+            <option value="">Select User...</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Priority Level <span class="req">*</span></label>
+          <select class="form-control" id="ticket-input-priority" required>
+            <option value="">Select Priority...</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Category -->
+      <div class="form-group">
+        <label>Issue Category <span class="req">*</span></label>
+        <select class="form-control" id="ticket-input-category" required>
+          <option value="">Select Category...</option>
+        </select>
+      </div>
+
+      <!-- Subtype Switch (Incident vs Service Request) -->
+      <div class="form-group">
+        <label>Ticket Classification <span class="req">*</span></label>
+        <div class="radio-pill-group">
+          <div>
+            <input type="radio" id="type-incident" name="ticket_type" value="Incident" checked onchange="toggleSubtypeFields()">
+            <label for="type-incident" class="radio-pill-label">🚨 Incident (Failure / Outage)</label>
+          </div>
+          <div>
+            <input type="radio" id="type-request" name="ticket_type" value="Service Request" onchange="toggleSubtypeFields()">
+            <label for="type-request" class="radio-pill-label">📋 Service Request (Provisioning)</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Subtype Detail Field -->
+      <div class="form-group">
+        <label id="subtype-detail-label">Incident Type <span class="req">*</span></label>
+        <input type="text" class="form-control" id="ticket-input-subtype" placeholder="e.g. Hardware Malfunction, Software Crash" required>
+        <span class="form-help" id="subtype-detail-help">Specifies classification recorded in subtype relational table.</span>
+      </div>
+
+      <!-- Title -->
+      <div class="form-group">
+        <label>Ticket Summary / Title <span class="req">*</span></label>
+        <input type="text" class="form-control" id="ticket-input-title" placeholder="Brief summary of the issue (e.g. Laptop display flickering)" maxlength="200" required>
+      </div>
+
+      <!-- Description -->
+      <div class="form-group">
+        <label>Detailed Description <span class="req">*</span></label>
+        <textarea class="form-control" id="ticket-input-desc" placeholder="Provide full context, symptoms, error messages, and troubleshooting steps..." required></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" onclick="closeModal('modal-ticket')">Cancel</button>
+      <button type="submit" class="btn btn-primary" id="btn-submit-ticket">Create Ticket in MySQL</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- ==========================================================
+     MODAL 2: ADD NEW USER (INSERT OPERATION)
+     ========================================================== -->
+<dialog id="modal-user" class="custom-modal">
+  <div class="modal-header">
+    <h3>Register New User</h3>
+    <button class="btn-close" onclick="closeModal('modal-user')">&times;</button>
+  </div>
+  <form id="form-create-user" onsubmit="handleCreateUser(event)">
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Full Name <span class="req">*</span></label>
+        <input type="text" class="form-control" id="user-input-name" placeholder="e.g. Rahul Sharma" required>
+      </div>
+      <div class="form-group">
+        <label>Email Address <span class="req">*</span></label>
+        <input type="email" class="form-control" id="user-input-email" placeholder="e.g. rahul.sharma@company.com" required>
+        <span class="form-help">Must be unique across the organization.</span>
+      </div>
+      <div class="form-group">
+        <label>Department <span class="req">*</span></label>
+        <select class="form-control" id="user-input-dept" required>
+          <option value="">Select Department...</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" onclick="closeModal('modal-user')">Cancel</button>
+      <button type="submit" class="btn btn-primary">Add User to MySQL</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- ==========================================================
+     MODAL 3: REGISTER NEW ASSET (INSERT OPERATION)
+     ========================================================== -->
+<dialog id="modal-asset" class="custom-modal">
+  <div class="modal-header">
+    <h3>Register Hardware Asset</h3>
+    <button class="btn-close" onclick="closeModal('modal-asset')">&times;</button>
+  </div>
+  <form id="form-create-asset" onsubmit="handleCreateAsset(event)">
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Asset Tag <span class="req">*</span></label>
+          <input type="text" class="form-control" id="asset-input-tag" placeholder="e.g. AST-LENOVO-007" required>
+        </div>
+        <div class="form-group">
+          <label>Serial Number <span class="req">*</span></label>
+          <input type="text" class="form-control" id="asset-input-serial" placeholder="e.g. SN-8921-789" required>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Asset Name / Model <span class="req">*</span></label>
+        <input type="text" class="form-control" id="asset-input-name" placeholder="e.g. ThinkPad T14s Gen 5" required>
+      </div>
+      <div class="form-group">
+        <label>Category <span class="req">*</span></label>
+        <select class="form-control" id="asset-input-cat" required>
+          <option value="">Select Category...</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Assigned User (Optional)</label>
+          <select class="form-control" id="asset-input-user">
+            <option value="">Unassigned (In Inventory)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Warranty Plan (Optional)</label>
+          <select class="form-control" id="asset-input-warranty">
+            <option value="">None / Standard</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" onclick="closeModal('modal-asset')">Cancel</button>
+      <button type="submit" class="btn btn-primary">Save Asset to MySQL</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- ==========================================================
+     MODAL 4: TICKET DETAILS & AUDIT TRAIL (VIEW OPERATION)
+     ========================================================== -->
+<dialog id="modal-ticket-details" class="custom-modal" style="max-width: 680px;">
+  <div class="modal-header">
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <h3 id="td-ticket-no">TKT-001</h3>
+      <span id="td-status-badge" class="badge">Open</span>
+      <span id="td-type-badge" class="badge">Incident</span>
+    </div>
+    <button class="btn-close" onclick="closeModal('modal-ticket-details')">&times;</button>
+  </div>
+  <div class="modal-body" style="padding: 20px 24px;">
+    <!-- Title & Description -->
+    <div style="margin-bottom: 18px;">
+      <h4 id="td-title" style="font-size: 16px; font-weight: 700; color: var(--text-primary); margin-bottom: 6px;">Ticket Title</h4>
+      <p id="td-desc" style="font-size: 13.5px; color: var(--text-secondary); line-height: 1.6; background-color: var(--bg-card); padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);"></p>
+    </div>
+
+    <!-- Metadata Grid -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 20px; font-size: 12px;">
+      <div style="background-color: var(--bg-card); padding: 10px; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
+        <span style="color: var(--text-muted); display: block;">Requester</span>
+        <strong id="td-user" style="color: var(--text-primary);">-</strong>
+      </div>
+      <div style="background-color: var(--bg-card); padding: 10px; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
+        <span style="color: var(--text-muted); display: block;">Department</span>
+        <strong id="td-dept" style="color: var(--text-primary);">-</strong>
+      </div>
+      <div style="background-color: var(--bg-card); padding: 10px; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
+        <span style="color: var(--text-muted); display: block;">Category</span>
+        <strong id="td-category" style="color: var(--text-primary);">-</strong>
+      </div>
+      <div style="background-color: var(--bg-card); padding: 10px; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
+        <span style="color: var(--text-muted); display: block;">Priority</span>
+        <strong id="td-priority" style="color: var(--text-primary);">-</strong>
+      </div>
+      <div style="background-color: var(--bg-card); padding: 10px; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
+        <span style="color: var(--text-muted); display: block;">Logged Date</span>
+        <strong id="td-created" style="color: var(--text-primary);">-</strong>
+      </div>
+    </div>
+
+    <!-- Assigned Technicians -->
+    <div style="margin-bottom: 20px;">
+      <h5 style="font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px;">
+        🛠️ Assigned Support Staff (assignments Table)
+      </h5>
+      <div id="td-assignments-container" style="font-size: 12.5px; color: var(--text-secondary);">
+        (No staff assigned yet)
+      </div>
+    </div>
+
+    <!-- Status History Audit Trail -->
+    <div style="margin-bottom: 20px;">
+      <h5 style="font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px;">
+        📜 Status Lifecycle Audit Log (status_histories Table)
+      </h5>
+      <div class="timeline" id="td-timeline-container">
+        <!-- Dynamic timeline items -->
+      </div>
+    </div>
+
+    <!-- Resolution Record -->
+    <div id="td-resolution-box" style="display: none; background-color: var(--accent-green-subtle); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: var(--radius-sm); padding: 12px;">
+      <h5 style="font-size: 13px; font-weight: 600; color: #34d399; margin-bottom: 4px;">
+        ✅ Resolution Summary (resolutions Table)
+      </h5>
+      <p id="td-resolution-desc" style="font-size: 13px; color: var(--text-primary);"></p>
+      <span id="td-resolution-time" style="font-size: 11px; color: var(--text-secondary); font-family: var(--font-mono);"></span>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" onclick="closeModal('modal-ticket-details')">Close</button>
+    <button type="button" class="btn btn-primary" id="td-btn-update-status" onclick="openStatusModalFromDetails()">Update Status / Assign</button>
+  </div>
+</dialog>
+
+<!-- ==========================================================
+     MODAL 5: UPDATE STATUS / ASSIGN TECHNICIAN
+     ========================================================== -->
+<dialog id="modal-status" class="custom-modal">
+  <div class="modal-header">
+    <h3 id="status-modal-title">Update Ticket Status & Assignment</h3>
+    <button class="btn-close" onclick="closeModal('modal-status')">&times;</button>
+  </div>
+  <form id="form-update-status" onsubmit="handleUpdateStatus(event)">
+    <input type="hidden" id="status-ticket-id">
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Update Status <span class="req">*</span></label>
+        <select class="form-control" id="status-select" required onchange="toggleResolutionInput()">
+          <option value="Open">Open</option>
+          <option value="In Progress">In Progress</option>
+          <option value="Pending">Pending</option>
+          <option value="Resolved">Resolved</option>
+          <option value="Closed">Closed</option>
+          <option value="Cancelled">Cancelled</option>
+        </select>
+        <span class="form-help">Every status change automatically records previous status and timestamp in MySQL.</span>
+      </div>
+
+      <div class="form-group">
+        <label>Assign Support Staff (Optional)</label>
+        <select class="form-control" id="status-staff-select">
+          <option value="">Keep current assignment</option>
+        </select>
+      </div>
+
+      <div class="form-group" id="group-resolution-desc" style="display: none;">
+        <label>Resolution Notes / Fix Summary <span class="req">*</span></label>
+        <textarea class="form-control" id="status-resolution-desc" placeholder="Describe the solution applied to resolve this ticket..."></textarea>
+        <span class="form-help">Will be inserted into the resolutions table.</span>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" onclick="closeModal('modal-status')">Cancel</button>
+      <button type="submit" class="btn btn-primary">Commit Status Update</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- ==========================================================
+     MODAL 6: DELETE CONFIRMATION (DELETE OPERATION)
+     ========================================================== -->
+<dialog id="modal-delete" class="custom-modal" style="max-width: 460px;">
+  <div class="modal-header">
+    <h3 style="color: var(--accent-red);">Confirm Deletion</h3>
+    <button class="btn-close" onclick="closeModal('modal-delete')">&times;</button>
+  </div>
+  <div class="modal-body">
+    <p style="font-size: 14px; margin-bottom: 12px; color: var(--text-primary);">
+      Are you sure you want to permanently delete this record from MySQL?
+    </p>
+    <div style="background-color: var(--bg-card); padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); margin-bottom: 14px;">
+      <div style="font-size: 12px; color: var(--text-muted); text-transform: uppercase;" id="del-record-type">Ticket</div>
+      <div style="font-size: 15px; font-weight: 700; color: var(--text-primary);" id="del-record-identifier">TKT-001</div>
+      <div style="font-size: 13px; color: var(--text-secondary);" id="del-record-title">Laptop display flickering constantly</div>
+    </div>
+    <p style="font-size: 12px; color: var(--text-muted); line-height: 1.5;">
+      ⚠️ <em>This operation will execute a real SQL <code>DELETE</code> against MySQL. Foreign key cascade rules will be applied.</em>
+    </p>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" onclick="closeModal('modal-delete')">Cancel</button>
+    <button type="button" class="btn btn-danger" id="btn-confirm-delete" onclick="executeDeleteRecord()">
+      Delete from MySQL
+    </button>
+  </div>
+</dialog>
+
+<!-- TOAST NOTIFICATION CONTAINER -->
+<div id="toastContainer" class="toast-container"></div>
+
+<script src="/static/js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>DBMS Project Report - IT Helpdesk & Asset Support Management System</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 20mm 15mm;
+    }
+    body {
+      font-family: 'Times New Roman', Times, serif;
+      color: #111;
+      line-height: 1.6;
+      font-size: 11pt;
+      margin: 0;
+      padding: 0;
+    }
+    .cover-page {
+      page-break-after: always;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      height: 90vh;
+      border: 3px double #333;
+      padding: 40px;
+      margin: 20px;
+    }
+    .cover-title {
+      font-size: 24pt;
+      font-weight: bold;
+      margin: 30px 0 10px;
+      color: #0b2545;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .cover-sub {
+      font-size: 14pt;
+      margin-bottom: 40px;
+      color: #555;
+    }
+    .cover-meta {
+      margin-top: 50px;
+      font-size: 12pt;
+      line-height: 1.8;
+    }
+    h1 {
+      font-size: 18pt;
+      color: #0b2545;
+      border-bottom: 2px solid #0b2545;
+      padding-bottom: 4px;
+      margin-top: 30px;
+      page-break-before: auto;
+    }
+    h2 {
+      font-size: 14pt;
+      color: #134074;
+      margin-top: 20px;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 3px;
+    }
+    h3 {
+      font-size: 12pt;
+      color: #1d2d44;
+      margin-top: 14px;
+    }
+    p {
+      text-align: justify;
+      margin: 10px 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      font-size: 9.5pt;
+    }
+    th, td {
+      border: 1px solid #444;
+      padding: 6px 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #eef4f8;
+      font-weight: bold;
+      color: #0b2545;
+    }
+    code, pre {
+      font-family: 'Courier New', Courier, monospace;
+      background-color: #f4f4f4;
+      padding: 2px 4px;
+      font-size: 9pt;
+      border-radius: 3px;
+    }
+    pre {
+      padding: 10px;
+      border: 1px solid #ddd;
+      overflow-x: auto;
+      white-space: pre-wrap;
+    }
+    .badge {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: bold;
+      font-size: 8.5pt;
+    }
+    .badge-pass { background-color: #d1fae5; color: #065f46; }
+    .page-break { page-break-before: always; }
+  </style>
+</head>
+<body>
+
+<!-- COVER PAGE -->
+<div class="cover-page">
+  <div style="font-size: 18pt; font-weight: bold; letter-spacing: 1px;">WOXSEN UNIVERSITY</div>
+  <div style="font-size: 12pt; color: #444; text-transform: uppercase; margin-top: 4px;">School of Technology • Department of AI & ML</div>
+
+  <div class="cover-title">IT Helpdesk & Asset Support<br>Management System</div>
+  <div class="cover-sub">Course Project Report & System Demonstration</div>
+
+  <div style="margin: 30px 0;">
+    <p><strong>Course:</strong> Database Management Systems (DBMS)</p>
+    <p><strong>Academic Year:</strong> 2026</p>
+    <p><strong>Section:</strong> AIML Panthers</p>
+    <p><strong>Phase:</strong> Presentation-III & Final Project Evaluation</p>
+  </div>
+
+  <div class="cover-meta">
+    <p><strong>Submitted By:</strong></p>
+    <p style="font-size: 14pt; font-weight: bold; color: #0b2545;">Md Aali Rahman</p>
+    <p>Roll Number: <strong>25WU0102156</strong></p>
+  </div>
+</div>
+
+<!-- ABSTRACT -->
+<h1>1. Abstract</h1>
+<p>
+The <strong>IT Helpdesk and Asset Support Management System</strong> is a comprehensive relational database application engineered for enterprise technical support and computing hardware asset lifecycle tracking. Modern organizations frequently suffer from lost helpdesk requests, missing computing assets, unmonitored repair expenses, and absent operational audit trails due to fragmented management tools.
+</p>
+<p>
+This project delivers a normalized <strong>Third Normal Form (3NF)</strong> relational database designed in <strong>MySQL 8.0+</strong> comprising 14 interconnected tables. The database enforces relational integrity using Primary Keys, Foreign Keys (<code>CASCADE</code>, <code>RESTRICT</code>, <code>SET NULL</code>), <code>UNIQUE</code> constraints, and <code>CHECK</code> expressions. The system features a modern Python backend using parameterized SQL queries and a single-page web interface. Real-time <strong>VIEW</strong>, <strong>INSERT</strong>, and <strong>DELETE</strong> operations are supported with live verification in MySQL. Automated testing confirms 100% compliance across all evaluation criteria.
+</p>
+
+<!-- PROBLEM STATEMENT -->
+<h1>2. Introduction & Problem Statement</h1>
+<p>
+Modern enterprises manage diverse computing assets alongside dozens of daily technical support requests across multiple organizational departments. When managed through spreadsheets or informal channels:
+</p>
+<ul>
+  <li><strong>Lost Helpdesk Tickets:</strong> Tickets lack centralized queuing, causing SLA breaches and neglected users.</li>
+  <li><strong>Technician Accountability Deficit:</strong> Unclear technician assignments result in duplicate effort and delayed resolutions.</li>
+  <li><strong>Untracked Hardware Inventory:</strong> Relocations, warranty expirations, and device reallocations go unmonitored.</li>
+  <li><strong>Absence of Immutable Audit Trails:</strong> State transitions are overwritten rather than historically preserved.</li>
+  <li><strong>Untracked Maintenance Expenditure:</strong> Servicing expenses are not correlated with physical assets or departments.</li>
+</ul>
+
+<!-- OBJECTIVES & SCOPE -->
+<h1>3. System Objectives & Scope</h1>
+<ol>
+  <li>Provide a centralized MySQL relational database in Third Normal Form (3NF).</li>
+  <li>Support entity inheritance for <strong>Incidents</strong> (failures) and <strong>Service Requests</strong> (provisioning).</li>
+  <li>Catalog hardware assets by unique tag and serial number, linked to user ownership and warranties.</li>
+  <li>Record immutable audit trails in <code>status_histories</code> for every state transition.</li>
+  <li>Deliver a live, responsive web user interface connected directly to MySQL for live viva demonstration.</li>
+</ol>
+
+<!-- 3NF NORMALIZATION -->
+<h1>4. Relational Schema & 3NF Normalization</h1>
+<p>
+The database schema comprises 14 normalized tables:
+</p>
+<ul>
+  <li><strong>Organization Domain:</strong> <code>departments</code>, <code>users</code></li>
+  <li><strong>Support Classification:</strong> <code>categories</code>, <code>priorities</code></li>
+  <li><strong>Support Staff:</strong> <code>support_staff</code>, <code>assignments</code></li>
+  <li><strong>Hardware Assets:</strong> <code>warranties</code>, <code>assets</code>, <code>maintenance</code></li>
+  <li><strong>Ticketing & Lifecycles:</strong> <code>tickets</code>, <code>incidents</code>, <code>service_requests</code>, <code>status_histories</code>, <code>resolutions</code></li>
+</ul>
+<p>
+<strong>Normalization Proof:</strong>
+</p>
+<ul>
+  <li><strong>1NF:</strong> All attributes contain atomic values; composite/multi-valued attributes are separated into dedicated relations.</li>
+  <li><strong>2NF:</strong> Every non-prime attribute is fully functionally dependent on its respective primary key.</li>
+  <li><strong>3NF:</strong> No non-prime attribute is transitively dependent on a primary key (e.g. departmental locations depend on <code>department_id</code>, not <code>user_id</code>).</li>
+</ul>
+
+<!-- TEST CASES -->
+<div class="page-break"></div>
+<h1>5. Testing & Verification Results</h1>
+<table>
+  <thead>
+    <tr>
+      <th>Test ID</th>
+      <th>Test Description</th>
+      <th>Expected Result</th>
+      <th>Actual Result</th>
+      <th>Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>TC01</strong></td>
+      <td>MySQL Database Connection</td>
+      <td>Successful connection, 14 tables verified</td>
+      <td>Connected to it_helpdesk (v9.7.1, 14 tables)</td>
+      <td><span class="badge badge-pass">PASS</span></td>
+    </tr>
+    <tr>
+      <td><strong>TC02</strong></td>
+      <td>View Tickets</td>
+      <td>Relational rows retrieved via JOINs</td>
+      <td>5 tickets loaded with user & category info</td>
+      <td><span class="badge badge-pass">PASS</span></td>
+    </tr>
+    <tr>
+      <td><strong>TC03</strong></td>
+      <td>Insert Ticket Record</td>
+      <td>Atomic multi-table insertion</td>
+      <td>Created TKT-006 with subtype & history log</td>
+      <td><span class="badge badge-pass">PASS</span></td>
+    </tr>
+    <tr>
+      <td><strong>TC04</strong></td>
+      <td>Refresh & Persistence</td>
+      <td>Record confirmed in MySQL InnoDB storage</td>
+      <td>Row verified directly via SQL query</td>
+      <td><span class="badge badge-pass">PASS</span></td>
+    </tr>
+    <tr>
+      <td><strong>TC05</strong></td>
+      <td>Delete Ticket</td>
+      <td>Record removed from MySQL</td>
+      <td>Cascade deleted from tickets and child tables</td>
+      <td><span class="badge badge-pass">PASS</span></td>
+    </tr>
+    <tr>
+      <td><strong>TC06</strong></td>
+      <td>Absence After Delete</td>
+      <td>Record remains absent after refresh</td>
+      <td>Verified 0 rows in MySQL for deleted ID</td>
+      <td><span class="badge badge-pass">PASS</span></td>
+    </tr>
+    <tr>
+      <td><strong>TC07</strong></td>
+      <td>Form Input Validation</td>
+      <td>HTTP 400 rejection on empty required fields</td>
+      <td>Rejected with friendly validation message</td>
+      <td><span class="badge badge-pass">PASS</span></td>
+    </tr>
+    <tr>
+      <td><strong>TC08</strong></td>
+      <td>Unique Constraint</td>
+      <td>Rejection on duplicate user email</td>
+      <td>Caught duplicate email with HTTP 409</td>
+      <td><span class="badge badge-pass">PASS</span></td>
+    </tr>
+    <tr>
+      <td><strong>TC09</strong></td>
+      <td>Foreign Key Deletion</td>
+      <td>Friendly warning on deleting user with tickets</td>
+      <td>Caught FK RESTRICT violation with friendly error</td>
+      <td><span class="badge badge-pass">PASS</span></td>
+    </tr>
+    <tr>
+      <td><strong>TC10</strong></td>
+      <td>MySQL Offline Resilience</td>
+      <td>Safe user error without leaking credentials</td>
+      <td>Displays clean database offline message</td>
+      <td><span class="badge badge-pass">PASS</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- CONCLUSION -->
+<h1>6. Conclusion & Viva Demonstration Summary</h1>
+<p>
+The <strong>IT Helpdesk and Asset Support Management System</strong> fulfills all official academic criteria for Presentation-III:
+</p>
+<ol>
+  <li>Connected directly to the real local MySQL server on port 3306.</li>
+  <li>Supports interactive <strong>VIEW</strong>, <strong>INSERT</strong>, and <strong>DELETE</strong> operations.</li>
+  <li>Enforces referential integrity with cascading deletions and protective restrictions.</li>
+  <li>Provides live database persistence verified across browser refreshes and direct SQL checks.</li>
+</ol>
+
+<div style="margin-top: 40px; border-top: 1px solid #777; padding-top: 10px; font-size: 10pt; color: #555;">
+  <strong>Candidate:</strong> Md Aali Rahman (25WU0102156) • Woxsen University • DBMS Project Report
+</div>
+
+</body>
+</html>
