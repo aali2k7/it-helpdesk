@@ -16,103 +16,199 @@
   <!-- SIDEBAR NAVIGATION -->
   <aside class="app-sidebar">
     <div class="sidebar-header">
-      <div class="brand-icon">⚡</div>
+      <div class="brand-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+        </svg>
+      </div>
       <div class="brand-text">
-        <h1>IT HELPDESK</h1>
-        <span>& Asset Support</span>
+        <div class="brand-title-wrap">
+          <h1>IT HELPDESK</h1>
+          <span class="brand-pill-tag">CORE 3.0</span>
+        </div>
+        <span class="brand-subtitle">& Asset Support Management</span>
       </div>
     </div>
 
     <nav class="sidebar-nav">
-      <span class="nav-section-title">Operations</span>
+      <span class="nav-section-title">// 01 · OPERATIONS</span>
       <a class="nav-item active" data-view="dashboard" id="nav-dashboard">
-        <span class="nav-icon">📊</span>
+        <span class="nav-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="9" rx="1.5"></rect>
+            <rect x="14" y="3" width="7" height="5" rx="1.5"></rect>
+            <rect x="14" y="12" width="7" height="9" rx="1.5"></rect>
+            <rect x="3" y="16" width="7" height="5" rx="1.5"></rect>
+          </svg>
+        </span>
         <span>Dashboard</span>
       </a>
       <a class="nav-item" data-view="tickets" id="nav-tickets">
-        <span class="nav-icon">🎫</span>
+        <span class="nav-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2z"></path>
+            <path d="M13 5v2"></path><path d="M13 17v2"></path><path d="M13 11v2"></path>
+          </svg>
+        </span>
         <span>Tickets</span>
         <span class="nav-badge" id="badge-open-tickets">0</span>
       </a>
       <a class="nav-item" data-view="incidents" id="nav-incidents">
-        <span class="nav-icon">🚨</span>
+        <span class="nav-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path>
+            <line x1="12" y1="9" x2="12" y2="13"></line>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+        </span>
         <span>Incidents</span>
       </a>
       <a class="nav-item" data-view="service-requests" id="nav-service-requests">
-        <span class="nav-icon">📋</span>
+        <span class="nav-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+            <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+            <path d="M9 14h6"></path><path d="M9 18h4"></path><path d="M9 10h6"></path>
+          </svg>
+        </span>
         <span>Service Requests</span>
       </a>
 
-      <span class="nav-section-title">Inventory & People</span>
+      <span class="nav-section-title">// 02 · INVENTORY & USERS</span>
       <a class="nav-item" data-view="assets" id="nav-assets">
-        <span class="nav-icon">💻</span>
+        <span class="nav-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+            <line x1="8" y1="21" x2="16" y2="21"></line>
+            <line x1="12" y1="17" x2="12" y2="21"></line>
+          </svg>
+        </span>
         <span>Assets</span>
         <span class="nav-badge" id="badge-total-assets">0</span>
       </a>
       <a class="nav-item" data-view="users" id="nav-users">
-        <span class="nav-icon">👥</span>
+        <span class="nav-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
+        </span>
         <span>Users</span>
       </a>
       <a class="nav-item" data-view="staff" id="nav-staff">
-        <span class="nav-icon">🛠️</span>
+        <span class="nav-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+          </svg>
+        </span>
         <span>Support Staff</span>
       </a>
       <a class="nav-item" data-view="departments" id="nav-departments">
-        <span class="nav-icon">🏢</span>
+        <span class="nav-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect>
+            <line x1="9" y1="22" x2="9" y2="18"></line>
+            <line x1="15" y1="22" x2="15" y2="18"></line>
+            <line x1="9" y1="6" x2="9.01" y2="6"></line><line x1="15" y1="6" x2="15.01" y2="6"></line>
+            <line x1="9" y1="10" x2="9.01" y2="10"></line><line x1="15" y1="10" x2="15.01" y2="10"></line>
+            <line x1="9" y1="14" x2="9.01" y2="14"></line><line x1="15" y1="14" x2="15.01" y2="14"></line>
+          </svg>
+        </span>
         <span>Departments</span>
       </a>
       <a class="nav-item" data-view="maintenance" id="nav-maintenance">
-        <span class="nav-icon">🔧</span>
+        <span class="nav-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 20h9"></path>
+            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+          </svg>
+        </span>
         <span>Maintenance</span>
       </a>
 
-      <span class="nav-section-title">Viva & Evaluation</span>
+      <span class="nav-section-title">// 03 · VIVA & EVALUATION</span>
       <a class="nav-item" data-view="sql" id="nav-sql">
-        <span class="nav-icon">🔍</span>
+        <span class="nav-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="4 17 10 11 4 5"></polyline>
+            <line x1="12" y1="19" x2="20" y2="19"></line>
+          </svg>
+        </span>
         <span>SQL Verification</span>
       </a>
       <a class="nav-item" href="/er-diagram" target="_blank" id="nav-er-diagram">
-        <span class="nav-icon">📐</span>
+        <span class="nav-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+            <polyline points="2 17 12 22 22 17"></polyline>
+            <polyline points="2 12 12 17 22 12"></polyline>
+          </svg>
+        </span>
         <span>ER Diagram ↗</span>
       </a>
       <a class="nav-item" href="/presentation" target="_blank" id="nav-presentation">
-        <span class="nav-icon">📽️</span>
+        <span class="nav-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+            <polygon points="10 8 16 12 10 16 10 8"></polygon>
+          </svg>
+        </span>
         <span>Presentation ↗</span>
       </a>
     </nav>
 
     <div class="sidebar-footer">
-      <div class="student-tag">
-        <span class="student-name">Md Aali Rahman</span>
-        <span class="student-roll">Roll: 25WU0102156</span>
-        <span class="student-inst">Woxsen Univ • AIML Panthers</span>
+      <div class="architect-id-badge">
+        <div class="badge-avatar-ring">
+          <span class="avatar-monogram">AR</span>
+          <span class="avatar-status-pip"></span>
+        </div>
+        <div class="badge-meta">
+          <div class="student-name">Md Aali Rahman</div>
+          <div class="student-roll mono-text">25WU0102156</div>
+          <div class="student-inst">Woxsen Univ • AIML Panthers</div>
+          <div class="architect-tag-pill">SYSTEM ARCHITECT // VIVA-III</div>
+        </div>
       </div>
     </div>
   </aside>
 
   <!-- MAIN APPLICATION CONTENT -->
   <main class="app-main">
-    <!-- TOP HEADER -->
+    <!-- TOP HEADER (CYBER COMMAND STUDIO) -->
     <header class="app-header">
       <div class="header-title-box">
-        <h2>IT Helpdesk & Asset Support Management System</h2>
-        <div class="header-subtitle">
-          <span>DBMS Course Project</span>
-          <span>•</span>
-          <span>Presentation-III User Interface Demo</span>
-          <span>•</span>
-          <span id="active-time" style="font-family: var(--font-mono); font-size: 11px;">7 Oct 2026</span>
+        <div class="header-title-row">
+          <h2>IT Helpdesk & Asset Support Management System</h2>
+          <span class="header-edition-badge">ENTERPRISE 3NF</span>
+        </div>
+        <div class="header-telemetry-ribbon mono-text">
+          <span class="telemetry-node"><span class="tele-dot"></span>ENGINE: MySQL 9.7.1 InnoDB</span>
+          <span class="tele-sep">|</span>
+          <span>STUDENT: Md Aali Rahman (25WU0102156)</span>
+          <span class="tele-sep">|</span>
+          <span>SLOT: 7 Oct 2026 • 9:30 AM (Slot 39)</span>
+          <span class="tele-sep">|</span>
+          <span class="telemetry-norm">NORMALIZED: 3NF CERTIFIED</span>
         </div>
       </div>
 
       <div class="header-actions">
         <!-- Live Database Status Indicator -->
-        <div id="dbStatusPill" class="db-status-pill connected" title="Database status checked via MySQL query">
+        <div id="dbStatusPill" class="db-status-pill connected" title="Database status checked via live MySQL query">
+          <span class="status-radar-ripple"></span>
           <span class="status-dot"></span>
-          <span id="dbStatusText">Checking MySQL...</span>
+          <span id="dbStatusText" class="mono-text">MySQL 9.7.1 Connected</span>
         </div>
-        <button id="btnRefreshDb" class="btn btn-secondary btn-sm" title="Re-test live MySQL connection">
-          🔄 Ping DB
+        <button id="btnRefreshDb" class="btn btn-secondary btn-sm btn-cyber-ping" title="Re-test live MySQL connection">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="23 4 23 10 17 10"></polyline>
+            <polyline points="1 20 1 14 7 14"></polyline>
+            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+          </svg>
+          <span>Ping DB</span>
         </button>
       </div>
     </header>
@@ -131,14 +227,17 @@
 
           <!-- TOP LEFT HUD: Apple Spatial Studio Metadata -->
           <div class="hud-box hud-top-left">
-            <div class="hud-eyebrow">SPATIAL DATABASE STUDIO // LIVE TELEMETRY</div>
+            <div class="hud-eyebrow">
+              <span class="hud-live-tag">LIVE TELEMETRY</span>
+              <span>SPATIAL DATABASE STUDIO 3.0</span>
+            </div>
             <div class="hud-title">RELATIONAL SCHEMA ARCHITECTURE</div>
             <div class="hud-meta">
               <span>SCHEMA: <strong class="mono-text" id="hud-schema-name">IT_HELPDESK</strong></span>
               <span class="hud-dot"></span>
               <span>ENGINE: <strong class="mono-text">INNODB</strong></span>
               <span class="hud-dot"></span>
-              <span>NORMALIZATION: <strong class="mono-text">3NF</strong></span>
+              <span>ISOLATION: <strong class="mono-text">REPEATABLE-READ</strong></span>
             </div>
           </div>
 
@@ -146,37 +245,72 @@
           <div class="hud-box hud-top-right">
             <div class="hud-status-badge">
               <span class="status-pulse-dot"></span>
-              <span id="hud-db-status">MYSQL 9.7.1 · CONNECTED</span>
+              <span id="hud-db-status" class="mono-text">MYSQL 9.7.1 · CONNECTED</span>
             </div>
             <div class="hud-metrics-row">
-              <div class="hud-metric"><span class="hud-lbl">ENTITIES</span><strong id="hud-tables-count" class="mono-text">14</strong></div>
-              <div class="hud-metric"><span class="hud-lbl">RELATIONS</span><strong id="hud-fks-count" class="mono-text">14</strong></div>
-              <div class="hud-metric"><span class="hud-lbl">RECORDS</span><strong id="hud-records-count" class="mono-text">55</strong></div>
-              <div class="hud-metric"><span class="hud-lbl">LATENCY</span><strong id="hud-latency" class="mono-text">1.1ms</strong></div>
+              <div class="hud-metric">
+                <span class="hud-lbl">ENTITIES</span>
+                <strong id="hud-tables-count" class="mono-text">14</strong>
+              </div>
+              <div class="hud-metric">
+                <span class="hud-lbl">RELATIONS</span>
+                <strong id="hud-fks-count" class="mono-text">14</strong>
+              </div>
+              <div class="hud-metric">
+                <span class="hud-lbl">RECORDS</span>
+                <strong id="hud-records-count" class="mono-text">55</strong>
+              </div>
+              <div class="hud-metric">
+                <span class="hud-lbl">LATENCY</span>
+                <strong id="hud-latency" class="mono-text">0.9ms</strong>
+              </div>
             </div>
           </div>
 
           <!-- BOTTOM LEFT HUD: Interaction Guide -->
           <div class="hud-box hud-bottom-left">
-            <div class="hud-controls-help">
-              <span>DRAG TO ORBIT</span> • <span>SCROLL TO ZOOM</span> • <span>CLICK ANY ENTITY TO INSPECT</span>
+            <div class="hud-controls-help mono-text">
+              <span class="hud-key-pill">ORBIT</span> DRAG • <span class="hud-key-pill">ZOOM</span> SCROLL • <span class="hud-key-pill">SELECT</span> CLICK NODE
             </div>
           </div>
 
           <!-- BOTTOM RIGHT HUD: visionOS Floating Table Inspector Card -->
           <div class="hud-box hud-node-inspector" id="hud-node-inspector" style="display: none;">
             <div class="inspector-header">
-              <div class="inspector-table-name mono-text" id="insp-table-name">TICKETS</div>
-              <div class="inspector-badge" id="insp-domain">OPERATIONS</div>
+              <div class="inspector-badge-row">
+                <div class="inspector-table-name mono-text" id="insp-table-name">TICKETS</div>
+                <div class="inspector-badge" id="insp-domain">OPERATIONS</div>
+              </div>
+              <button class="inspector-close-btn" onclick="dbVisualizer && dbVisualizer.deselect()" title="Close Inspector">✕</button>
             </div>
             <div class="inspector-body">
-              <div class="insp-stat"><span class="insp-lbl">RECORDS IN MYSQL</span><strong id="insp-records" class="mono-text">5 rows</strong></div>
-              <div class="insp-stat"><span class="insp-lbl">PRIMARY KEY</span><strong id="insp-pk" class="mono-text">ticket_id</strong></div>
-              <div class="insp-stat"><span class="insp-lbl">FOREIGN KEYS</span><strong id="insp-fks" class="mono-text">3 FKs</strong></div>
-              <div class="insp-stat"><span class="insp-lbl">SCHEMA COLUMNS</span><strong id="insp-cols" class="mono-text">8 columns</strong></div>
+              <div class="insp-stat-grid">
+                <div class="insp-stat">
+                  <span class="insp-lbl">RECORDS IN MYSQL</span>
+                  <strong id="insp-records" class="mono-text">5 rows</strong>
+                </div>
+                <div class="insp-stat">
+                  <span class="insp-lbl">PRIMARY KEY</span>
+                  <strong id="insp-pk" class="mono-text">ticket_id</strong>
+                </div>
+                <div class="insp-stat">
+                  <span class="insp-lbl">FOREIGN KEYS</span>
+                  <strong id="insp-fks" class="mono-text">3 FKs</strong>
+                </div>
+                <div class="insp-stat">
+                  <span class="insp-lbl">SCHEMA COLUMNS</span>
+                  <strong id="insp-cols" class="mono-text">8 columns</strong>
+                </div>
+              </div>
+              <div class="inspector-links-box">
+                <div class="insp-lbl">CONNECTED RELATIONS:</div>
+                <div class="inspector-links-chips" id="inspector-rels">
+                  <!-- Chips populated dynamically -->
+                </div>
+              </div>
             </div>
             <div class="inspector-footer">
-              <button class="btn btn-primary btn-sm" id="btn-insp-view" onclick="inspectNodeViewRecords()">
+              <button class="btn btn-primary btn-sm btn-sparkle" id="btn-insp-view" onclick="inspectNodeViewRecords()">
                 Inspect Live Records →
               </button>
               <button class="btn btn-secondary btn-sm" onclick="dbVisualizer && dbVisualizer.deselect()">
@@ -189,61 +323,188 @@
           <div class="hud-viewport-toolbar">
             <div class="cluster-segmented">
               <button class="cluster-btn active" onclick="setVisualizerCluster('all', this)">All (14)</button>
-              <button class="cluster-btn" onclick="setVisualizerCluster('operations', this)">Operations</button>
-              <button class="cluster-btn" onclick="setVisualizerCluster('entities', this)">Entities</button>
-              <button class="cluster-btn" onclick="setVisualizerCluster('infrastructure', this)">Infrastructure</button>
+              <button class="cluster-btn" onclick="setVisualizerCluster('operations', this)">Operations (6)</button>
+              <button class="cluster-btn" onclick="setVisualizerCluster('entities', this)">Entities (4)</button>
+              <button class="cluster-btn" onclick="setVisualizerCluster('infrastructure', this)">Infrastructure (4)</button>
             </div>
-            <button class="hud-tool-btn" onclick="triggerVisualizerPulse()" title="Send synaptic data pulses through relationships">⚡ Pulse Signals</button>
-            <button class="hud-tool-btn" id="btn-toggle-camera-plan" onclick="toggleCameraView(this)" title="Toggle Top Blueprint / Spatial 3D">⤢ Top Plan</button>
-            <button class="hud-tool-btn" onclick="resetVisualizerCamera()" title="Reset Camera Perspective">⟲ Reset</button>
+            <button class="hud-tool-btn btn-neon-pulse" onclick="triggerVisualizerPulse()" title="Send synaptic data pulses through relationships">
+              ⚡ Synaptic Pulse
+            </button>
+            <button class="hud-tool-btn" id="btn-toggle-orbit-tour" onclick="toggleOrbitTour(this)" title="Cinematic 360° Architectural Orbit">
+              🌀 Orbit Tour
+            </button>
+            <button class="hud-tool-btn" id="btn-toggle-camera-plan" onclick="toggleCameraView(this)" title="Toggle Top Blueprint / Spatial 3D">
+              ⤢ Top Plan
+            </button>
+            <button class="hud-tool-btn" onclick="resetVisualizerCamera()" title="Reset Camera Perspective">
+              ⟲ Reset
+            </button>
           </div>
         </div>
 
-        <!-- EDITORIAL STATISTICS RAIL (Precision Horizontal Instrumentation) -->
-        <div class="editorial-stats-rail">
-          <div class="rail-item">
-            <span class="rail-label">TOTAL TICKETS</span>
-            <span class="rail-val mono-text" id="stat-total-tickets">5</span>
+        <!-- CYBER TELEMETRY HARDWARE INSTRUMENTATION DECK (6 Precision Cards) -->
+        <div class="cyber-telemetry-deck">
+          <!-- CARD 1: TOTAL TICKETS -->
+          <div class="telemetry-card card-tickets">
+            <div class="telemetry-card-top">
+              <div class="tele-meta">
+                <span class="tele-idx mono-text">[SYS::01]</span>
+                <span class="tele-title">TOTAL TICKETS</span>
+              </div>
+              <div class="tele-icon-badge badge-amber">🎫</div>
+            </div>
+            <div class="telemetry-card-main">
+              <div class="tele-number mono-text" id="stat-total-tickets">6</div>
+              <div class="tele-sparkline-mini">
+                <div class="spark-bar" style="height: 38%;"></div>
+                <div class="spark-bar" style="height: 60%;"></div>
+                <div class="spark-bar" style="height: 45%;"></div>
+                <div class="spark-bar" style="height: 80%;"></div>
+                <div class="spark-bar" style="height: 100%;"></div>
+              </div>
+            </div>
+            <div class="telemetry-card-foot">
+              <span class="tele-foot-tag mono-text">// INNODB CORE HUB</span>
+              <span class="tele-foot-status">RELATIONAL 3NF</span>
+            </div>
           </div>
-          <div class="rail-divider"></div>
-          <div class="rail-item">
-            <span class="rail-label">ACTIVE / OPEN</span>
-            <span class="rail-val mono-text accent-amber" id="stat-open-tickets">4</span>
+
+          <!-- CARD 2: ACTIVE / OPEN -->
+          <div class="telemetry-card card-open">
+            <div class="telemetry-card-top">
+              <div class="tele-meta">
+                <span class="tele-idx mono-text">[SYS::02]</span>
+                <span class="tele-title">ACTIVE QUEUE</span>
+              </div>
+              <div class="tele-icon-badge badge-orange">
+                <span class="active-pulse-pip"></span>
+                <span>🔥</span>
+              </div>
+            </div>
+            <div class="telemetry-card-main">
+              <div class="tele-number mono-text accent-amber" id="stat-open-tickets">5</div>
+              <div class="tele-meter-box">
+                <div class="meter-bar-track">
+                  <div class="meter-bar-fill fill-orange" style="width: 83%;"></div>
+                </div>
+                <span class="meter-label mono-text">83% DENSITY</span>
+              </div>
+            </div>
+            <div class="telemetry-card-foot">
+              <span class="tele-foot-tag mono-text">// PENDING DISPATCH</span>
+              <span class="tele-foot-status accent-amber">LIVE WORKLOAD</span>
+            </div>
           </div>
-          <div class="rail-divider"></div>
-          <div class="rail-item">
-            <span class="rail-label">RESOLVED</span>
-            <span class="rail-val mono-text accent-green" id="stat-resolved-tickets">1</span>
+
+          <!-- CARD 3: RESOLVED -->
+          <div class="telemetry-card card-resolved">
+            <div class="telemetry-card-top">
+              <div class="tele-meta">
+                <span class="tele-idx mono-text">[SYS::03]</span>
+                <span class="tele-title">RESOLVED TICKETS</span>
+              </div>
+              <div class="tele-icon-badge badge-green">✓</div>
+            </div>
+            <div class="telemetry-card-main">
+              <div class="tele-number mono-text accent-green" id="stat-resolved-tickets">1</div>
+              <div class="tele-badge-ring">
+                <span class="sla-chip mono-text">100% SLA</span>
+              </div>
+            </div>
+            <div class="telemetry-card-foot">
+              <span class="tele-foot-tag mono-text">// VERIFIED CLOSURE</span>
+              <span class="tele-foot-status accent-green">AUDIT LOGGED</span>
+            </div>
           </div>
-          <div class="rail-divider"></div>
-          <div class="rail-item">
-            <span class="rail-label">TOTAL ASSETS</span>
-            <span class="rail-val mono-text accent-steel" id="stat-total-assets">5</span>
+
+          <!-- CARD 4: TOTAL ASSETS -->
+          <div class="telemetry-card card-assets">
+            <div class="telemetry-card-top">
+              <div class="tele-meta">
+                <span class="tele-idx mono-text">[SYS::04]</span>
+                <span class="tele-title">HARDWARE ASSETS</span>
+              </div>
+              <div class="tele-icon-badge badge-blue">💻</div>
+            </div>
+            <div class="telemetry-card-main">
+              <div class="tele-number mono-text accent-steel" id="stat-total-assets">5</div>
+              <div class="tele-spec-chips">
+                <span class="micro-spec mono-text">DELL · APPLE · CISCO</span>
+              </div>
+            </div>
+            <div class="telemetry-card-foot">
+              <span class="tele-foot-tag mono-text">// INVENTORY FLEET</span>
+              <span class="tele-foot-status">100% ASSIGNED</span>
+            </div>
           </div>
-          <div class="rail-divider"></div>
-          <div class="rail-item">
-            <span class="rail-label">REGISTERED USERS</span>
-            <span class="rail-val mono-text accent-ivory" id="stat-total-users">5</span>
+
+          <!-- CARD 5: REGISTERED USERS -->
+          <div class="telemetry-card card-users">
+            <div class="telemetry-card-top">
+              <div class="tele-meta">
+                <span class="tele-idx mono-text">[SYS::05]</span>
+                <span class="tele-title">REGISTERED USERS</span>
+              </div>
+              <div class="tele-icon-badge badge-purple">👥</div>
+            </div>
+            <div class="telemetry-card-main">
+              <div class="tele-number mono-text accent-purple" id="stat-total-users">5</div>
+              <div class="tele-user-avatars">
+                <span class="mini-avatar av-1">A</span>
+                <span class="mini-avatar av-2">P</span>
+                <span class="mini-avatar av-3">R</span>
+                <span class="mini-avatar av-more">+2</span>
+              </div>
+            </div>
+            <div class="telemetry-card-foot">
+              <span class="tele-foot-tag mono-text">// ACCESS CONTROL</span>
+              <span class="tele-foot-status">RBAC ACTIVE</span>
+            </div>
           </div>
-          <div class="rail-divider"></div>
-          <div class="rail-item">
-            <span class="rail-label">MAINTENANCE COST</span>
-            <span class="rail-val mono-text accent-copper" id="stat-total-maint">$2,400.00</span>
+
+          <!-- CARD 6: MAINTENANCE COST -->
+          <div class="telemetry-card card-cost">
+            <div class="telemetry-card-top">
+              <div class="tele-meta">
+                <span class="tele-idx mono-text">[SYS::06]</span>
+                <span class="tele-title">MAINTENANCE EXPENSE</span>
+              </div>
+              <div class="tele-icon-badge badge-gold">💰</div>
+            </div>
+            <div class="telemetry-card-main">
+              <div class="tele-number mono-text accent-gold" id="stat-total-maint">$2,400.00</div>
+            </div>
+            <div class="telemetry-card-foot">
+              <span class="tele-foot-tag mono-text">// AGGREGATE JOIN</span>
+              <span class="tele-foot-status">4-TABLE RELATIONAL</span>
+            </div>
           </div>
         </div>
 
-        <!-- Quick Actions Bar (Technical Precision Styling) -->
+        <!-- QUICK DATABASE OPERATIONS (CYBER COMMAND DECK) -->
         <div class="quick-actions-bar">
           <div class="quick-actions-title">
-            <span>⚡ QUICK DATABASE OPERATIONS</span>
+            <span class="command-deck-label mono-text">⚡ QUICK DATABASE OPERATIONS</span>
           </div>
           <div class="quick-actions-btns">
-            <button class="btn btn-primary btn-sm" onclick="openTicketModal()">+ Add Ticket</button>
-            <button class="btn btn-secondary btn-sm" onclick="openUserModal()">+ Add User</button>
-            <button class="btn btn-secondary btn-sm" onclick="openAssetModal()">+ Register Asset</button>
-            <button class="btn btn-secondary btn-sm" onclick="switchView('tickets')">View Tickets</button>
-            <button class="btn btn-secondary btn-sm" onclick="switchView('assets')">View Assets</button>
-            <button class="btn btn-secondary btn-sm" onclick="switchView('sql')">Live SQL Queries</button>
+            <button class="btn btn-cyber-primary btn-sm" onclick="openTicketModal()">
+              <span class="btn-icon">＋</span> Add Ticket Record
+            </button>
+            <button class="btn btn-cyber-accent btn-sm" onclick="openUserModal()">
+              <span class="btn-icon">👤</span> Add User
+            </button>
+            <button class="btn btn-cyber-accent btn-sm" onclick="openAssetModal()">
+              <span class="btn-icon">💻</span> Register Asset
+            </button>
+            <button class="btn btn-cyber-glass btn-sm" onclick="switchView('tickets')">
+              <span>View Tickets</span>
+            </button>
+            <button class="btn btn-cyber-glass btn-sm" onclick="switchView('assets')">
+              <span>View Assets</span>
+            </button>
+            <button class="btn btn-cyber-terminal btn-sm" onclick="switchView('sql')">
+              <span class="terminal-prompt-pip">_</span> Live SQL Queries
+            </button>
           </div>
         </div>
 

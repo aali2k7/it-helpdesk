@@ -443,12 +443,20 @@ function handleVisualizerNodeSelected(node) {
   if (relsContainer) {
     const relTables = node.relatedTables || [];
     if (relTables.length > 0) {
-      relsContainer.innerHTML = relTables.map(t => `<span class="inspector-rel-tag">${escapeHtml(t)}</span>`).join('');
+      relsContainer.innerHTML = relTables.map(t => `<button class="inspector-rel-tag" onclick="focusVisualizerTable('${escapeHtml(t)}')">🔗 ${escapeHtml(t)}</button>`).join('');
     } else {
       relsContainer.innerHTML = '<span style="color: var(--text-muted); font-size: 11px;">Standalone entity</span>';
     }
   }
 }
+
+function focusVisualizerTable(tableName) {
+  if (window.dbVisualizer && window.dbVisualizer.nodes) {
+    const node = window.dbVisualizer.nodes.get(tableName);
+    if (node) window.dbVisualizer.selectNode(node);
+  }
+}
+window.focusVisualizerTable = focusVisualizerTable;
 
 function handleVisualizerNodeHovered(node) {
   // Optional hover feedback
@@ -465,6 +473,7 @@ function closeNodeInspector() {
 window.closeNodeInspector = closeNodeInspector;
 
 let currentCameraMode = 'perspective';
+let isOrbitTourActive = false;
 
 function setVisualizerCluster(clusterName, btnEl) {
   if (btnEl && btnEl.parentElement) {
@@ -480,10 +489,27 @@ window.setVisualizerCluster = setVisualizerCluster;
 function triggerVisualizerPulse() {
   if (window.dbVisualizer) {
     window.dbVisualizer.triggerPulseBurst();
-    showToast('Synaptic Pulse', 'Live relational signals propagated through foreign keys.', 'info', 2200);
+    showToast('Synaptic Pulse Burst', 'Relational high-voltage pulses propagated across foreign keys.', 'info', 2200);
   }
 }
 window.triggerVisualizerPulse = triggerVisualizerPulse;
+
+function toggleOrbitTour(btnEl) {
+  if (!window.dbVisualizer) return;
+  isOrbitTourActive = !isOrbitTourActive;
+  window.dbVisualizer.setOrbitTour(isOrbitTourActive);
+  if (btnEl) {
+    if (isOrbitTourActive) {
+      btnEl.textContent = '⏹ Stop Tour';
+      btnEl.classList.add('active');
+      showToast('Cinematic Orbit Tour', 'Architectural camera orbiting 3D relational schema.', 'info', 2000);
+    } else {
+      btnEl.textContent = '🌀 Orbit Tour';
+      btnEl.classList.remove('active');
+    }
+  }
+}
+window.toggleOrbitTour = toggleOrbitTour;
 
 function toggleCameraView(btnEl) {
   if (!window.dbVisualizer) return;
@@ -501,6 +527,13 @@ window.toggleCameraView = toggleCameraView;
 
 function resetVisualizerCamera() {
   currentCameraMode = 'perspective';
+  isOrbitTourActive = false;
+  const orbitBtn = document.getElementById('btn-toggle-orbit-tour');
+  if (orbitBtn) {
+    orbitBtn.textContent = '🌀 Orbit Tour';
+    orbitBtn.classList.remove('active');
+  }
+
   const planBtn = document.getElementById('btn-toggle-camera-plan');
   if (planBtn) planBtn.textContent = '⤢ Top Plan';
 
@@ -510,6 +543,7 @@ function resetVisualizerCamera() {
   });
 
   if (window.dbVisualizer) {
+    window.dbVisualizer.setOrbitTour(false);
     window.dbVisualizer.resetCamera();
   }
 }
