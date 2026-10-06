@@ -1,7 +1,6 @@
 /**
  * IT Helpdesk & Asset Support Management System
  * Frontend Controller & API Client (app.js)
- * Course: DBMS - Woxsen University | Md Aali Rahman (25WU0102156)
  */
 
 // Global State
@@ -608,20 +607,19 @@ async function loadDashboard() {
     // Render Recent Tickets
     const tbody = document.getElementById('dashboard-recent-tbody');
     if (!data.recent_tickets || data.recent_tickets.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="8" class="empty-state">No tickets registered in MySQL yet.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No tickets registered in MySQL yet.</td></tr>';
       return;
     }
 
     tbody.innerHTML = data.recent_tickets.map(t => `
       <tr>
         <td><span class="mono-pill">${escapeHtml(t.ticket_no)}</span></td>
-        <td><strong>${escapeHtml(t.title)}</strong></td>
+        <td><strong class="ticket-title-cell">${escapeHtml(t.title)}</strong></td>
         <td>${escapeHtml(t.user_name)}</td>
-        <td>${escapeHtml(t.category_name)}</td>
-        <td><span class="priority-${t.priority_level}">${escapeHtml(t.priority_name)}</span></td>
+        <td><span class="priority-pill priority-${t.priority_level}">${escapeHtml(t.priority_name)}</span></td>
         <td>${renderStatusBadge(t.status)}</td>
-        <td style="font-family: var(--font-mono); font-size: 11px;">${escapeHtml(t.created_at)}</td>
-        <td>
+        <td class="cell-date">${escapeHtml(t.created_at)}</td>
+        <td style="text-align: right;">
           <button class="btn btn-secondary btn-sm" onclick="viewTicketDetails(${t.ticket_id})">View</button>
         </td>
       </tr>
@@ -1392,7 +1390,7 @@ async function loadMaintenance() {
 }
 
 // ==========================================================
-// 10. LIVE SQL DEMONSTRATION CONTROLLER (FOR FACULTY)
+// 10. LIVE SQL VERIFICATION CONTROLLER
 // ==========================================================
 function updateSqlDisplay() {
   const key = document.getElementById('sql-query-select').value;

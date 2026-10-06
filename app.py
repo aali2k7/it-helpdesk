@@ -16,6 +16,8 @@ from db import get_connection, check_db_status, get_db_config
 
 app = Flask(__name__, template_folder="templates", static_folder="static")
 app.config["JSON_SORT_KEYS"] = False
+app.config["TEMPLATES_AUTO_RELOAD"] = True
+app.config["SEND_FILE_MAX_AGE_DEFAULT"] = 0
 
 
 # -----------------------------------------------------------------------------

@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>IT Helpdesk & Asset Support Management System | DBMS Project</title>
-  <meta name="description" content="DBMS Course Project User Interface for IT Helpdesk and Asset Support Management System connected to MySQL. Student: Md Aali Rahman (25WU0102156), Woxsen University.">
+  <title>IT Helpdesk & Asset Support Management</title>
+  <meta name="description" content="Enterprise IT Helpdesk and Asset Support Management platform with relational database architecture.">
   <link rel="stylesheet" href="/static/css/style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,21 +17,18 @@
   <aside class="app-sidebar">
     <div class="sidebar-header">
       <div class="brand-icon">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
         </svg>
       </div>
       <div class="brand-text">
-        <div class="brand-title-wrap">
-          <h1>IT HELPDESK</h1>
-          <span class="brand-pill-tag">CORE 3.0</span>
-        </div>
-        <span class="brand-subtitle">& Asset Support Management</span>
+        <h1>IT HELPDESK</h1>
+        <span class="brand-subtitle">Asset Support Management</span>
       </div>
     </div>
 
     <nav class="sidebar-nav">
-      <span class="nav-section-title">// 01 · OPERATIONS</span>
+      <span class="nav-section-title">OPERATIONS</span>
       <a class="nav-item active" data-view="dashboard" id="nav-dashboard">
         <span class="nav-icon">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -74,7 +71,7 @@
         <span>Service Requests</span>
       </a>
 
-      <span class="nav-section-title">// 02 · INVENTORY & USERS</span>
+      <span class="nav-section-title">INVENTORY</span>
       <a class="nav-item" data-view="assets" id="nav-assets">
         <span class="nav-icon">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -128,7 +125,7 @@
         <span>Maintenance</span>
       </a>
 
-      <span class="nav-section-title">// 03 · VIVA & EVALUATION</span>
+      <span class="nav-section-title">SYSTEM</span>
       <a class="nav-item" data-view="sql" id="nav-sql">
         <span class="nav-icon">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -148,62 +145,34 @@
         </span>
         <span>ER Diagram ↗</span>
       </a>
-      <a class="nav-item" href="/presentation" target="_blank" id="nav-presentation">
-        <span class="nav-icon">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
-            <polygon points="10 8 16 12 10 16 10 8"></polygon>
-          </svg>
-        </span>
-        <span>Presentation ↗</span>
-      </a>
     </nav>
 
     <div class="sidebar-footer">
-      <div class="architect-id-badge">
-        <div class="badge-avatar-ring">
-          <span class="avatar-monogram">AR</span>
-          <span class="avatar-status-pip"></span>
-        </div>
-        <div class="badge-meta">
-          <div class="student-name">Md Aali Rahman</div>
-          <div class="student-roll mono-text">25WU0102156</div>
-          <div class="student-inst">Woxsen Univ • AIML Panthers</div>
-          <div class="architect-tag-pill">SYSTEM ARCHITECT // VIVA-III</div>
-        </div>
+      <div class="system-meta-footer">
+        <span class="system-ping-dot"></span>
+        <span class="system-meta-text">MySQL · 3306</span>
       </div>
     </div>
   </aside>
 
   <!-- MAIN APPLICATION CONTENT -->
   <main class="app-main">
-    <!-- TOP HEADER (CYBER COMMAND STUDIO) -->
+    <!-- TOP HEADER -->
     <header class="app-header">
-      <div class="header-title-box">
-        <div class="header-title-row">
-          <h2>IT Helpdesk & Asset Support Management System</h2>
-          <span class="header-edition-badge">ENTERPRISE 3NF</span>
-        </div>
-        <div class="header-telemetry-ribbon mono-text">
-          <span class="telemetry-node"><span class="tele-dot"></span>ENGINE: MySQL 9.7.1 InnoDB</span>
-          <span class="tele-sep">|</span>
-          <span>STUDENT: Md Aali Rahman (25WU0102156)</span>
-          <span class="tele-sep">|</span>
-          <span>SLOT: 7 Oct 2026 • 9:30 AM (Slot 39)</span>
-          <span class="tele-sep">|</span>
-          <span class="telemetry-norm">NORMALIZED: 3NF CERTIFIED</span>
-        </div>
+      <div class="header-brand-wrap">
+        <span class="header-product-title">IT HELPDESK</span>
+        <span class="header-product-sep">/</span>
+        <span class="header-product-sub">Asset Support Management</span>
       </div>
 
       <div class="header-actions">
         <!-- Live Database Status Indicator -->
         <div id="dbStatusPill" class="db-status-pill connected" title="Database status checked via live MySQL query">
-          <span class="status-radar-ripple"></span>
           <span class="status-dot"></span>
-          <span id="dbStatusText" class="mono-text">MySQL 9.7.1 Connected</span>
+          <span id="dbStatusText" class="mono-text">MySQL Connected</span>
         </div>
-        <button id="btnRefreshDb" class="btn btn-secondary btn-sm btn-cyber-ping" title="Re-test live MySQL connection">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <button id="btnRefreshDb" class="btn btn-secondary btn-sm" title="Re-test live MySQL connection">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="23 4 23 10 17 10"></polyline>
             <polyline points="1 20 1 14 7 14"></polyline>
             <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
@@ -217,64 +186,35 @@
     <div class="view-viewport">
 
       <!-- ====================================================
-           VIEW 1: DASHBOARD (CINEMATIC 3D DATABASE COMMAND CENTER)
+           VIEW 1: DASHBOARD
            ==================================================== -->
       <section id="view-dashboard" class="view-panel active">
-        <!-- 3D HERO DATABASE VISUALIZATION COMMAND CENTER -->
+        <div class="page-intro-header">
+          <div class="page-intro-content">
+            <h3 class="page-title">Dashboard</h3>
+            <p class="page-subtitle">IT support operations at a glance.</p>
+          </div>
+        </div>
+
+        <!-- 3D HERO DATABASE VISUALIZATION -->
         <div class="hero-visualization-container">
           <!-- 3D Canvas Mount Point -->
           <div id="dbVisualizerContainer" class="visualizer-canvas-viewport"></div>
 
-          <!-- TOP LEFT HUD: Apple Spatial Studio Metadata -->
+          <!-- TOP LEFT HUD -->
           <div class="hud-box hud-top-left">
-            <div class="hud-eyebrow">
-              <span class="hud-live-tag">LIVE TELEMETRY</span>
-              <span>SPATIAL DATABASE STUDIO 3.0</span>
-            </div>
-            <div class="hud-title">RELATIONAL SCHEMA ARCHITECTURE</div>
-            <div class="hud-meta">
-              <span>SCHEMA: <strong class="mono-text" id="hud-schema-name">IT_HELPDESK</strong></span>
-              <span class="hud-dot"></span>
-              <span>ENGINE: <strong class="mono-text">INNODB</strong></span>
-              <span class="hud-dot"></span>
-              <span>ISOLATION: <strong class="mono-text">REPEATABLE-READ</strong></span>
-            </div>
+            <div class="hud-title">Database Architecture</div>
+            <div class="hud-subtitle mono-text" id="hud-schema-name">IT_HELPDESK</div>
           </div>
 
-          <!-- TOP RIGHT HUD: Live MySQL Status & Volume Counters -->
-          <div class="hud-box hud-top-right">
-            <div class="hud-status-badge">
-              <span class="status-pulse-dot"></span>
-              <span id="hud-db-status" class="mono-text">MYSQL 9.7.1 · CONNECTED</span>
-            </div>
-            <div class="hud-metrics-row">
-              <div class="hud-metric">
-                <span class="hud-lbl">ENTITIES</span>
-                <strong id="hud-tables-count" class="mono-text">14</strong>
-              </div>
-              <div class="hud-metric">
-                <span class="hud-lbl">RELATIONS</span>
-                <strong id="hud-fks-count" class="mono-text">14</strong>
-              </div>
-              <div class="hud-metric">
-                <span class="hud-lbl">RECORDS</span>
-                <strong id="hud-records-count" class="mono-text">55</strong>
-              </div>
-              <div class="hud-metric">
-                <span class="hud-lbl">LATENCY</span>
-                <strong id="hud-latency" class="mono-text">0.9ms</strong>
-              </div>
-            </div>
-          </div>
-
-          <!-- BOTTOM LEFT HUD: Interaction Guide -->
+          <!-- BOTTOM LEFT HUD: Interaction Hint -->
           <div class="hud-box hud-bottom-left">
             <div class="hud-controls-help mono-text">
-              <span class="hud-key-pill">ORBIT</span> DRAG • <span class="hud-key-pill">ZOOM</span> SCROLL • <span class="hud-key-pill">SELECT</span> CLICK NODE
+              Drag to rotate · Scroll to zoom · Click a table
             </div>
           </div>
 
-          <!-- BOTTOM RIGHT HUD: visionOS Floating Table Inspector Card -->
+          <!-- Table Inspector Card -->
           <div class="hud-box hud-node-inspector" id="hud-node-inspector" style="display: none;">
             <div class="inspector-header">
               <div class="inspector-badge-row">
@@ -286,8 +226,8 @@
             <div class="inspector-body">
               <div class="insp-stat-grid">
                 <div class="insp-stat">
-                  <span class="insp-lbl">RECORDS IN MYSQL</span>
-                  <strong id="insp-records" class="mono-text">5 rows</strong>
+                  <span class="insp-lbl">RECORDS</span>
+                  <strong id="insp-records" class="mono-text">--</strong>
                 </div>
                 <div class="insp-stat">
                   <span class="insp-lbl">PRIMARY KEY</span>
@@ -298,243 +238,112 @@
                   <strong id="insp-fks" class="mono-text">3 FKs</strong>
                 </div>
                 <div class="insp-stat">
-                  <span class="insp-lbl">SCHEMA COLUMNS</span>
+                  <span class="insp-lbl">COLUMNS</span>
                   <strong id="insp-cols" class="mono-text">8 columns</strong>
                 </div>
               </div>
               <div class="inspector-links-box">
-                <div class="insp-lbl">CONNECTED RELATIONS:</div>
+                <div class="insp-lbl">CONNECTED RELATIONS</div>
                 <div class="inspector-links-chips" id="inspector-rels">
-                  <!-- Chips populated dynamically -->
+                  <!-- Populated dynamically -->
                 </div>
               </div>
             </div>
             <div class="inspector-footer">
-              <button class="btn btn-primary btn-sm btn-sparkle" id="btn-insp-view" onclick="inspectNodeViewRecords()">
-                Inspect Live Records →
+              <button class="btn btn-primary btn-sm" id="btn-insp-view" onclick="inspectNodeViewRecords()">
+                View Records &rarr;
               </button>
               <button class="btn btn-secondary btn-sm" onclick="dbVisualizer && dbVisualizer.deselect()">
-                ✕ Dismiss
+                Dismiss
               </button>
             </div>
           </div>
 
-          <!-- Viewport Floating Utility Bar (Segmented Controls & Gen Z Pulse) -->
+          <!-- Viewport Controls -->
           <div class="hud-viewport-toolbar">
-            <div class="cluster-segmented">
-              <button class="cluster-btn active" onclick="setVisualizerCluster('all', this)">All (14)</button>
-              <button class="cluster-btn" onclick="setVisualizerCluster('operations', this)">Operations (6)</button>
-              <button class="cluster-btn" onclick="setVisualizerCluster('entities', this)">Entities (4)</button>
-              <button class="cluster-btn" onclick="setVisualizerCluster('infrastructure', this)">Infrastructure (4)</button>
-            </div>
-            <button class="hud-tool-btn btn-neon-pulse" onclick="triggerVisualizerPulse()" title="Send synaptic data pulses through relationships">
-              ⚡ Synaptic Pulse
-            </button>
-            <button class="hud-tool-btn" id="btn-toggle-orbit-tour" onclick="toggleOrbitTour(this)" title="Cinematic 360° Architectural Orbit">
-              🌀 Orbit Tour
-            </button>
-            <button class="hud-tool-btn" id="btn-toggle-camera-plan" onclick="toggleCameraView(this)" title="Toggle Top Blueprint / Spatial 3D">
-              ⤢ Top Plan
-            </button>
-            <button class="hud-tool-btn" onclick="resetVisualizerCamera()" title="Reset Camera Perspective">
-              ⟲ Reset
-            </button>
+            <button class="hud-tool-btn" onclick="resetVisualizerCamera()" title="Reset Camera Perspective">Reset</button>
+            <button class="hud-tool-btn" onclick="refreshDatabaseVisualizer()" title="Sync with MySQL">Sync</button>
+            <button class="hud-tool-btn" onclick="switchView('sql')" title="SQL Console">Live SQL</button>
           </div>
         </div>
 
-        <!-- CYBER TELEMETRY HARDWARE INSTRUMENTATION DECK (6 Precision Cards) -->
-        <div class="cyber-telemetry-deck">
-          <!-- CARD 1: TOTAL TICKETS -->
-          <div class="telemetry-card card-tickets">
-            <div class="telemetry-card-top">
-              <div class="tele-meta">
-                <span class="tele-idx mono-text">[SYS::01]</span>
-                <span class="tele-title">TOTAL TICKETS</span>
-              </div>
-              <div class="tele-icon-badge badge-amber">🎫</div>
-            </div>
-            <div class="telemetry-card-main">
-              <div class="tele-number mono-text" id="stat-total-tickets">6</div>
-              <div class="tele-sparkline-mini">
-                <div class="spark-bar" style="height: 38%;"></div>
-                <div class="spark-bar" style="height: 60%;"></div>
-                <div class="spark-bar" style="height: 45%;"></div>
-                <div class="spark-bar" style="height: 80%;"></div>
-                <div class="spark-bar" style="height: 100%;"></div>
-              </div>
-            </div>
-            <div class="telemetry-card-foot">
-              <span class="tele-foot-tag mono-text">// INNODB CORE HUB</span>
-              <span class="tele-foot-status">RELATIONAL 3NF</span>
-            </div>
+        <!-- HORIZONTAL METRICS PANEL -->
+        <div class="metrics-horizontal-strip">
+          <div class="metric-item">
+            <span class="metric-label">Tickets</span>
+            <span class="metric-value mono-text" id="stat-total-tickets">--</span>
           </div>
-
-          <!-- CARD 2: ACTIVE / OPEN -->
-          <div class="telemetry-card card-open">
-            <div class="telemetry-card-top">
-              <div class="tele-meta">
-                <span class="tele-idx mono-text">[SYS::02]</span>
-                <span class="tele-title">ACTIVE QUEUE</span>
-              </div>
-              <div class="tele-icon-badge badge-orange">
-                <span class="active-pulse-pip"></span>
-                <span>🔥</span>
-              </div>
-            </div>
-            <div class="telemetry-card-main">
-              <div class="tele-number mono-text accent-amber" id="stat-open-tickets">5</div>
-              <div class="tele-meter-box">
-                <div class="meter-bar-track">
-                  <div class="meter-bar-fill fill-orange" style="width: 83%;"></div>
-                </div>
-                <span class="meter-label mono-text">83% DENSITY</span>
-              </div>
-            </div>
-            <div class="telemetry-card-foot">
-              <span class="tele-foot-tag mono-text">// PENDING DISPATCH</span>
-              <span class="tele-foot-status accent-amber">LIVE WORKLOAD</span>
-            </div>
+          <div class="metric-divider"></div>
+          <div class="metric-item">
+            <span class="metric-label">Open</span>
+            <span class="metric-value metric-open mono-text" id="stat-open-tickets">--</span>
           </div>
-
-          <!-- CARD 3: RESOLVED -->
-          <div class="telemetry-card card-resolved">
-            <div class="telemetry-card-top">
-              <div class="tele-meta">
-                <span class="tele-idx mono-text">[SYS::03]</span>
-                <span class="tele-title">RESOLVED TICKETS</span>
-              </div>
-              <div class="tele-icon-badge badge-green">✓</div>
-            </div>
-            <div class="telemetry-card-main">
-              <div class="tele-number mono-text accent-green" id="stat-resolved-tickets">1</div>
-              <div class="tele-badge-ring">
-                <span class="sla-chip mono-text">100% SLA</span>
-              </div>
-            </div>
-            <div class="telemetry-card-foot">
-              <span class="tele-foot-tag mono-text">// VERIFIED CLOSURE</span>
-              <span class="tele-foot-status accent-green">AUDIT LOGGED</span>
-            </div>
+          <div class="metric-divider"></div>
+          <div class="metric-item">
+            <span class="metric-label">Resolved</span>
+            <span class="metric-value metric-resolved mono-text" id="stat-resolved-tickets">--</span>
           </div>
-
-          <!-- CARD 4: TOTAL ASSETS -->
-          <div class="telemetry-card card-assets">
-            <div class="telemetry-card-top">
-              <div class="tele-meta">
-                <span class="tele-idx mono-text">[SYS::04]</span>
-                <span class="tele-title">HARDWARE ASSETS</span>
-              </div>
-              <div class="tele-icon-badge badge-blue">💻</div>
-            </div>
-            <div class="telemetry-card-main">
-              <div class="tele-number mono-text accent-steel" id="stat-total-assets">5</div>
-              <div class="tele-spec-chips">
-                <span class="micro-spec mono-text">DELL · APPLE · CISCO</span>
-              </div>
-            </div>
-            <div class="telemetry-card-foot">
-              <span class="tele-foot-tag mono-text">// INVENTORY FLEET</span>
-              <span class="tele-foot-status">100% ASSIGNED</span>
-            </div>
+          <div class="metric-divider"></div>
+          <div class="metric-item">
+            <span class="metric-label">Assets</span>
+            <span class="metric-value mono-text" id="stat-total-assets">--</span>
           </div>
-
-          <!-- CARD 5: REGISTERED USERS -->
-          <div class="telemetry-card card-users">
-            <div class="telemetry-card-top">
-              <div class="tele-meta">
-                <span class="tele-idx mono-text">[SYS::05]</span>
-                <span class="tele-title">REGISTERED USERS</span>
-              </div>
-              <div class="tele-icon-badge badge-purple">👥</div>
-            </div>
-            <div class="telemetry-card-main">
-              <div class="tele-number mono-text accent-purple" id="stat-total-users">5</div>
-              <div class="tele-user-avatars">
-                <span class="mini-avatar av-1">A</span>
-                <span class="mini-avatar av-2">P</span>
-                <span class="mini-avatar av-3">R</span>
-                <span class="mini-avatar av-more">+2</span>
-              </div>
-            </div>
-            <div class="telemetry-card-foot">
-              <span class="tele-foot-tag mono-text">// ACCESS CONTROL</span>
-              <span class="tele-foot-status">RBAC ACTIVE</span>
-            </div>
+          <div class="metric-divider"></div>
+          <div class="metric-item">
+            <span class="metric-label">Users</span>
+            <span class="metric-value mono-text" id="stat-total-users">--</span>
           </div>
-
-          <!-- CARD 6: MAINTENANCE COST -->
-          <div class="telemetry-card card-cost">
-            <div class="telemetry-card-top">
-              <div class="tele-meta">
-                <span class="tele-idx mono-text">[SYS::06]</span>
-                <span class="tele-title">MAINTENANCE EXPENSE</span>
-              </div>
-              <div class="tele-icon-badge badge-gold">💰</div>
-            </div>
-            <div class="telemetry-card-main">
-              <div class="tele-number mono-text accent-gold" id="stat-total-maint">$2,400.00</div>
-            </div>
-            <div class="telemetry-card-foot">
-              <span class="tele-foot-tag mono-text">// AGGREGATE JOIN</span>
-              <span class="tele-foot-status">4-TABLE RELATIONAL</span>
-            </div>
+          <div class="metric-divider"></div>
+          <div class="metric-item">
+            <span class="metric-label">Maintenance</span>
+            <span class="metric-value mono-text" id="stat-total-maint">--</span>
           </div>
         </div>
 
-        <!-- QUICK DATABASE OPERATIONS (CYBER COMMAND DECK) -->
-        <div class="quick-actions-bar">
-          <div class="quick-actions-title">
-            <span class="command-deck-label mono-text">⚡ QUICK DATABASE OPERATIONS</span>
+        <!-- QUICK ACTIONS TOOLBAR -->
+        <div class="quick-toolbar">
+          <div class="quick-toolbar-primary">
+            <button class="btn btn-primary btn-sm" onclick="openTicketModal()">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              <span>New Ticket</span>
+            </button>
+            <button class="btn btn-secondary btn-sm" onclick="openUserModal()">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><line x1="19" y1="8" x2="19" y2="14"></line><line x1="22" y1="11" x2="16" y2="11"></line></svg>
+              <span>Add User</span>
+            </button>
+            <button class="btn btn-secondary btn-sm" onclick="openAssetModal()">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+              <span>Register Asset</span>
+            </button>
           </div>
-          <div class="quick-actions-btns">
-            <button class="btn btn-cyber-primary btn-sm" onclick="openTicketModal()">
-              <span class="btn-icon">＋</span> Add Ticket Record
-            </button>
-            <button class="btn btn-cyber-accent btn-sm" onclick="openUserModal()">
-              <span class="btn-icon">👤</span> Add User
-            </button>
-            <button class="btn btn-cyber-accent btn-sm" onclick="openAssetModal()">
-              <span class="btn-icon">💻</span> Register Asset
-            </button>
-            <button class="btn btn-cyber-glass btn-sm" onclick="switchView('tickets')">
-              <span>View Tickets</span>
-            </button>
-            <button class="btn btn-cyber-glass btn-sm" onclick="switchView('assets')">
-              <span>View Assets</span>
-            </button>
-            <button class="btn btn-cyber-terminal btn-sm" onclick="switchView('sql')">
-              <span class="terminal-prompt-pip">_</span> Live SQL Queries
-            </button>
+          <div class="quick-toolbar-secondary">
+            <button class="btn btn-ghost btn-sm" onclick="switchView('tickets')">View Tickets</button>
+            <button class="btn btn-ghost btn-sm" onclick="switchView('assets')">View Assets</button>
+            <button class="btn btn-ghost btn-sm" onclick="switchView('sql')">SQL Queries</button>
           </div>
         </div>
 
-
-        <!-- Recent Tickets Table -->
+        <!-- RECENT TICKETS -->
         <div class="table-card">
-          <div class="panel-header" style="padding: 16px 20px; margin-bottom: 0; border-bottom: 1px solid var(--border-subtle);">
-            <div class="panel-header-left">
-              <h4 style="font-size: 15px; font-weight: 600;">Recent Tickets Queue</h4>
-            </div>
-            <div class="panel-actions">
-              <button class="btn btn-secondary btn-sm" onclick="switchView('tickets')">View All &rarr;</button>
-            </div>
+          <div class="table-card-header">
+            <div class="table-card-title">Recent Tickets</div>
+            <button class="btn btn-ghost btn-sm" onclick="switchView('tickets')">View All &rarr;</button>
           </div>
           <div class="table-responsive">
             <table class="data-table" id="dashboard-recent-table">
               <thead>
                 <tr>
-                  <th>Ticket #</th>
+                  <th>Ticket</th>
                   <th>Title</th>
                   <th>Requester</th>
-                  <th>Category</th>
                   <th>Priority</th>
                   <th>Status</th>
-                  <th>Logged Date</th>
-                  <th>Action</th>
+                  <th>Updated</th>
+                  <th style="text-align: right;">Action</th>
                 </tr>
               </thead>
               <tbody id="dashboard-recent-tbody">
-                <tr><td colspan="8" class="empty-state">Loading recent records from MySQL...</td></tr>
+                <tr><td colspan="7" class="empty-state">Loading recent records from MySQL...</td></tr>
               </tbody>
             </table>
           </div>
@@ -903,13 +712,13 @@
       </section>
 
       <!-- ====================================================
-           VIEW 10: SQL VERIFICATION PLAYGROUND (FOR FACULTY)
+           VIEW 10: SQL VERIFICATION
            ==================================================== -->
       <section id="view-sql" class="view-panel">
         <div class="panel-header">
           <div class="panel-header-left">
-            <h3>Live SQL Verification & Relational Reporting</h3>
-            <p>Execute actual multi-table JOINs, aggregations, and audit queries directly against MySQL for evaluation.</p>
+            <h3>SQL Verification & Relational Reporting</h3>
+            <p>Execute multi-table JOINs, aggregations, and audit queries directly against MySQL.</p>
           </div>
         </div>
 

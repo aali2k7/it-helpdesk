@@ -1,15 +1,14 @@
 /**
  * IT Helpdesk & Asset Support Management System
- * Spatial Database Studio 3.0 (Next-Gen Cyber-Architectural Engine)
- * High-End 3D Visualizer: Luminous Studio Mode, Floating Crystals & Synaptic Conduits
- * Course: DBMS - Woxsen University | Md Aali Rahman (25WU0102156)
+ * Spatial Database Architecture Visualizer (db-visualizer.js)
+ * Clean B2B SaaS Enterprise Architecture Engine
  */
 
 class DatabaseVisualizer {
   constructor(containerId, options = {}) {
     this.container = document.getElementById(containerId);
     if (!this.container) {
-      console.error(`[3D Studio] Container #${containerId} not found.`);
+      console.error(`[3D Visualizer] Container #${containerId} not found.`);
       return;
     }
 
@@ -31,7 +30,7 @@ class DatabaseVisualizer {
 
     this.reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     this.isUserInteracting = false;
-    this.idleRotationSpeed = this.reducedMotion ? 0 : 0.0007;
+    this.idleRotationSpeed = this.reducedMotion ? 0 : 0.0006;
     this.clock = new THREE.Clock();
 
     this.raycaster = new THREE.Raycaster();
@@ -47,22 +46,22 @@ class DatabaseVisualizer {
     this.targetCameraPos = null;
     this.targetLookAt = null;
 
-    // High-Voltage Apple Studio Color Palette (Ultra-Punchy for Projectors)
+    // Enterprise Restrained Color Palette
     this.domainColors = {
-      'tickets': '#ff9f0a',          // Intense Solar Amber (Core Hub)
-      'incidents': '#ff375f',        // Vivid Electric Coral
-      'service_requests': '#00c7be', // Cyberpunk Neon Cyan
-      'users': '#0071e3',            // Signature Apple Cobalt
-      'departments': '#30d158',      // Vivid Emerald Mint
-      'assets': '#0a84ff',           // High-Luminance Sky Blue
-      'maintenance': '#ff6934',      // Radiant Warm Copper
-      'warranties': '#bf5af2',       // Ultraviolet Amethyst
-      'support_staff': '#34c759',    // Spring Jade
-      'assignments': '#5e5ce6',      // Electric Indigo
-      'categories': '#ffd60a',       // Radiant Neon Gold
-      'priorities': '#ff2d55',       // Crimson Magenta
-      'resolutions': '#28cd41',      // Pure Success Mint
-      'status_histories': '#64748b'   // Precision Titanium Slate
+      'tickets': '#3b82f6',          // Core Hub (Linear Blue)
+      'incidents': '#60a5fa',        // Operations (Steel Blue)
+      'service_requests': '#38bdf8', // Operations (Sky Slate)
+      'users': '#0284c7',            // Entities (Cobalt)
+      'departments': '#0ea5e9',      // Entities (Cyan Slate)
+      'assets': '#0369a1',           // Entities (Deep Slate Blue)
+      'maintenance': '#64748b',      // Infrastructure (Cool Slate)
+      'warranties': '#64748b',       // Infrastructure (Cool Slate)
+      'support_staff': '#0284c7',    // Entities (Cobalt)
+      'assignments': '#60a5fa',      // Operations (Steel Blue)
+      'categories': '#94a3b8',       // Taxonomy (Muted Slate)
+      'priorities': '#94a3b8',       // Taxonomy (Muted Slate)
+      'resolutions': '#3b82f6',      // Operations (Blue)
+      'status_histories': '#64748b'   // Infrastructure (Cool Slate)
     };
 
     // Logical Clusters
@@ -95,25 +94,25 @@ class DatabaseVisualizer {
 
   init() {
     if (!this.isWebGLAvailable() || typeof THREE === 'undefined') {
-      console.warn('[3D Studio] WebGL unavailable. Falling back to 2D view.');
+      console.warn('[3D Visualizer] WebGL unavailable. Falling back to 2D view.');
       this.initSvgFallback();
       return;
     }
 
     // 1. Scene Setup
     this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color(0xf6f8fc);
-    this.scene.fog = new THREE.FogExp2(0xf6f8fc, 0.0016);
+    this.scene.background = new THREE.Color(0x0a0e17);
+    this.scene.fog = new THREE.FogExp2(0x0a0e17, 0.0016);
 
     // 2. Camera Setup
     const rect = this.container.getBoundingClientRect();
     const aspect = (rect.width || 800) / (rect.height || 500);
     this.camera = new THREE.PerspectiveCamera(40, aspect, 1, 3000);
-    this.initialCameraPos = new THREE.Vector3(0, 84, 145);
+    this.initialCameraPos = new THREE.Vector3(0, 80, 140);
     this.camera.position.copy(this.initialCameraPos);
     this.camera.lookAt(0, 4, 0);
 
-    // 3. High Performance Renderer
+    // 3. Renderer
     this.renderer = new THREE.WebGLRenderer({
       antialias: true,
       powerPreference: 'high-performance',
@@ -129,7 +128,7 @@ class DatabaseVisualizer {
       this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
       this.controls.enableDamping = true;
       this.controls.dampingFactor = 0.05;
-      this.controls.maxDistance = 400;
+      this.controls.maxDistance = 380;
       this.controls.minDistance = 25;
       this.controls.maxPolarAngle = Math.PI / 2 + 0.05;
       this.controls.target.set(0, 4, 0);
@@ -143,13 +142,13 @@ class DatabaseVisualizer {
       });
     }
 
-    // 5. Studio Multi-Point Illumination
+    // 5. Lighting
     this.setupLighting();
 
-    // 6. Holographic Radar Platform & Plinth
+    // 6. Minimal Floor & Grid
     this.setupFloorGrid();
 
-    // 7. Ambient Particle Dust Cloud (Cinematic Spatial Volume)
+    // 7. Ambient Particle Atmosphere
     this.setupParticleDust();
 
     // 8. Graph Root Group
@@ -162,179 +161,90 @@ class DatabaseVisualizer {
     // 10. Start Render Loop
     this.animate = this.animate.bind(this);
     this.animationFrameId = requestAnimationFrame(this.animate);
-
-    console.log('[3D Studio] Spatial Database Architecture Engine Active.');
   }
 
   setupLighting() {
-    // Crisp studio key light setup
-    const ambientLight = new THREE.AmbientLight(0xffffff, 1.35);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
     this.scene.add(ambientLight);
 
-    const keyLight = new THREE.DirectionalLight(0xffffff, 1.05);
-    keyLight.position.set(70, 120, 85);
+    const keyLight = new THREE.DirectionalLight(0xffffff, 1.15);
+    keyLight.position.set(60, 100, 70);
     this.scene.add(keyLight);
 
-    const fillLight = new THREE.DirectionalLight(0xdbeafe, 0.65);
-    fillLight.position.set(-80, 80, -70);
+    const fillLight = new THREE.DirectionalLight(0x64748b, 0.45);
+    fillLight.position.set(-60, 60, -60);
     this.scene.add(fillLight);
 
-    const rimLight = new THREE.DirectionalLight(0x0071e3, 0.35);
-    rimLight.position.set(0, -70, 0);
-    this.scene.add(rimLight);
-
-    // Dynamic solar light above Tickets hub
-    const hubPointLight = new THREE.PointLight(0xff9f0a, 1.3, 160);
-    hubPointLight.position.set(0, 24, 0);
+    const hubPointLight = new THREE.PointLight(0x3b82f6, 0.75, 140);
+    hubPointLight.position.set(0, 20, 0);
     this.scene.add(hubPointLight);
   }
 
   setupFloorGrid() {
     this.floorGroup = new THREE.Group();
 
-    // 1. Holographic Precision Coordinate Grid (Studio Light Cyber Matrix)
-    const grid = new THREE.GridHelper(320, 32, 0x0071e3, 0xdbeafe);
+    // 1. Subtle Architectural Dark Grid
+    const grid = new THREE.GridHelper(300, 24, 0x1e293b, 0x141d2e);
     grid.position.y = -14.7;
     this.floorGroup.add(grid);
 
-    // 2. Frosted White Glass Base Plinth with Luminous Border
-    const plinthGeo = new THREE.CylinderGeometry(152, 152, 1.4, 64);
+    // 2. Base Dark Plinth
+    const plinthGeo = new THREE.CylinderGeometry(148, 148, 1.2, 64);
     const plinthMat = new THREE.MeshBasicMaterial({
-      color: 0xffffff,
+      color: 0x0f172a,
       transparent: true,
-      opacity: 0.88
+      opacity: 0.85
     });
     const plinth = new THREE.Mesh(plinthGeo, plinthMat);
     plinth.position.y = -14.6;
     this.floorGroup.add(plinth);
 
-    // 3. Multi-Tiered Concentric Holographic Range Rings (Energetic Projector Accents)
-    const ringConfigs = [
-      { radius: 32,  color: 0x00c7be, opacity: 0.85, width: 2.0 }, // Inner Core (Cyan)
-      { radius: 68,  color: 0xff9f0a, opacity: 0.75, width: 1.8 }, // Operations Ring (Amber)
-      { radius: 104, color: 0x0071e3, opacity: 0.80, width: 2.0 }, // Entities Ring (Cobalt)
-      { radius: 142, color: 0xaf52de, opacity: 0.85, width: 2.2 }  // Outer Boundary (Ultraviolet)
-    ];
-
-    ringConfigs.forEach(cfg => {
-      const ringGeo = new THREE.BufferGeometry();
-      const points = [];
-      const segments = 128;
-      for (let i = 0; i <= segments; i++) {
-        const theta = (i / segments) * Math.PI * 2;
-        points.push(new THREE.Vector3(Math.cos(theta) * cfg.radius, -14.2, Math.sin(theta) * cfg.radius));
-      }
-      ringGeo.setFromPoints(points);
-      const ringMat = new THREE.LineBasicMaterial({
-        color: cfg.color,
-        transparent: true,
-        opacity: cfg.opacity,
-        linewidth: cfg.width
-      });
-      const ring = new THREE.Line(ringGeo, ringMat);
-      this.floorGroup.add(ring);
-    });
-
-    // 4. Central Hub Light Column Ring
-    const hubRingGeo = new THREE.RingGeometry(18, 19.5, 32);
-    const hubRingMat = new THREE.MeshBasicMaterial({
-      color: 0xff9f0a,
-      transparent: true,
-      opacity: 0.5,
-      side: THREE.DoubleSide
-    });
-    const hubRing = new THREE.Mesh(hubRingGeo, hubRingMat);
-    hubRing.rotation.x = -Math.PI / 2;
-    hubRing.position.y = -14.1;
-    this.floorGroup.add(hubRing);
-
-    // 5. Technical Coordinate Crosshair Axes with Cardinal Markers
-    const crossMat = new THREE.LineBasicMaterial({ color: 0x0071e3, transparent: true, opacity: 0.45 });
-    const crossGeo = new THREE.BufferGeometry().setFromPoints([
-      new THREE.Vector3(-155, -14.1, 0), new THREE.Vector3(155, -14.1, 0),
-      new THREE.Vector3(0, -14.1, -155), new THREE.Vector3(0, -14.1, 155)
-    ]);
-    const cross = new THREE.LineSegments(crossGeo, crossMat);
-    this.floorGroup.add(cross);
-
-    // 6. Rotating Holographic Radar Sweep Line & Beam Fan
-    this.radarGroup = new THREE.Group();
-    const radarGeo = new THREE.BufferGeometry().setFromPoints([
-      new THREE.Vector3(0, -14.0, 0),
-      new THREE.Vector3(142, -14.0, 0)
-    ]);
-    const radarMat = new THREE.LineBasicMaterial({
-      color: 0x0071e3,
-      transparent: true,
-      opacity: 0.9,
-      linewidth: 2.5
-    });
-    this.radarLine = new THREE.Line(radarGeo, radarMat);
-    this.radarGroup.add(this.radarLine);
-
-    // Trailing sector fan (holographic radar wedge)
-    const fanShape = new THREE.Shape();
-    fanShape.moveTo(0, 0);
-    const fanAngle = Math.PI / 6; // 30 degrees
-    for (let a = 0; a <= fanAngle; a += 0.05) {
-      fanShape.lineTo(Math.cos(a) * 142, Math.sin(a) * 142);
+    // 3. Single Minimal Boundary Ring
+    const ringGeo = new THREE.BufferGeometry();
+    const points = [];
+    const segments = 96;
+    for (let i = 0; i <= segments; i++) {
+      const theta = (i / segments) * Math.PI * 2;
+      points.push(new THREE.Vector3(Math.cos(theta) * 142, -14.2, Math.sin(theta) * 142));
     }
-    fanShape.closePath();
-    const fanGeo = new THREE.ShapeGeometry(fanShape);
-    const fanMat = new THREE.MeshBasicMaterial({
-      color: 0x0071e3,
+    ringGeo.setFromPoints(points);
+    const ringMat = new THREE.LineBasicMaterial({
+      color: 0x334155,
       transparent: true,
-      opacity: 0.12,
-      side: THREE.DoubleSide
+      opacity: 0.45
     });
-    const fanMesh = new THREE.Mesh(fanGeo, fanMat);
-    fanMesh.rotation.x = -Math.PI / 2;
-    fanMesh.position.y = -14.05;
-    this.radarGroup.add(fanMesh);
+    const ring = new THREE.Line(ringGeo, ringMat);
+    this.floorGroup.add(ring);
 
-    this.floorGroup.add(this.radarGroup);
     this.scene.add(this.floorGroup);
   }
 
   setupParticleDust() {
-    // 220 floating spatial data dust particles
-    const particleCount = 220;
+    // 36 subtle, quiet ambient particles
+    const particleCount = 36;
     const geometry = new THREE.BufferGeometry();
     const positions = new Float32Array(particleCount * 3);
-    const colors = new Float32Array(particleCount * 3);
-
-    const cCobalt = new THREE.Color(0x0071e3);
-    const cAmber  = new THREE.Color(0xff9f0a);
-    const cCyan   = new THREE.Color(0x00c7be);
-    const cPurple = new THREE.Color(0xaf52de);
 
     this.particleInitialY = [];
 
     for (let i = 0; i < particleCount; i++) {
-      const px = (Math.random() - 0.5) * 280;
-      const py = Math.random() * 90 - 12;
-      const pz = (Math.random() - 0.5) * 280;
+      const px = (Math.random() - 0.5) * 240;
+      const py = Math.random() * 70 - 10;
+      const pz = (Math.random() - 0.5) * 240;
 
       positions[i * 3]     = px;
       positions[i * 3 + 1] = py;
       positions[i * 3 + 2] = pz;
       this.particleInitialY.push(py);
-
-      const r = Math.random();
-      const c = r < 0.35 ? cCobalt : r < 0.65 ? cAmber : r < 0.85 ? cCyan : cPurple;
-      colors[i * 3]     = c.r;
-      colors[i * 3 + 1] = c.g;
-      colors[i * 3 + 2] = c.b;
     }
 
     geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
 
     const material = new THREE.PointsMaterial({
-      size: 2.2,
-      vertexColors: true,
+      size: 1.5,
+      color: 0x475569,
       transparent: true,
-      opacity: 0.85
+      opacity: 0.35
     });
 
     this.particleDust = new THREE.Points(geometry, material);
@@ -387,22 +297,20 @@ class DatabaseVisualizer {
   // ==========================================================
   async loadGraph(url = '/api/database/graph') {
     try {
-      console.log(`[3D Studio] Ingesting relational architecture from ${url}...`);
       const res = await fetch(url);
       const data = await res.json();
 
       if (!data || !data.tables) {
-        console.error('[3D Studio] Invalid graph API payload:', data);
+        console.error('[3D Visualizer] Invalid graph API payload:', data);
         return;
       }
 
-      console.log(`[3D Studio] Live graph loaded: ${data.tables.length} tables, ${data.relationships.length} foreign keys.`);
       this.graphData = data;
       this.buildGraph();
       this.frameCameraToGraph();
 
     } catch (err) {
-      console.error('[3D Studio] Failed to load schema graph:', err);
+      console.error('[3D Visualizer] Failed to load schema graph:', err);
     }
   }
 
@@ -426,9 +334,8 @@ class DatabaseVisualizer {
           node.data = t;
           node.recordCount = t.record_count;
 
-          // If count changed (INSERT or DELETE), animate pulse burst!
+          // If count changed (INSERT or DELETE), animate subtle pulse
           if (oldCount !== t.record_count) {
-            console.log(`[3D Studio] Mutation detected on '${t.name}': ${oldCount} -> ${t.record_count}`);
             this.animateNodePulse(node);
           }
 
@@ -437,7 +344,7 @@ class DatabaseVisualizer {
         }
       });
     } catch (err) {
-      console.error('[3D Studio] Refresh error:', err);
+      console.error('[3D Visualizer] Refresh error:', err);
     }
   }
 
@@ -491,8 +398,6 @@ class DatabaseVisualizer {
         this.graphGroup.add(link.curveLine);
       }
     });
-
-    console.log(`[3D Studio] Scene graph built: ${this.nodes.size} nodes created.`);
   }
 
   computeTopologicalPositions(tables, relationships) {
@@ -539,44 +444,40 @@ class DatabaseVisualizer {
   }
 
   // ==========================================================
-  // SICK NODE CREATION: PRECISION HARDWARE MONOLITH & CRYSTAL
+  // NODE CREATION: DARK GRAPHITE MONOLITH & SATELLITE LABEL
   // ==========================================================
   createTableNode(table, position) {
     const group = new THREE.Group();
     group.position.set(position.x, position.y, position.z);
 
     const count = table.record_count || 0;
-    const hexColor = this.domainColors[table.name] || '#0071e3';
+    const hexColor = this.domainColors[table.name] || '#3b82f6';
     const domainColor = new THREE.Color(hexColor);
 
     // Dimensions
-    const baseW = 20 + Math.log2(count + 1) * 3.4;
-    const baseH = 7.0 + Math.log2(count + 1) * 1.8;
-    const baseD = 17 + Math.log2(count + 1) * 2.8;
+    const baseW = 20 + Math.log2(count + 1) * 2.8;
+    const baseH = 6.0 + Math.log2(count + 1) * 1.4;
+    const baseD = 16 + Math.log2(count + 1) * 2.4;
 
     // 1. Lower Hardware Pedestal (Matte Chamfered Unit)
-    const pedGeo = new THREE.BoxGeometry(baseW * 1.08, 1.8, baseD * 1.08);
+    const pedGeo = new THREE.BoxGeometry(baseW * 1.04, 1.2, baseD * 1.04);
     const pedMat = new THREE.MeshStandardMaterial({
-      color: 0xffffff,
-      metalness: 0.25,
-      roughness: 0.15,
-      emissive: domainColor,
-      emissiveIntensity: 0.22
+      color: 0x090d16,
+      metalness: 0.3,
+      roughness: 0.4
     });
     const pedestal = new THREE.Mesh(pedGeo, pedMat);
-    pedestal.position.y = -baseH / 2 - 0.9;
+    pedestal.position.y = -baseH / 2 - 0.6;
     group.add(pedestal);
 
-    // 2. Translucent Levitating Crystal Chassis Body
+    // 2. High-Tech Dark Graphite Monolith Chassis Body
     const boxGeo = new THREE.BoxGeometry(baseW, baseH, baseD);
     const boxMat = new THREE.MeshStandardMaterial({
-      color: 0xffffff,
-      roughness: 0.12,
-      metalness: 0.1,
-      emissive: domainColor,
-      emissiveIntensity: 0.45,
-      transparent: true,
-      opacity: 0.94
+      color: 0x111827,
+      roughness: 0.35,
+      metalness: 0.25,
+      emissive: 0x0a0f1d,
+      emissiveIntensity: 0.3
     });
     const mesh = new THREE.Mesh(boxGeo, boxMat);
     mesh.castShadow = true;
@@ -584,81 +485,33 @@ class DatabaseVisualizer {
     mesh.userData = { tableName: table.name };
     group.add(mesh);
 
-    // 3. Glowing Neon Wireframe Bevel Cage
+    // 3. Crisp Edge Lines
     const edgesGeo = new THREE.EdgesGeometry(boxGeo);
     const edgesMat = new THREE.LineBasicMaterial({
-      color: domainColor,
-      linewidth: 3.0,
-      transparent: false
+      color: 0x334155,
+      linewidth: 1.5,
+      transparent: true,
+      opacity: 0.7
     });
     const edgeLines = new THREE.LineSegments(edgesGeo, edgesMat);
     group.add(edgeLines);
 
-    // 4. Luminous Cyber Surface Console Plate
-    const topPlateGeo = new THREE.PlaneGeometry(baseW * 0.94, baseD * 0.94);
-    const topPlateMat = new THREE.MeshBasicMaterial({
+    // 4. Subtle Top Accent Bar
+    const topBarGeo = new THREE.PlaneGeometry(baseW * 0.92, 1.0);
+    const topBarMat = new THREE.MeshBasicMaterial({
       color: domainColor,
       transparent: true,
-      opacity: 0.90,
+      opacity: 0.85,
       side: THREE.DoubleSide
     });
-    const topPlate = new THREE.Mesh(topPlateGeo, topPlateMat);
-    topPlate.rotation.x = -Math.PI / 2;
-    topPlate.position.y = baseH / 2 + 0.08;
-    group.add(topPlate);
+    const topBar = new THREE.Mesh(topBarGeo, topBarMat);
+    topBar.rotation.x = -Math.PI / 2;
+    topBar.position.set(0, baseH / 2 + 0.05, -baseD * 0.38);
+    group.add(topBar);
 
-    // 5. Dual-Nested Floating Rotating Crystal Core
-    const crystalGroup = new THREE.Group();
-    crystalGroup.position.y = 0;
-
-    // Outer wireframe crystal
-    const outerGeo = new THREE.OctahedronGeometry(baseH * 0.52, 0);
-    const outerMat = new THREE.MeshBasicMaterial({
-      color: domainColor,
-      wireframe: true,
-      transparent: true,
-      opacity: 0.85
-    });
-    const outerCrystal = new THREE.Mesh(outerGeo, outerMat);
-    crystalGroup.add(outerCrystal);
-
-    // Inner glowing solid crystal core
-    const innerGeo = new THREE.OctahedronGeometry(baseH * 0.32, 0);
-    const innerMat = new THREE.MeshStandardMaterial({
-      color: 0xffffff,
-      emissive: domainColor,
-      emissiveIntensity: 0.95,
-      metalness: 0.3,
-      roughness: 0.1
-    });
-    const innerCrystal = new THREE.Mesh(innerGeo, innerMat);
-    crystalGroup.add(innerCrystal);
-
-    group.add(crystalGroup);
-
-    // 6. Floor Holographic Underglow Projection Ring
-    const floorHaloGeo = new THREE.RingGeometry(baseW * 0.65, baseW * 0.78, 36);
-    const floorHaloMat = new THREE.MeshBasicMaterial({
-      color: domainColor,
-      transparent: true,
-      opacity: 0.55,
-      side: THREE.DoubleSide
-    });
-    const floorHalo = new THREE.Mesh(floorHaloGeo, floorHaloMat);
-    floorHalo.rotation.x = -Math.PI / 2;
-    floorHalo.position.y = -baseH / 2 - 1.7;
-    group.add(floorHalo);
-
-    // 7. Architectural Vertical Light Beacon
-    const stemGeo = new THREE.CylinderGeometry(0.3, 0.3, 7.5, 8);
-    const stemMat = new THREE.MeshBasicMaterial({ color: domainColor, transparent: true, opacity: 0.85 });
-    const stem = new THREE.Mesh(stemGeo, stemMat);
-    stem.position.y = baseH / 2 + 3.75;
-    group.add(stem);
-
-    // 8. Floating Cyber-Tactile Billboard Label (Dark Glass with Neon Halo)
+    // 5. Billboard Label (Dark Graphite Capsule)
     const labelSprite = this.createCanvasLabel(table.name, count, hexColor);
-    labelSprite.position.set(0, baseH / 2 + 9.2, 0);
+    labelSprite.position.set(0, baseH / 2 + 6.8, 0);
     group.add(labelSprite);
 
     const nodeObj = {
@@ -668,13 +521,10 @@ class DatabaseVisualizer {
       group: group,
       mesh: mesh,
       pedestal: pedestal,
-      crystal: crystalGroup,
-      innerCrystal: innerCrystal,
-      outerCrystal: outerCrystal,
-      floorHalo: floorHalo,
       boxMat: boxMat,
-      edgeLines: edgesMat,
-      topPlateMat: topPlateMat,
+      edgeLines: edgeLines,
+      edgeMat: edgesMat,
+      topBarMat: topBarMat,
       labelSprite: labelSprite,
       baseColor: domainColor,
       hexColor: hexColor,
@@ -705,7 +555,7 @@ class DatabaseVisualizer {
       depthWrite: false
     });
     const sprite = new THREE.Sprite(spriteMat);
-    sprite.scale.set(32, 8.5, 1);
+    sprite.scale.set(30, 8.0, 1);
     sprite.userData = { canvas, ctx, texture };
 
     return sprite;
@@ -714,15 +564,15 @@ class DatabaseVisualizer {
   drawLabelCanvas(ctx, tableName, recordCount, accentColor) {
     ctx.clearRect(0, 0, 540, 144);
 
-    const color = accentColor || '#0071e3';
+    const color = accentColor || '#3b82f6';
 
-    // 1. High-Contrast Dark Holographic Glass Capsule
-    ctx.fillStyle = '#0f172a'; // Deep slate navy for maximum projector contrast
-    ctx.strokeStyle = color;
-    ctx.lineWidth = 5.0;
+    // 1. High-Contrast Dark Slate Capsule
+    ctx.fillStyle = '#0f172a';
+    ctx.strokeStyle = '#334155';
+    ctx.lineWidth = 3.0;
 
     // Rounded rectangle
-    const x = 10, y = 10, w = 520, h = 124, r = 24;
+    const x = 10, y = 10, w = 520, h = 124, r = 20;
     ctx.beginPath();
     ctx.moveTo(x + r, y);
     ctx.lineTo(x + w - r, y);
@@ -737,35 +587,29 @@ class DatabaseVisualizer {
     ctx.fill();
     ctx.stroke();
 
-    // 2. Pulse Status Beacon (Outer ring + Solid core)
-    ctx.strokeStyle = color;
-    ctx.lineWidth = 2.0;
-    ctx.beginPath();
-    ctx.arc(42, 72, 14, 0, Math.PI * 2);
-    ctx.stroke();
-
+    // 2. Subtle Accent Status Dot
     ctx.fillStyle = color;
     ctx.beginPath();
-    ctx.arc(42, 72, 8, 0, Math.PI * 2);
+    ctx.arc(44, 72, 7, 0, Math.PI * 2);
     ctx.fill();
 
-    // 3. Table Name (Razor Sharp Pure White)
+    // 3. Table Name (Crisp White Bold Typography)
     ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 36px -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", sans-serif';
+    ctx.font = '700 34px -apple-system, BlinkMacSystemFont, "Inter", sans-serif';
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
     ctx.fillText(tableName.toUpperCase(), 68, 72);
 
-    // 4. Live Row Count Badge Pill on Right
-    ctx.fillStyle = color;
+    // 4. Compact Row Count Pill on Right
+    ctx.fillStyle = '#1e293b';
     ctx.beginPath();
-    ctx.roundRect ? ctx.roundRect(375, 46, 140, 52, 14) : ctx.rect(375, 46, 140, 52);
+    ctx.roundRect ? ctx.roundRect(380, 48, 134, 48, 12) : ctx.rect(380, 48, 134, 48);
     ctx.fill();
 
-    ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 23px "SF Mono", monospace';
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = '600 21px "Inter", "SF Mono", monospace';
     ctx.textAlign = 'center';
-    ctx.fillText(`${recordCount} ROWS`, 445, 72);
+    ctx.fillText(`${recordCount} rows`, 447, 72);
   }
 
   updateNodeLabel(node) {
@@ -777,9 +621,9 @@ class DatabaseVisualizer {
 
   updateNodeGeometryScale(node) {
     const count = node.recordCount || 0;
-    const newW = 19 + Math.log2(count + 1) * 3.2;
-    const newH = 6.5 + Math.log2(count + 1) * 1.6;
-    const newD = 16 + Math.log2(count + 1) * 2.6;
+    const newW = 19 + Math.log2(count + 1) * 2.8;
+    const newH = 6.0 + Math.log2(count + 1) * 1.4;
+    const newD = 16 + Math.log2(count + 1) * 2.4;
 
     const scaleX = newW / node.baseDims.w;
     const scaleY = newH / node.baseDims.h;
@@ -791,12 +635,12 @@ class DatabaseVisualizer {
   animateNodePulse(node) {
     const initialY = node.baseY;
     const startTime = performance.now();
-    const duration = 700;
+    const duration = 600;
 
     const pulseStep = (now) => {
       const elapsed = now - startTime;
       const progress = Math.min(1.0, elapsed / duration);
-      const bounce = Math.sin(progress * Math.PI) * 6.0;
+      const bounce = Math.sin(progress * Math.PI) * 4.0;
       node.group.position.y = initialY + bounce;
 
       if (progress < 1.0) {
@@ -809,7 +653,7 @@ class DatabaseVisualizer {
   }
 
   // ==========================================================
-  // RELATIONSHIP CONDUITS & SYNAPTIC TRAVELING ENERGY
+  // RELATIONSHIP CONDUITS & SUBTLE WAVE PACKETS
   // ==========================================================
   createRelationshipLink(srcNode, tgtNode, relData) {
     const p1 = srcNode.position;
@@ -817,7 +661,7 @@ class DatabaseVisualizer {
 
     // Architectural parabolic arch
     const midX = (p1.x + p2.x) / 2;
-    const midY = Math.max(p1.y, p2.y) + 7.0 + Math.hypot(p2.x - p1.x, p2.z - p1.z) * 0.085;
+    const midY = Math.max(p1.y, p2.y) + 5.0 + Math.hypot(p2.x - p1.x, p2.z - p1.z) * 0.07;
     const midZ = (p1.z + p2.z) / 2;
     const controlPoint = new THREE.Vector3(midX, midY, midZ);
 
@@ -827,39 +671,32 @@ class DatabaseVisualizer {
       new THREE.Vector3(p2.x, p2.y, p2.z)
     );
 
-    const points = curve.getPoints(32);
+    const points = curve.getPoints(28);
     const geometry = new THREE.BufferGeometry().setFromPoints(points);
 
-    // Visible dual-layer conduit line
+    // Elegant thin link line
     const material = new THREE.LineBasicMaterial({
-      color: 0x0071e3,
-      linewidth: 2.4,
+      color: 0x334155,
+      linewidth: 1.5,
       transparent: true,
-      opacity: 0.65
+      opacity: 0.55
     });
 
     const curveLine = new THREE.Line(geometry, material);
 
-    // Glowing Traveling Data Packets (Dual Photons)
-    const pulseMat1 = new THREE.MeshBasicMaterial({ color: 0x00c7be });
-    const pulseGeo1 = new THREE.SphereGeometry(1.1, 12, 12);
-    const pulseDot1 = new THREE.Mesh(pulseGeo1, pulseMat1);
-    this.graphGroup.add(pulseDot1);
-
-    const pulseMat2 = new THREE.MeshBasicMaterial({ color: 0xff9f0a });
-    const pulseGeo2 = new THREE.SphereGeometry(0.85, 12, 12);
-    const pulseDot2 = new THREE.Mesh(pulseGeo2, pulseMat2);
-    this.graphGroup.add(pulseDot2);
+    // Single subtle traveling data packet
+    const pulseMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.75 });
+    const pulseGeo = new THREE.SphereGeometry(0.85, 8, 8);
+    const pulseDot = new THREE.Mesh(pulseGeo, pulseMat);
+    this.graphGroup.add(pulseDot);
 
     const linkObj = {
       curve: curve,
       curveLine: curveLine,
       material: material,
-      pulseDot: pulseDot1,
-      pulseDot2: pulseDot2,
+      pulseDot: pulseDot,
       pulseT: Math.random(),
-      pulseT2: (Math.random() + 0.5) % 1.0,
-      pulseSpeed: 0.18 + Math.random() * 0.1,
+      pulseSpeed: 0.14 + Math.random() * 0.08,
       source: srcNode.name,
       target: tgtNode.name,
       relData: relData
@@ -870,56 +707,7 @@ class DatabaseVisualizer {
   }
 
   // ==========================================================
-  // SICK TRAFFIC PULSE BURST (Simulate Synaptic Storm)
-  // ==========================================================
-  triggerPulseBurst() {
-    this.pulses.forEach(link => {
-      link.pulseSpeed *= 3.8;
-      link.pulseDot.scale.set(2.4, 2.4, 2.4);
-      link.pulseDot.material.color.setHex(0xff3b30); // High-voltage red/coral
-      if (link.pulseDot2) {
-        link.pulseDot2.scale.set(2.0, 2.0, 2.0);
-        link.pulseDot2.material.color.setHex(0xff9500); // Solar amber
-      }
-      link.material.color.setHex(0xff9500);
-      link.material.opacity = 1.0;
-    });
-
-    // Make all internal crystals spin and surge vigorously
-    this.nodes.forEach(node => {
-      if (node.crystal) {
-        node.crystal.scale.set(1.6, 1.6, 1.6);
-      }
-      if (node.innerCrystal) {
-        node.innerCrystal.material.emissiveIntensity = 1.6;
-      }
-    });
-
-    setTimeout(() => {
-      this.pulses.forEach(link => {
-        link.pulseSpeed /= 3.8;
-        link.pulseDot.scale.set(1.0, 1.0, 1.0);
-        link.pulseDot.material.color.setHex(0x00c7be);
-        if (link.pulseDot2) {
-          link.pulseDot2.scale.set(1.0, 1.0, 1.0);
-          link.pulseDot2.material.color.setHex(0xff9f0a);
-        }
-        link.material.color.setHex(0x0071e3);
-        link.material.opacity = 0.65;
-      });
-      this.nodes.forEach(node => {
-        if (node.crystal) {
-          node.crystal.scale.set(1.0, 1.0, 1.0);
-        }
-        if (node.innerCrystal) {
-          node.innerCrystal.material.emissiveIntensity = 0.95;
-        }
-      });
-    }, 1800);
-  }
-
-  // ==========================================================
-  // CLUSTER SPOTLIGHT FILTERS
+  // CLUSTER FILTERS
   // ==========================================================
   setCluster(clusterName) {
     this.currentCluster = clusterName;
@@ -928,19 +716,15 @@ class DatabaseVisualizer {
     this.nodes.forEach(node => {
       const isMatch = clusterName === 'all' || (activeSet && activeSet.has(node.name));
       if (isMatch) {
-        node.boxMat.opacity = 0.92;
-        node.boxMat.emissiveIntensity = 0.42;
-        node.edgeLines.opacity = 1.0;
+        node.boxMat.opacity = 1.0;
+        node.boxMat.emissiveIntensity = 0.3;
+        node.edgeMat.opacity = 0.7;
         node.labelSprite.material.opacity = 1.0;
-        node.floorHalo.material.opacity = 0.45;
-        node.crystal.visible = true;
       } else {
-        node.boxMat.opacity = 0.16;
-        node.boxMat.emissiveIntensity = 0.04;
-        node.edgeLines.opacity = 0.12;
-        node.labelSprite.material.opacity = 0.16;
-        node.floorHalo.material.opacity = 0.05;
-        node.crystal.visible = false;
+        node.boxMat.opacity = 0.2;
+        node.boxMat.emissiveIntensity = 0.05;
+        node.edgeMat.opacity = 0.15;
+        node.labelSprite.material.opacity = 0.2;
       }
     });
 
@@ -948,10 +732,10 @@ class DatabaseVisualizer {
       const srcMatch = clusterName === 'all' || (activeSet && activeSet.has(l.source));
       const tgtMatch = clusterName === 'all' || (activeSet && activeSet.has(l.target));
       if (srcMatch && tgtMatch) {
-        l.material.opacity = 0.85;
+        l.material.opacity = 0.55;
         l.pulseDot.visible = true;
       } else {
-        l.material.opacity = 0.1;
+        l.material.opacity = 0.08;
         l.pulseDot.visible = false;
       }
     });
@@ -1040,13 +824,14 @@ class DatabaseVisualizer {
     this.hoveredNode = node;
     this.container.style.cursor = 'pointer';
 
-    node.boxMat.emissiveIntensity = 0.7;
-    node.group.position.y = node.baseY + 3.0; // Levitation lift!
+    node.boxMat.emissiveIntensity = 0.6;
+    node.edgeMat.color.setHex(0x3b82f6);
+    node.group.position.y = node.baseY + 2.0;
 
     // Highlight connecting links
     this.links.forEach(l => {
       if (l.source === node.name || l.target === node.name) {
-        l.material.color.setHex(0x0071e3);
+        l.material.color.setHex(0x3b82f6);
         l.material.opacity = 1.0;
       }
     });
@@ -1060,7 +845,8 @@ class DatabaseVisualizer {
   clearHover() {
     if (this.hoveredNode) {
       if (this.hoveredNode !== this.selectedNode) {
-        this.hoveredNode.boxMat.emissiveIntensity = 0.42;
+        this.hoveredNode.boxMat.emissiveIntensity = 0.3;
+        this.hoveredNode.edgeMat.color.setHex(0x334155);
         this.hoveredNode.group.position.y = this.hoveredNode.baseY;
       }
       this.hoveredNode = null;
@@ -1086,10 +872,12 @@ class DatabaseVisualizer {
     // Reset old selected node position
     if (this.selectedNode && this.selectedNode !== node) {
       this.selectedNode.group.position.y = this.selectedNode.baseY;
+      this.selectedNode.edgeMat.color.setHex(0x334155);
     }
 
     this.selectedNode = node;
-    node.group.position.y = node.baseY + 4.5; // High levitation!
+    node.group.position.y = node.baseY + 3.5;
+    node.edgeMat.color.setHex(0x3b82f6);
 
     // Determine connected tables
     const connectedTables = new Set([node.name]);
@@ -1102,35 +890,33 @@ class DatabaseVisualizer {
     this.nodes.forEach(n => {
       if (connectedTables.has(n.name)) {
         n.boxMat.opacity = 1.0;
-        n.boxMat.emissiveIntensity = n === node ? 0.85 : 0.5;
-        n.edgeLines.opacity = 1.0;
+        n.boxMat.emissiveIntensity = n === node ? 0.7 : 0.4;
+        n.edgeMat.opacity = 1.0;
         n.labelSprite.material.opacity = 1.0;
-        n.crystal.visible = true;
       } else {
         n.boxMat.opacity = 0.2;
         n.boxMat.emissiveIntensity = 0.05;
-        n.edgeLines.opacity = 0.15;
+        n.edgeMat.opacity = 0.15;
         n.labelSprite.material.opacity = 0.2;
-        n.crystal.visible = false;
       }
     });
 
     // Highlight relationship curves
     this.links.forEach(l => {
       if (l.source === node.name || l.target === node.name) {
-        l.material.color.setHex(0xff9f0a); // Radiant amber
+        l.material.color.setHex(0x3b82f6);
         l.material.opacity = 1.0;
       } else {
-        l.material.color.setHex(0xcbd5e1);
-        l.material.opacity = 0.12;
+        l.material.color.setHex(0x1e293b);
+        l.material.opacity = 0.1;
       }
     });
 
     // Smooth photographic camera glide towards target
     const targetPos = new THREE.Vector3(
       node.position.x,
-      node.position.y + 36,
-      node.position.z + 58
+      node.position.y + 32,
+      node.position.z + 54
     );
     this.smoothGlideCamera(targetPos, node.position);
 
@@ -1149,6 +935,7 @@ class DatabaseVisualizer {
   deselect() {
     if (this.selectedNode) {
       this.selectedNode.group.position.y = this.selectedNode.baseY;
+      this.selectedNode.edgeMat.color.setHex(0x334155);
       this.selectedNode = null;
     }
 
@@ -1163,8 +950,8 @@ class DatabaseVisualizer {
 
   resetLinkStyles() {
     this.links.forEach(l => {
-      l.material.color.setHex(0x94a3b8);
-      l.material.opacity = 0.85;
+      l.material.color.setHex(0x334155);
+      l.material.opacity = 0.55;
     });
   }
 
@@ -1177,42 +964,19 @@ class DatabaseVisualizer {
     const delta = this.clock.getDelta();
     const elapsedTime = this.clock.getElapsedTime();
 
-    // 1. Rotate Radar Sweep Line & Group
-    if (this.radarGroup) {
-      this.radarGroup.rotation.y = elapsedTime * 0.55;
-    } else if (this.radarLine) {
-      this.radarLine.rotation.y = elapsedTime * 0.55;
-    }
-
-    // 2. Rotate Internal Crystals & Ambient Dust
-    this.nodes.forEach(node => {
-      if (node.crystal && node.crystal.visible) {
-        if (node.outerCrystal) {
-          node.outerCrystal.rotation.x += delta * 1.1;
-          node.outerCrystal.rotation.y += delta * 1.4;
-        }
-        if (node.innerCrystal) {
-          node.innerCrystal.rotation.x -= delta * 0.9;
-          node.innerCrystal.rotation.z += delta * 1.2;
-          // Breathing emissive light
-          node.innerCrystal.material.emissiveIntensity = 0.8 + Math.sin(elapsedTime * 4.0) * 0.25;
-        }
-      }
-    });
-
-    // 3. Floating Spatial Particle Dust Undulation
+    // 1. Floating Spatial Particle Dust Undulation (Subtle)
     if (this.particleDust && this.particleInitialY) {
       const posAttr = this.particleDust.geometry.attributes.position;
       const count = posAttr.count;
       for (let i = 0; i < count; i++) {
         const initY = this.particleInitialY[i];
-        posAttr.setY(i, initY + Math.sin(elapsedTime * 1.2 + i) * 3.5);
+        posAttr.setY(i, initY + Math.sin(elapsedTime * 0.8 + i) * 1.8);
       }
       posAttr.needsUpdate = true;
-      this.particleDust.rotation.y = elapsedTime * 0.04;
+      this.particleDust.rotation.y = elapsedTime * 0.02;
     }
 
-    // 4. Smooth Camera Glide Lerp (when clicking nodes)
+    // 2. Smooth Camera Glide Lerp (when clicking nodes)
     if (this.targetCameraPos && this.camera) {
       this.camera.position.lerp(this.targetCameraPos, 0.065);
       if (this.controls && this.targetLookAt) {
@@ -1223,13 +987,13 @@ class DatabaseVisualizer {
       }
     }
 
-    // 5. Cinematic Orbit Tour
+    // 3. Cinematic Orbit Tour
     if (this.isOrbitTourActive && this.camera && !this.isUserInteracting) {
-      this.orbitAngle += delta * 0.26;
-      const orbitRadius = 165;
+      this.orbitAngle += delta * 0.22;
+      const orbitRadius = 160;
       this.camera.position.x = Math.sin(this.orbitAngle) * orbitRadius;
       this.camera.position.z = Math.cos(this.orbitAngle) * orbitRadius;
-      this.camera.position.y = 82 + Math.sin(this.orbitAngle * 1.5) * 14;
+      this.camera.position.y = 80 + Math.sin(this.orbitAngle * 1.5) * 10;
       this.camera.lookAt(0, 4, 0);
       if (this.controls) this.controls.target.set(0, 4, 0);
     } else if (!this.isUserInteracting && !this.reducedMotion && this.graphGroup && !this.selectedNode && !this.targetCameraPos) {
@@ -1237,27 +1001,21 @@ class DatabaseVisualizer {
       this.graphGroup.rotation.y += this.idleRotationSpeed;
     }
 
-    // 6. Animate dual-photon packet markers along curves
+    // 4. Animate data packet markers along curves
     if (!this.reducedMotion) {
       this.pulses.forEach(link => {
         link.pulseT = (link.pulseT + link.pulseSpeed * delta) % 1.0;
         const pt1 = link.curve.getPoint(link.pulseT);
         link.pulseDot.position.copy(pt1);
-
-        if (link.pulseDot2) {
-          link.pulseT2 = (link.pulseT2 + link.pulseSpeed * 0.85 * delta) % 1.0;
-          const pt2 = link.curve.getPoint(link.pulseT2);
-          link.pulseDot2.position.copy(pt2);
-        }
       });
     }
 
-    // 7. Update controls
+    // 5. Update controls
     if (this.controls && !this.isOrbitTourActive) {
       this.controls.update();
     }
 
-    // 8. Render scene
+    // 6. Render scene
     if (this.renderer && this.scene && this.camera) {
       this.renderer.render(this.scene, this.camera);
     }
@@ -1268,9 +1026,9 @@ class DatabaseVisualizer {
   // ==========================================================
   initSvgFallback() {
     this.container.innerHTML = `
-      <div class="svg-graph-fallback" style="width:100%; height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; background:#f8fafc; color:#1d1d1f; padding:20px;">
-        <div style="font-size:14px; font-weight:700; color:#0071e3; margin-bottom:6px;">DATABASE ARCHITECTURE // SPATIAL FALLBACK</div>
-        <p style="font-size:12px; color:#64748b; margin-bottom:16px;">Displaying 2D relational schema topology.</p>
+      <div class="svg-graph-fallback" style="width:100%; height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; background:#0a0e17; color:#f8fafc; padding:20px;">
+        <div style="font-size:14px; font-weight:700; color:#3b82f6; margin-bottom:6px;">DATABASE ARCHITECTURE</div>
+        <p style="font-size:12px; color:#94a3b8; margin-bottom:16px;">Displaying 2D relational schema topology.</p>
         <div id="svgFallbackCanvas" style="width:100%; height:380px; overflow:hidden;"></div>
       </div>
     `;
@@ -1289,11 +1047,11 @@ class DatabaseVisualizer {
         data.tables.forEach((t, i) => {
           const x = 70 + (i % cols) * (w / cols);
           const y = 50 + Math.floor(i / cols) * 90;
-          const col = this.domainColors[t.name] || '#0071e3';
+          const col = this.domainColors[t.name] || '#3b82f6';
           svgHtml += `
             <g style="cursor:pointer;" onclick="window.inspectNodeViewRecords && (window.selectedInspectorTable='${t.name}', window.inspectNodeViewRecords())">
-              <rect x="${x - 45}" y="${y - 20}" width="90" height="42" rx="10" fill="#ffffff" stroke="${col}" stroke-width="2.5" />
-              <text x="${x}" y="${y - 2}" fill="#1d1d1f" font-size="11" font-weight="bold" text-anchor="middle">${t.name.toUpperCase()}</text>
+              <rect x="${x - 45}" y="${y - 20}" width="90" height="42" rx="8" fill="#111827" stroke="${col}" stroke-width="1.5" />
+              <text x="${x}" y="${y - 2}" fill="#ffffff" font-size="11" font-weight="bold" text-anchor="middle">${t.name.toUpperCase()}</text>
               <text x="${x}" y="${y + 13}" fill="${col}" font-size="10" font-family="monospace" text-anchor="middle">${t.record_count} rows</text>
             </g>
           `;
