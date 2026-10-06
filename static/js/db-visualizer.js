@@ -9,12 +9,14 @@ class DatabaseVisualizer {
   constructor(containerId, options = {}) {
     this.container = document.getElementById(containerId);
     if (!this.container) {
-      console.error(`Visualizer container #${containerId} not found.`);
+      console.error(`[3D Visualizer] Container #${containerId} not found.`);
       return;
     }
 
     this.options = Object.assign({
+      onSelectNode: null,
       onNodeSelect: null,
+      onHoverNode: null,
       onNodeHover: null,
       onViewTable: null
     }, options);
@@ -34,6 +36,25 @@ class DatabaseVisualizer {
     this.raycaster = new THREE.Raycaster();
     this.mouse = new THREE.Vector2(-1000, -1000);
     this.mouseClientPos = { x: 0, y: 0 };
+    this.interactableMeshes = [];
+
+    // Distinct domain color mapping for MySQL tables
+    this.domainColors = {
+      'tickets': '#f59e0b',        // Amber (Central Hub)
+      'incidents': '#ef4444',      // Crimson
+      'service_requests': '#06b6d4', // Cyan
+      'users': '#f8fafc',          // Soft Ivory / Titanium
+      'departments': '#10b981',    // Emerald Green
+      'assets': '#38bdf8',         // Steel Sky Blue
+      'maintenance': '#fb923c',    // Warm Copper
+      'warranties': '#c084fc',     // Lavender
+      'support_staff': '#34d399',  // Mint
+      'assignments': '#818cf8',    // Indigo
+      'categories': '#fbbf24',     // Gold
+      'priorities': '#f43f5e',     // Rose
+      'resolutions': '#22c55e',    // Success Green
+      'status_histories': '#94a3b8' // Technical Slate
+    };
 
     this.init();
   }
@@ -49,21 +70,21 @@ class DatabaseVisualizer {
 
   init() {
     if (!this.isWebGLAvailable() || typeof THREE === 'undefined') {
-      console.warn('WebGL or Three.js not available. Using SVG fallback.');
+      console.warn('[3D Visualizer] WebGL or Three.js not available. Using 2D SVG fallback.');
       this.initSvgFallback();
       return;
     }
 
     // 1. Scene setup
     this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color(0x0a0d12);
-    this.scene.fog = new THREE.FogExp2(0x0a0d12, 0.0035);
+    this.scene.background = new THREE.Color(0x0a0d14);
+    this.scene.fog = new THREE.FogExp2(0x0a0d14, 0.0025);
 
     // 2. Camera setup
     const rect = this.container.getBoundingClientRect();
-    const aspect = (rect.width || 800) / (rect.height || 520);
-    this.camera = new THREE.PerspectiveCamera(42, aspect, 1, 1000);
-    this.initialCameraPos = new THREE.Vector3(0, 75, 125);
+    const aspect = (rect.width || 800) / (rect.height || 480);
+    this.camera = new THREE.PerspectiveCamera(40, aspect, 1, 2000);
+    this.initialCameraPos = new THREE.Vector3(0, 95, 160);
     this.camera.position.copy(this.initialCameraPos);
     this.camera.lookAt(0, 0, 0);
 
@@ -73,8 +94,8 @@ class DatabaseVisualizer {
       powerPreference: 'high-performance',
       alpha: false
     });
-    this.renderer.setSize(rect.width || 800, rect.height || 520);
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    this.renderer.setSize(rect.width || 800, rect.height || 480);
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     this.renderer.outputEncoding = THREE.sRGBEncoding;
     this.container.appendChild(this.renderer.domElement);
 
@@ -82,10 +103,10 @@ class DatabaseVisualizer {
     if (typeof THREE.OrbitControls !== 'undefined') {
       this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
       this.controls.enableDamping = true;
-      this.controls.dampingFactor = 0.06;
-      this.controls.maxDistance = 260;
-      this.controls.minDistance = 35;
-      this.controls.maxPolarAngle = Math.PI / 2 + 0.1; // allow slight under-view
+      this.controls.dampingFactor = 0.05;
+      this.controls.maxDistance = 380;
+      this.controls.minDistance = 30;
+      this.controls.maxPolarAngle = Math.PI / 2 + 0.08;
       this.controls.target.set(0, 0, 0);
 
       this.controls.addEventListener('start', () => { this.isUserInteracting = true; });
@@ -94,13 +115,13 @@ class DatabaseVisualizer {
       });
     }
 
-    // 5. Lighting
+    // 5. Lighting - Strong, technical, highly visible illumination
     this.setupLighting();
 
-    // 6. Architectural Reference Plane / Floor Grid
+    // 6. Architectural Floor Grid
     this.setupFloorGrid();
 
-    // 7. Node Root Group
+    // 7. Graph Root Group
     this.graphGroup = new THREE.Group();
     this.scene.add(this.graphGroup);
 
@@ -110,56 +131,69 @@ class DatabaseVisualizer {
     // 9. Start Render Loop
     this.animate = this.animate.bind(this);
     this.animationFrameId = requestAnimationFrame(this.animate);
+
+    console.log('[3D Visualizer] WebGL Three.js Engine initialized successfully.');
   }
 
   setupLighting() {
-    // Ambient light - restrained, technical illumination
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+    // High-intensity ambient light to guarantee 100% mesh visibility
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.95);
     this.scene.add(ambientLight);
 
-    // Directional key light with architectural tone
-    const dirLight1 = new THREE.DirectionalLight(0xe2e8f0, 0.9);
-    dirLight1.position.set(50, 90, 60);
-    this.scene.add(dirLight1);
+    // Key light from top-front
+    const keyLight = new THREE.DirectionalLight(0xffffff, 0.9);
+    keyLight.position.set(60, 110, 80);
+    this.scene.add(keyLight);
 
-    // Subtle blue-tint fill light from below
-    const dirLight2 = new THREE.DirectionalLight(0x38bdf8, 0.35);
-    dirLight2.position.set(-60, -30, -50);
-    this.scene.add(dirLight2);
+    // Fill light from top-rear
+    const fillLight = new THREE.DirectionalLight(0x93c5fd, 0.55);
+    fillLight.position.set(-70, 70, -80);
+    this.scene.add(fillLight);
+
+    // Bottom architectural bounce light
+    const bounceLight = new THREE.DirectionalLight(0x38bdf8, 0.3);
+    bounceLight.position.set(0, -60, 0);
+    this.scene.add(bounceLight);
+
+    // Central point light over tickets hub
+    const centerLight = new THREE.PointLight(0xf59e0b, 1.2, 120);
+    centerLight.position.set(0, 20, 0);
+    this.scene.add(centerLight);
   }
 
   setupFloorGrid() {
-    // Circular concentric range rings
-    const ringGroup = new THREE.Group();
+    const floorGroup = new THREE.Group();
+
+    // Concentric architectural range rings
     const ringMat = new THREE.LineBasicMaterial({
-      color: 0x1e2735,
+      color: 0x1e293b,
       transparent: true,
-      opacity: 0.55
+      opacity: 0.65
     });
 
-    [30, 60, 95, 130].forEach(radius => {
+    [35, 70, 105, 140].forEach(radius => {
       const ringGeo = new THREE.BufferGeometry();
       const points = [];
       const segments = 64;
       for (let i = 0; i <= segments; i++) {
         const theta = (i / segments) * Math.PI * 2;
-        points.push(new THREE.Vector3(Math.cos(theta) * radius, -12, Math.sin(theta) * radius));
+        points.push(new THREE.Vector3(Math.cos(theta) * radius, -14, Math.sin(theta) * radius));
       }
       ringGeo.setFromPoints(points);
       const ring = new THREE.Line(ringGeo, ringMat);
-      ringGroup.add(ring);
+      floorGroup.add(ring);
     });
 
-    // Technical crosshairs
-    const crossMat = new THREE.LineBasicMaterial({ color: 0x18202d, transparent: true, opacity: 0.6 });
+    // Crosshair axes
+    const crossMat = new THREE.LineBasicMaterial({ color: 0x223044, transparent: true, opacity: 0.5 });
     const crossGeo = new THREE.BufferGeometry().setFromPoints([
-      new THREE.Vector3(-140, -12, 0), new THREE.Vector3(140, -12, 0),
-      new THREE.Vector3(0, -12, -140), new THREE.Vector3(0, -12, 140)
+      new THREE.Vector3(-150, -14, 0), new THREE.Vector3(150, -14, 0),
+      new THREE.Vector3(0, -14, -150), new THREE.Vector3(0, -14, 150)
     ]);
     const cross = new THREE.LineSegments(crossGeo, crossMat);
-    ringGroup.add(cross);
+    floorGroup.add(cross);
 
-    this.scene.add(ringGroup);
+    this.scene.add(floorGroup);
   }
 
   setupEvents() {
@@ -193,42 +227,92 @@ class DatabaseVisualizer {
     if (!this.container || !this.renderer || !this.camera) return;
     const rect = this.container.getBoundingClientRect();
     const width = rect.width || 800;
-    const height = rect.height || 520;
+    const height = rect.height || 480;
     this.camera.aspect = width / height;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(width, height);
   }
 
-  // ==========================================================
-  // GRAPH POPULATION & TOPOLOGICAL LAYOUT
-  // ==========================================================
-  setData(graphData) {
-    this.graphData = graphData;
-    this.buildGraph();
-    this.playIntroAssembly();
+  onWindowResize() {
+    this.onResize();
   }
 
-  updateData(graphData) {
-    this.graphData = graphData;
-    // Update node metrics smoothly without destroying current scene
-    if (this.nodes.size === 0) {
-      this.setData(graphData);
-      return;
+  // ==========================================================
+  // DATA LOADING & REFRESH (Step 1, Step 11, Step 20)
+  // ==========================================================
+  async loadGraph(url = '/api/database/graph') {
+    try {
+      console.log(`[3D Visualizer] Fetching live database schema from ${url}...`);
+      const res = await fetch(url);
+      const data = await res.json();
+
+      if (!data || !data.tables) {
+        console.error('[3D Visualizer] Invalid graph API response:', data);
+        return;
+      }
+
+      console.log(`[3D Visualizer] DATA RECEIVED: ${data.tables.length} tables, ${data.relationships.length} relationships.`);
+      data.tables.forEach(t => {
+        console.log(`  - Table: ${t.name.padEnd(16)} | Records: ${String(t.record_count).padStart(3)} | PK: ${t.primary_key || 'None'}`);
+      });
+
+      this.graphData = data;
+      this.buildGraph();
+      this.frameCameraToGraph();
+
+    } catch (err) {
+      console.error('[3D Visualizer] Failed to load graph data:', err);
+    }
+  }
+
+  async refresh(url = '/api/database/graph') {
+    if (!this.graphData) {
+      return this.loadGraph(url);
     }
 
-    graphData.tables.forEach(tableData => {
-      const node = this.nodes.get(tableData.name);
-      if (node) {
-        node.data = tableData;
-        node.recordCount = tableData.record_count;
-        this.updateNodeGeometryScale(node);
-        this.updateNodeLabel(node);
-      }
-    });
+    try {
+      const res = await fetch(url);
+      const data = await res.json();
+      if (!data || !data.tables) return;
+
+      this.graphData = data;
+
+      // Update existing nodes smoothly
+      data.tables.forEach(t => {
+        const node = this.nodes.get(t.name);
+        if (node) {
+          const oldCount = node.recordCount;
+          node.data = t;
+          node.recordCount = t.record_count;
+
+          // If count changed (e.g. INSERT or DELETE), animate scale & billboard!
+          if (oldCount !== t.record_count) {
+            console.log(`[3D Visualizer] Live table record count change detected on '${t.name}': ${oldCount} -> ${t.record_count}`);
+            this.animateNodePulse(node);
+          }
+
+          this.updateNodeGeometryScale(node);
+          this.updateNodeLabel(node);
+        }
+      });
+    } catch (err) {
+      console.error('[3D Visualizer] Refresh error:', err);
+    }
   }
 
+  setData(data) {
+    this.graphData = data;
+    this.buildGraph();
+    this.frameCameraToGraph();
+  }
+
+  // ==========================================================
+  // GRAPH CONSTRUCTION & SCENE POPULATION (Step 2, 8, 9)
+  // ==========================================================
   buildGraph() {
-    // Clear previous
+    if (!this.graphData || !this.graphData.tables) return;
+
+    // Clear previous objects
     while (this.graphGroup.children.length > 0) {
       const obj = this.graphGroup.children[0];
       this.graphGroup.remove(obj);
@@ -238,24 +322,25 @@ class DatabaseVisualizer {
         else obj.material.dispose();
       }
     }
+
     this.nodes.clear();
     this.links = [];
     this.pulses = [];
-
-    if (!this.graphData || !this.graphData.tables) return;
+    this.interactableMeshes = [];
 
     // 1. Calculate Positions based on Relational Topology
     const positions = this.computeTopologicalPositions(this.graphData.tables, this.graphData.relationships);
 
-    // 2. Build 3D Table Nodes
+    // 2. Build Visible 3D Table Nodes
     this.graphData.tables.forEach(table => {
       const pos = positions[table.name] || { x: 0, y: 0, z: 0 };
       const node = this.createTableNode(table, pos);
       this.nodes.set(table.name, node);
       this.graphGroup.add(node.group);
+      this.interactableMeshes.push(node.mesh);
     });
 
-    // 3. Build 3D Relationship Connectors
+    // 3. Build 3D Foreign Key Relationship Connectors
     this.graphData.relationships.forEach(rel => {
       const srcNode = this.nodes.get(rel.source);
       const tgtNode = this.nodes.get(rel.target);
@@ -265,41 +350,43 @@ class DatabaseVisualizer {
         this.graphGroup.add(link.curveLine);
       }
     });
+
+    console.log(`[3D Visualizer] SCENE GRAPH BUILT: ${this.nodes.size} nodes created and added to scene.`);
   }
 
   computeTopologicalPositions(tables, relationships) {
     const pos = {};
 
-    // Topological Layers based on entity importance and relationships
-    // Central Hub: tickets (degree 6)
-    pos['tickets'] = { x: 0, y: 4, z: 0 };
+    // Topological Layout: Tickets hub in center, surrounded by logical functional rings
+    // Center: Central Operational Hub
+    pos['tickets']          = { x: 0,   y: 4,  z: 0 };
 
     // Ring 1 (Immediate Operational Subtypes & Lifecycle)
-    pos['incidents']        = { x: -28, y: 2, z: -14 };
-    pos['service_requests'] = { x: 28,  y: 2, z: -14 };
-    pos['status_histories'] = { x: -16, y: -4, z: 28 };
-    pos['resolutions']      = { x: 16,  y: -4, z: 28 };
-    pos['assignments']      = { x: 0,   y: 14, z: -28 };
+    pos['incidents']        = { x: -32, y: 3,  z: -16 };
+    pos['service_requests'] = { x: 32,  y: 3,  z: -16 };
+    pos['status_histories'] = { x: -20, y: -4, z: 30 };
+    pos['resolutions']      = { x: 20,  y: -4, z: 30 };
+    pos['assignments']      = { x: 0,   y: 16, z: -32 };
 
     // Ring 2 (Core Entities: Users, Assets, Staff)
-    pos['users']         = { x: -48, y: 8,  z: 10 };
-    pos['assets']        = { x: 48,  y: 8,  z: 10 };
-    pos['support_staff'] = { x: 0,   y: 28, z: -52 };
+    pos['users']            = { x: -56, y: 8,  z: 12 };
+    pos['assets']           = { x: 56,  y: 8,  z: 12 };
+    pos['support_staff']    = { x: 0,   y: 28, z: -58 };
 
     // Ring 3 (Organization & Taxonomy)
-    pos['departments'] = { x: -74, y: 12, z: 22 };
-    pos['categories']  = { x: -36, y: -8, z: -55 };
-    pos['priorities']  = { x: 36,  y: -8, z: -55 };
+    pos['departments']      = { x: -84, y: 12, z: 24 };
+    pos['categories']       = { x: -40, y: -6, z: -60 };
+    pos['priorities']       = { x: 40,  y: -6, z: -60 };
 
     // Ring 4 (Asset Sub-domain)
-    pos['warranties']  = { x: 74,  y: 12, z: -18 };
-    pos['maintenance'] = { x: 70,  y: 2,  z: 42 };
+    pos['warranties']       = { x: 84,  y: 12, z: -20 };
+    pos['maintenance']      = { x: 80,  y: 2,  z: 46 };
 
-    // Fallback for any unexpected future dynamic tables
+    // Fallback for any unknown tables
     tables.forEach(t => {
       if (!pos[t.name]) {
         const angle = Math.random() * Math.PI * 2;
-        const rad = 85 + Math.random() * 20;
+        const rad = 95 + Math.random() * 20;
         pos[t.name] = {
           x: Math.cos(angle) * rad,
           y: (Math.random() - 0.5) * 20,
@@ -311,27 +398,30 @@ class DatabaseVisualizer {
     return pos;
   }
 
+  // ==========================================================
+  // NODE CREATION - GUARANTEED HIGH VISIBILITY (Step 3, 5, 6, 7)
+  // ==========================================================
   createTableNode(table, position) {
     const group = new THREE.Group();
     group.position.set(position.x, position.y, position.z);
 
-    // Compute dimensions based on record count and importance
     const count = table.record_count || 0;
-    const baseW = 14 + Math.log2(count + 1) * 2.8;
-    const baseH = 4 + Math.log2(count + 1) * 1.2;
-    const baseD = 12 + Math.log2(count + 1) * 2.4;
+    const hexColor = this.domainColors[table.name] || '#38bdf8';
+    const domainColor = new THREE.Color(hexColor);
 
-    // Node Box Geometry
+    // Generous, clearly visible dimensions (w: 18-28, h: 6-12, d: 15-24)
+    const baseW = 18 + Math.log2(count + 1) * 3.0;
+    const baseH = 6 + Math.log2(count + 1) * 1.5;
+    const baseD = 15 + Math.log2(count + 1) * 2.5;
+
+    // 1. Solid Primary Mesh - Clearly visible, architectural slate with domain emissive rim
     const boxGeo = new THREE.BoxGeometry(baseW, baseH, baseD);
-    const domainColor = new THREE.Color(table.color || '#3b82f6');
-
-    // Precision Dark Architectural Slab Material
     const boxMat = new THREE.MeshStandardMaterial({
-      color: 0x131822,
+      color: 0x1e2738,
       roughness: 0.35,
-      metalness: 0.45,
-      transparent: true,
-      opacity: 0.95
+      metalness: 0.3,
+      emissive: domainColor,
+      emissiveIntensity: 0.22
     });
 
     const mesh = new THREE.Mesh(boxGeo, boxMat);
@@ -340,46 +430,63 @@ class DatabaseVisualizer {
     mesh.userData = { tableName: table.name };
     group.add(mesh);
 
-    // Crisp Architectural Wireframe Edge
+    // 2. High-Contrast Architectural Wireframe Cage
     const edgesGeo = new THREE.EdgesGeometry(boxGeo);
     const edgesMat = new THREE.LineBasicMaterial({
       color: domainColor,
-      transparent: true,
-      opacity: 0.75,
-      linewidth: 1.5
+      linewidth: 2.0,
+      transparent: false
     });
     const edgeLines = new THREE.LineSegments(edgesGeo, edgesMat);
     group.add(edgeLines);
 
-    // Subtle Top Surface Plate with Domain Accent
-    const topPlateGeo = new THREE.PlaneGeometry(baseW * 0.92, baseD * 0.92);
+    // 3. Glowing Accent Top Plate
+    const topPlateGeo = new THREE.PlaneGeometry(baseW * 0.94, baseD * 0.94);
     const topPlateMat = new THREE.MeshBasicMaterial({
       color: domainColor,
       transparent: true,
-      opacity: 0.16,
+      opacity: 0.42,
       side: THREE.DoubleSide
     });
     const topPlate = new THREE.Mesh(topPlateGeo, topPlateMat);
     topPlate.rotation.x = -Math.PI / 2;
-    topPlate.position.y = baseH / 2 + 0.05;
+    topPlate.position.y = baseH / 2 + 0.08;
     group.add(topPlate);
 
-    // Billboard Text Label (Canvas Sprite)
-    const labelSprite = this.createCanvasLabel(table.name, count, table.color);
-    labelSprite.position.set(0, baseH / 2 + 3.8, 0);
+    // 4. Central Indicator Core Light
+    const coreGeo = new THREE.BoxGeometry(baseW * 0.4, 0.4, baseD * 0.4);
+    const coreMat = new THREE.MeshBasicMaterial({
+      color: domainColor
+    });
+    const corePlate = new THREE.Mesh(coreGeo, coreMat);
+    corePlate.position.y = baseH / 2 + 0.12;
+    group.add(corePlate);
+
+    // 5. Architectural Vertical Label Stem
+    const stemGeo = new THREE.CylinderGeometry(0.25, 0.25, 6.5, 8);
+    const stemMat = new THREE.MeshBasicMaterial({ color: domainColor, transparent: true, opacity: 0.6 });
+    const stem = new THREE.Mesh(stemGeo, stemMat);
+    stem.position.y = baseH / 2 + 3.25;
+    group.add(stem);
+
+    // 6. Crisp Floating Billboard Canvas Label (Step 13)
+    const labelSprite = this.createCanvasLabel(table.name, count, hexColor);
+    labelSprite.position.set(0, baseH / 2 + 8.0, 0);
     group.add(labelSprite);
 
     const nodeObj = {
       name: table.name,
       data: table,
+      recordCount: count,
       group: group,
       mesh: mesh,
+      boxMat: boxMat,
       edgeLines: edgesMat,
       topPlateMat: topPlateMat,
+      corePlate: corePlate,
       labelSprite: labelSprite,
       baseColor: domainColor,
-      targetScale: 1.0,
-      currentScale: 1.0,
+      hexColor: hexColor,
       baseDims: { w: baseW, h: baseH, d: baseD },
       position: group.position
     };
@@ -389,8 +496,8 @@ class DatabaseVisualizer {
 
   createCanvasLabel(tableName, recordCount, accentColor) {
     const canvas = document.createElement('canvas');
-    canvas.width = 256;
-    canvas.height = 72;
+    canvas.width = 512;
+    canvas.height = 144;
     const ctx = canvas.getContext('2d');
 
     this.drawLabelCanvas(ctx, tableName, recordCount, accentColor);
@@ -402,72 +509,106 @@ class DatabaseVisualizer {
     const spriteMat = new THREE.SpriteMaterial({
       map: texture,
       transparent: true,
-      depthTest: false
+      depthTest: false,
+      depthWrite: false
     });
     const sprite = new THREE.Sprite(spriteMat);
-    sprite.scale.set(13, 3.6, 1);
+    sprite.scale.set(30, 8.5, 1);
     sprite.userData = { canvas, ctx, texture };
 
     return sprite;
   }
 
   drawLabelCanvas(ctx, tableName, recordCount, accentColor) {
-    ctx.clearRect(0, 0, 256, 72);
+    ctx.clearRect(0, 0, 512, 144);
 
-    // Pill background
-    ctx.fillStyle = 'rgba(10, 14, 20, 0.88)';
+    // Architectural Card Background with high-contrast border
+    ctx.fillStyle = '#060a12';
     ctx.strokeStyle = accentColor || '#388bfd';
-    ctx.lineWidth = 2.5;
+    ctx.lineWidth = 4.0;
 
+    // Rounded rectangle
+    const x = 8, y = 8, w = 496, h = 128, r = 16;
     ctx.beginPath();
-    ctx.roundRect ? ctx.roundRect(8, 8, 240, 56, 8) : ctx.rect(8, 8, 240, 56);
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + w - r, y);
+    ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+    ctx.lineTo(x + w, y + h - r);
+    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    ctx.lineTo(x + r, y + h);
+    ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+    ctx.lineTo(x, y + r);
+    ctx.quadraticCurveTo(x, y, x + r, y);
+    ctx.closePath();
     ctx.fill();
     ctx.stroke();
 
-    // Table Name (Uppercase, Technical)
-    ctx.fillStyle = '#f0f6fc';
-    ctx.font = 'bold 20px -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, sans-serif';
+    // Table Name (Uppercase, Technical, High Contrast White)
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 36px -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, sans-serif';
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
-    ctx.fillText(tableName.toUpperCase(), 22, 36);
+    ctx.fillText(tableName.toUpperCase(), 30, 72);
 
     // Record count pill on the right
     const countStr = `${recordCount} rows`;
-    ctx.font = 'bold 15px monospace';
-    ctx.fillStyle = accentColor || '#60a5fa';
+    ctx.font = 'bold 28px monospace';
+    ctx.fillStyle = accentColor || '#38bdf8';
     ctx.textAlign = 'right';
-    ctx.fillText(countStr, 234, 36);
+    ctx.fillText(countStr, 480, 72);
   }
 
   updateNodeLabel(node) {
     if (!node.labelSprite || !node.labelSprite.userData.ctx) return;
     const { ctx, texture } = node.labelSprite.userData;
-    this.drawLabelCanvas(ctx, node.name, node.recordCount, node.data.color);
+    this.drawLabelCanvas(ctx, node.name, node.recordCount, node.hexColor);
     texture.needsUpdate = true;
   }
 
   updateNodeGeometryScale(node) {
     const count = node.recordCount || 0;
-    const newW = 14 + Math.log2(count + 1) * 2.8;
-    const newH = 4 + Math.log2(count + 1) * 1.2;
-    const newD = 12 + Math.log2(count + 1) * 2.4;
+    const newW = 18 + Math.log2(count + 1) * 3.0;
+    const newH = 6 + Math.log2(count + 1) * 1.5;
+    const newD = 15 + Math.log2(count + 1) * 2.5;
 
     const scaleX = newW / node.baseDims.w;
     const scaleY = newH / node.baseDims.h;
     const scaleZ = newD / node.baseDims.d;
 
-    // Smoothly scale mesh
     node.mesh.scale.set(scaleX, scaleY, scaleZ);
   }
 
+  animateNodePulse(node) {
+    const initialY = node.group.position.y;
+    const startTime = performance.now();
+    const duration = 600;
+
+    const pulseStep = (now) => {
+      const elapsed = now - startTime;
+      const progress = Math.min(1.0, elapsed / duration);
+      // Sine bounce
+      const bounce = Math.sin(progress * Math.PI) * 4.0;
+      node.group.position.y = initialY + bounce;
+
+      if (progress < 1.0) {
+        requestAnimationFrame(pulseStep);
+      } else {
+        node.group.position.y = initialY;
+      }
+    };
+    requestAnimationFrame(pulseStep);
+  }
+
+  // ==========================================================
+  // RELATIONSHIP CONNECTORS (Step 12)
+  // ==========================================================
   createRelationshipLink(srcNode, tgtNode, relData) {
-    // Generate curved quadratic bezier curve between nodes
     const p1 = srcNode.position;
     const p2 = tgtNode.position;
 
-    // Midpoint elevated slightly to produce elegant architectural arch
+    // Midpoint elevated to form an architectural 3D arch
     const midX = (p1.x + p2.x) / 2;
-    const midY = Math.max(p1.y, p2.y) + 4.5 + Math.hypot(p2.x - p1.x, p2.z - p1.z) * 0.08;
+    const midY = Math.max(p1.y, p2.y) + 6.0 + Math.hypot(p2.x - p1.x, p2.z - p1.z) * 0.08;
     const midZ = (p1.z + p2.z) / 2;
     const controlPoint = new THREE.Vector3(midX, midY, midZ);
 
@@ -480,19 +621,19 @@ class DatabaseVisualizer {
     const points = curve.getPoints(24);
     const geometry = new THREE.BufferGeometry().setFromPoints(points);
 
-    // Subtle graphite line
+    // Visible graphite / slate relationship line
     const material = new THREE.LineBasicMaterial({
-      color: 0x334155,
+      color: 0x64748b,
+      linewidth: 2.0,
       transparent: true,
-      opacity: 0.38,
-      linewidth: 1.2
+      opacity: 0.75
     });
 
     const curveLine = new THREE.Line(geometry, material);
 
-    // Animated packet dot
-    const pulseMat = new THREE.MeshBasicMaterial({ color: 0x93c5fd, transparent: true, opacity: 0.9 });
-    const pulseGeo = new THREE.SphereGeometry(0.5, 8, 8);
+    // Traveling packet dot
+    const pulseMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8 });
+    const pulseGeo = new THREE.SphereGeometry(0.7, 8, 8);
     const pulseDot = new THREE.Mesh(pulseGeo, pulseMat);
     this.graphGroup.add(pulseDot);
 
@@ -501,8 +642,8 @@ class DatabaseVisualizer {
       curveLine: curveLine,
       material: material,
       pulseDot: pulseDot,
-      pulseT: Math.random(), // randomized initial offset along curve
-      pulseSpeed: 0.12 + Math.random() * 0.08,
+      pulseT: Math.random(),
+      pulseSpeed: 0.15 + Math.random() * 0.08,
       source: srcNode.name,
       target: tgtNode.name,
       relData: relData
@@ -513,50 +654,54 @@ class DatabaseVisualizer {
   }
 
   // ==========================================================
-  // INTRO ANIMATION (1.5 seconds assembly sequence)
+  // CAMERA FRAMING (Step 4, Step 15)
   // ==========================================================
-  playIntroAssembly() {
-    const startTime = performance.now();
-    const duration = 1400; // ms
+  frameCameraToGraph() {
+    if (!this.graphGroup || this.nodes.size === 0) return;
 
-    // Initially scale down nodes
-    this.nodes.forEach(node => {
-      node.group.scale.set(0.001, 0.001, 0.001);
-    });
+    const box = new THREE.Box3().setFromObject(this.graphGroup);
+    const center = new THREE.Vector3();
+    box.getCenter(center);
 
-    const updateAssembly = (now) => {
-      const elapsed = now - startTime;
-      const progress = Math.min(1.0, elapsed / duration);
-      // Ease out cubic
-      const ease = 1 - Math.pow(1 - progress, 3);
+    const sphere = new THREE.Sphere();
+    box.getBoundingSphere(sphere);
 
-      this.nodes.forEach(node => {
-        node.group.scale.set(ease, ease, ease);
-      });
+    const radius = Math.max(sphere.radius, 55);
 
-      if (progress < 1.0) {
-        requestAnimationFrame(updateAssembly);
-      }
-    };
+    // Calculate camera distance based on FOV - bring closer for bold dramatic composition
+    const fov = this.camera.fov * (Math.PI / 180);
+    const dist = (radius / Math.sin(fov / 2)) * 0.62;
 
-    requestAnimationFrame(updateAssembly);
+    // Angled down at the graph center
+    const targetPos = new THREE.Vector3(center.x, center.y + dist * 0.52, center.z + dist * 0.82);
+    this.camera.position.copy(targetPos);
+    this.camera.lookAt(center);
+
+    if (this.controls) {
+      this.controls.target.copy(center);
+      this.controls.update();
+    }
+
+    console.log(`[3D Visualizer] Camera framed to bounding sphere radius ${radius.toFixed(1)} at dist ${dist.toFixed(1)}`);
+  }
+
+  resetCamera() {
+    this.frameCameraToGraph();
+    this.deselect();
   }
 
   // ==========================================================
-  // INTERACTION: HOVER & SELECTION
+  // INTERACTION: HOVER & SELECTION (Step 14)
   // ==========================================================
   handlePointerMove() {
-    if (this.mouse.x === -1000) return;
+    if (this.mouse.x === -1000 || this.interactableMeshes.length === 0) return;
 
     this.raycaster.setFromCamera(this.mouse, this.camera);
-    const meshes = Array.from(this.nodes.values()).map(n => n.mesh);
-    const intersects = this.raycaster.intersectObjects(meshes, false);
+    const intersects = this.raycaster.intersectObjects(this.interactableMeshes, false);
 
     if (intersects.length > 0) {
       const mesh = intersects[0].object;
-      const tableName = mesh.userData.tableName;
-      const node = this.nodes.get(tableName);
-
+      const node = this.nodes.get(mesh.userData.tableName);
       if (node && this.hoveredNode !== node) {
         this.setHoveredNode(node);
       }
@@ -568,19 +713,18 @@ class DatabaseVisualizer {
   }
 
   handlePointerClick(e) {
+    if (this.interactableMeshes.length === 0) return;
+
     this.raycaster.setFromCamera(this.mouse, this.camera);
-    const meshes = Array.from(this.nodes.values()).map(n => n.mesh);
-    const intersects = this.raycaster.intersectObjects(meshes, false);
+    const intersects = this.raycaster.intersectObjects(this.interactableMeshes, false);
 
     if (intersects.length > 0) {
       const mesh = intersects[0].object;
-      const tableName = mesh.userData.tableName;
-      const node = this.nodes.get(tableName);
+      const node = this.nodes.get(mesh.userData.tableName);
       if (node) {
         this.selectNode(node);
       }
     } else {
-      // Clicked in empty space -> deselect
       this.deselect();
     }
   }
@@ -589,39 +733,48 @@ class DatabaseVisualizer {
     this.hoveredNode = node;
     this.container.style.cursor = 'pointer';
 
-    // Highlight hovered node and connected links
+    node.boxMat.emissiveIntensity = 0.55;
+
+    // Highlight connecting links
     this.links.forEach(l => {
       if (l.source === node.name || l.target === node.name) {
-        l.material.color.setHex(0x60a5fa);
-        l.material.opacity = 0.9;
-      } else if (!this.selectedNode) {
-        l.material.color.setHex(0x334155);
-        l.material.opacity = 0.25;
+        l.material.color.setHex(0x38bdf8);
+        l.material.opacity = 1.0;
       }
     });
 
-    if (typeof this.options.onNodeHover === 'function') {
-      this.options.onNodeHover(node.data, this.mouseClientPos);
+    const cb = this.options.onHoverNode || this.options.onNodeHover;
+    if (typeof cb === 'function') {
+      cb(node.data);
     }
   }
 
   clearHover() {
-    this.hoveredNode = null;
+    if (this.hoveredNode) {
+      this.hoveredNode.boxMat.emissiveIntensity = 0.22;
+      this.hoveredNode = null;
+    }
     this.container.style.cursor = 'default';
 
     if (!this.selectedNode) {
       this.resetLinkStyles();
     }
 
-    if (typeof this.options.onNodeHover === 'function') {
-      this.options.onNodeHover(null);
+    const cb = this.options.onHoverNode || this.options.onNodeHover;
+    if (typeof cb === 'function') {
+      cb(null);
     }
   }
 
   selectNode(node) {
+    if (!node) {
+      this.deselect();
+      return;
+    }
+
     this.selectedNode = node;
 
-    // Find connected tables
+    // Determine connected tables
     const connectedTables = new Set([node.name]);
     this.links.forEach(l => {
       if (l.source === node.name) connectedTables.add(l.target);
@@ -631,30 +784,38 @@ class DatabaseVisualizer {
     // Dim unconnected nodes, highlight connected ones
     this.nodes.forEach(n => {
       if (connectedTables.has(n.name)) {
-        n.mesh.material.opacity = 1.0;
+        n.boxMat.opacity = 1.0;
+        n.boxMat.emissiveIntensity = n === node ? 0.65 : 0.35;
         n.edgeLines.opacity = 1.0;
         n.labelSprite.material.opacity = 1.0;
       } else {
-        n.mesh.material.opacity = 0.25;
-        n.edgeLines.opacity = 0.2;
-        n.labelSprite.material.opacity = 0.25;
+        n.boxMat.opacity = 0.3;
+        n.boxMat.emissiveIntensity = 0.05;
+        n.edgeLines.opacity = 0.25;
+        n.labelSprite.material.opacity = 0.3;
       }
     });
 
-    // Highlight relevant relationship curves
+    // Highlight relationship curves
     this.links.forEach(l => {
       if (l.source === node.name || l.target === node.name) {
         l.material.color.setHex(0xf59e0b);
         l.material.opacity = 1.0;
       } else {
         l.material.color.setHex(0x1e293b);
-        l.material.opacity = 0.1;
+        l.material.opacity = 0.15;
       }
     });
 
-    // Dispatch callback to update the UI Table Inspector Drawer
-    if (typeof this.options.onNodeSelect === 'function') {
-      this.options.onNodeSelect(node.data);
+    // Prepare enriched node data with related tables
+    const nodePayload = Object.assign({}, node.data, {
+      relatedTables: Array.from(connectedTables).filter(t => t !== node.name),
+      recordCount: node.recordCount
+    });
+
+    const cb = this.options.onSelectNode || this.options.onNodeSelect;
+    if (typeof cb === 'function') {
+      cb(nodePayload);
     }
   }
 
@@ -663,47 +824,46 @@ class DatabaseVisualizer {
 
     // Restore all nodes
     this.nodes.forEach(n => {
-      n.mesh.material.opacity = 0.95;
-      n.edgeLines.opacity = 0.75;
+      n.boxMat.opacity = 1.0;
+      n.boxMat.emissiveIntensity = 0.22;
+      n.edgeLines.opacity = 1.0;
       n.labelSprite.material.opacity = 1.0;
     });
 
     this.resetLinkStyles();
 
-    if (typeof this.options.onNodeSelect === 'function') {
-      this.options.onNodeSelect(null);
+    const cb = this.options.onSelectNode || this.options.onNodeSelect;
+    if (typeof cb === 'function') {
+      cb(null);
     }
   }
 
   resetLinkStyles() {
     this.links.forEach(l => {
-      l.material.color.setHex(0x334155);
-      l.material.opacity = 0.38;
+      l.material.color.setHex(0x475569);
+      l.material.opacity = 0.65;
     });
   }
 
-  resetCamera() {
-    if (!this.camera || !this.controls) return;
-    this.controls.reset();
-    this.camera.position.copy(this.initialCameraPos);
-    this.camera.lookAt(0, 0, 0);
-    this.deselect();
+  togglePause() {
+    this.isUserInteracting = !this.isUserInteracting;
+    return this.isUserInteracting;
   }
 
   // ==========================================================
-  // RENDER LOOP & PACKET ANIMATION
+  // RENDER LOOP & PACKET ANIMATION (Step 10)
   // ==========================================================
   animate() {
     this.animationFrameId = requestAnimationFrame(this.animate);
 
     const delta = this.clock.getDelta();
 
-    // 1. Subtle idle drift when not actively interacting
+    // 1. Subtle idle drift
     if (!this.isUserInteracting && !this.reducedMotion && this.graphGroup) {
       this.graphGroup.rotation.y += this.idleRotationSpeed;
     }
 
-    // 2. Animate relationship data packets along curves
+    // 2. Animate packet markers along relationship lines
     if (!this.reducedMotion) {
       this.pulses.forEach(link => {
         link.pulseT = (link.pulseT + link.pulseSpeed * delta) % 1.0;
@@ -717,7 +877,7 @@ class DatabaseVisualizer {
       this.controls.update();
     }
 
-    // 4. Render frame
+    // 4. Render scene
     if (this.renderer && this.scene && this.camera) {
       this.renderer.render(this.scene, this.camera);
     }
@@ -730,36 +890,39 @@ class DatabaseVisualizer {
     this.container.innerHTML = `
       <div class="svg-graph-fallback" style="width:100%; height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; background:#0b0d10; color:#cbd5e1; padding:20px;">
         <div style="font-size:14px; font-weight:700; color:#388bfd; margin-bottom:8px;">DATABASE ARCHITECTURE // 2D TOPOLOGY FALLBACK</div>
-        <p style="font-size:12px; color:#8b949e; margin-bottom:16px;">WebGL hardware acceleration unavailable. Displaying relational topology schema.</p>
-        <div id="svgFallbackCanvas" style="width:100%; height:400px; overflow:hidden;"></div>
+        <p style="font-size:12px; color:#8b949e; margin-bottom:16px;">Displaying relational topology schema.</p>
+        <div id="svgFallbackCanvas" style="width:100%; height:380px; overflow:hidden;"></div>
       </div>
     `;
 
-    // Render 2D SVG graph
-    setTimeout(() => {
+    setTimeout(async () => {
       const el = document.getElementById('svgFallbackCanvas');
-      if (!el || !this.graphData) return;
-      const w = el.clientWidth || 700;
-      const h = el.clientHeight || 400;
+      if (!el) return;
+      try {
+        const res = await fetch('/api/database/graph');
+        const data = await res.json();
+        const w = el.clientWidth || 700;
+        const h = el.clientHeight || 380;
 
-      let svgHtml = `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" style="width:100%; height:100%;">`;
-      // Lines
-      svgHtml += `<g stroke="#2d3748" stroke-width="1.5">`;
-      // Render simple circle nodes in grid
-      const cols = 5;
-      this.graphData.tables.forEach((t, i) => {
-        const x = 70 + (i % cols) * (w / cols);
-        const y = 50 + Math.floor(i / cols) * 110;
-        svgHtml += `
-          <g style="cursor:pointer;" onclick="window.dbVisualizerDispatchView('${t.name}')">
-            <rect x="${x - 45}" y="${y - 20}" width="90" height="40" rx="6" fill="#161b22" stroke="${t.color || '#3b82f6'}" stroke-width="1.5" />
-            <text x="${x}" y="${y - 2}" fill="#f0f6fc" font-size="11" font-weight="bold" text-anchor="middle">${t.name.toUpperCase()}</text>
-            <text x="${x}" y="${y + 12}" fill="${t.color || '#388bfd'}" font-size="9.5" font-family="monospace" text-anchor="middle">${t.record_count} rows</text>
-          </g>
-        `;
-      });
-      svgHtml += `</svg>`;
-      el.innerHTML = svgHtml;
+        let svgHtml = `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" style="width:100%; height:100%;">`;
+        const cols = 5;
+        data.tables.forEach((t, i) => {
+          const x = 70 + (i % cols) * (w / cols);
+          const y = 50 + Math.floor(i / cols) * 90;
+          const col = this.domainColors[t.name] || '#388bfd';
+          svgHtml += `
+            <g style="cursor:pointer;" onclick="window.inspectNodeViewRecords && (window.selectedInspectorTable='${t.name}', window.inspectNodeViewRecords())">
+              <rect x="${x - 45}" y="${y - 20}" width="90" height="42" rx="6" fill="#161b22" stroke="${col}" stroke-width="2" />
+              <text x="${x}" y="${y - 2}" fill="#f0f6fc" font-size="11" font-weight="bold" text-anchor="middle">${t.name.toUpperCase()}</text>
+              <text x="${x}" y="${y + 13}" fill="${col}" font-size="10" font-family="monospace" text-anchor="middle">${t.record_count} rows</text>
+            </g>
+          `;
+        });
+        svgHtml += `</svg>`;
+        el.innerHTML = svgHtml;
+      } catch (e) {
+        console.error('Fallback SVG error:', e);
+      }
     }, 100);
   }
 
@@ -776,9 +939,4 @@ class DatabaseVisualizer {
   }
 }
 
-// Global fallback helper
-window.dbVisualizerDispatchView = function(tableName) {
-  if (typeof switchViewForTable === 'function') {
-    switchViewForTable(tableName);
-  }
-};
+window.DatabaseVisualizer = DatabaseVisualizer;

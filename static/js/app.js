@@ -352,6 +352,8 @@ function initDbVisualizer() {
       onHoverNode: handleVisualizerNodeHovered
     });
     window.dbVisualizerInstance = dbVisualizerInstance;
+    window.dbVisualizer = dbVisualizerInstance;
+    window.refreshDatabaseGraph = refreshDatabaseVisualizer;
     dbVisualizerInstance.loadGraph('/api/database/graph');
   } catch (err) {
     console.error('Failed to initialize 3D Database Visualizer:', err);
@@ -363,6 +365,7 @@ function refreshDatabaseVisualizer() {
     dbVisualizerInstance.refresh('/api/database/graph');
   }
 }
+window.refreshDatabaseGraph = refreshDatabaseVisualizer;
 
 function handleVisualizerNodeSelected(node) {
   const inspector = document.getElementById('hud-node-inspector');
@@ -377,22 +380,53 @@ function handleVisualizerNodeSelected(node) {
   selectedInspectorTable = node.name;
   inspector.style.display = 'block';
 
-  const nameEl = document.getElementById('inspector-table-name');
-  if (nameEl) nameEl.textContent = node.name;
+  // Table Name
+  const nameEl1 = document.getElementById('inspector-table-name');
+  if (nameEl1) nameEl1.textContent = node.name.toUpperCase();
+  const nameEl2 = document.getElementById('insp-table-name');
+  if (nameEl2) nameEl2.textContent = node.name.toUpperCase();
 
-  const countEl = document.getElementById('inspector-record-count');
-  if (countEl) countEl.textContent = `${node.recordCount} rows`;
+  // Record Count
+  const countEl1 = document.getElementById('inspector-record-count');
+  if (countEl1) countEl1.textContent = `${node.recordCount} rows`;
+  const countEl2 = document.getElementById('insp-records');
+  if (countEl2) countEl2.textContent = `${node.recordCount}`;
 
-  const pkEl = document.getElementById('inspector-pk');
-  if (pkEl) pkEl.textContent = node.primaryKey || 'None';
+  // Primary Key
+  const pkEl1 = document.getElementById('inspector-pk');
+  if (pkEl1) pkEl1.textContent = node.primary_key || node.primaryKey || 'None';
+  const pkEl2 = document.getElementById('insp-pk');
+  if (pkEl2) pkEl2.textContent = node.primary_key || node.primaryKey || 'None';
 
-  const fkEl = document.getElementById('inspector-fks');
-  if (fkEl) {
-    if (node.foreignKeys && node.foreignKeys.length > 0) {
-      fkEl.textContent = node.foreignKeys.map(fk => `${fk.column} -> ${fk.referenced_table}`).join(', ');
-    } else {
-      fkEl.textContent = 'None';
-    }
+  // Foreign Keys
+  const fks = (node.foreign_keys || node.foreignKeys || []);
+  const fkText = fks.length > 0
+    ? fks.map(fk => typeof fk === 'string' ? fk : `${fk.column} -> ${fk.referenced_table}`).join(', ')
+    : 'None';
+  const fkEl1 = document.getElementById('inspector-fks');
+  if (fkEl1) fkEl1.textContent = fkText;
+  const fkEl2 = document.getElementById('insp-fks');
+  if (fkEl2) fkEl2.textContent = `${fks.length} FKs`;
+
+  // Columns & Domain
+  const cols = node.columns || [];
+  const colEl = document.getElementById('insp-cols');
+  if (colEl) colEl.textContent = `${cols.length || 'Schema'} columns`;
+
+  const domainEl = document.getElementById('insp-domain');
+  if (domainEl) {
+    const domainMap = {
+      tickets: 'CORE OPERATIONS',
+      incidents: 'INCIDENT MGMT',
+      service_requests: 'SERVICE DESK',
+      assets: 'HARDWARE ASSETS',
+      users: 'IDENTITY / USERS',
+      departments: 'ORGANIZATION',
+      support_staff: 'HUMAN RESOURCES',
+      maintenance: 'HARDWARE SERVICING',
+      warranties: 'CONTRACTS'
+    };
+    domainEl.textContent = domainMap[node.name] || 'RELATIONAL ENTITY';
   }
 
   const relsContainer = document.getElementById('inspector-rels');
@@ -414,7 +448,7 @@ function closeNodeInspector() {
   const inspector = document.getElementById('hud-node-inspector');
   if (inspector) inspector.style.display = 'none';
   if (dbVisualizerInstance) {
-    dbVisualizerInstance.selectNode(null);
+    dbVisualizerInstance.deselect();
   }
   selectedInspectorTable = null;
 }

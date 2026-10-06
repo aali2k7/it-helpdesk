@@ -21,8 +21,7 @@ def snap(url, output_filename, delay=1.8, window_size="1440,900"):
     dest = os.path.join(OUT_DIR, output_filename)
     cmd = [
         CHROME_BIN,
-        "--headless",
-        "--disable-gpu",
+        "--headless=new",
         f"--window-size={window_size}",
         f"--screenshot={dest}",
         f"--virtual-time-budget={int(delay * 1000)}",
