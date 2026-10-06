@@ -103,6 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
   checkDatabaseStatus();
   loadAllLookups();
   loadDashboard();
+  initDbVisualizer();
   updateSqlDisplay();
 
   // Ping DB button
@@ -174,6 +175,9 @@ function switchView(viewName) {
   switch (viewName) {
     case 'dashboard':
       loadDashboard();
+      if (window.dbVisualizerInstance) {
+        setTimeout(() => window.dbVisualizerInstance.onWindowResize(), 50);
+      }
       break;
     case 'tickets':
       loadTickets();
@@ -327,8 +331,118 @@ function populateSelectElements() {
 }
 
 // ==========================================================
-// 1. DASHBOARD CONTROLLER
+// 1. DASHBOARD CONTROLLER & 3D DATABASE VISUALIZER
 // ==========================================================
+let dbVisualizerInstance = null;
+let selectedInspectorTable = null;
+
+function initDbVisualizer() {
+  const container = document.getElementById('dbVisualizerContainer');
+  if (!container) return;
+
+  if (typeof DatabaseVisualizer === 'undefined') {
+    console.warn('DatabaseVisualizer script not yet loaded, retrying...');
+    setTimeout(initDbVisualizer, 100);
+    return;
+  }
+
+  try {
+    dbVisualizerInstance = new DatabaseVisualizer('dbVisualizerContainer', {
+      onSelectNode: handleVisualizerNodeSelected,
+      onHoverNode: handleVisualizerNodeHovered
+    });
+    window.dbVisualizerInstance = dbVisualizerInstance;
+    dbVisualizerInstance.loadGraph('/api/database/graph');
+  } catch (err) {
+    console.error('Failed to initialize 3D Database Visualizer:', err);
+  }
+}
+
+function refreshDatabaseVisualizer() {
+  if (dbVisualizerInstance) {
+    dbVisualizerInstance.refresh('/api/database/graph');
+  }
+}
+
+function handleVisualizerNodeSelected(node) {
+  const inspector = document.getElementById('hud-node-inspector');
+  if (!inspector) return;
+
+  if (!node) {
+    inspector.style.display = 'none';
+    selectedInspectorTable = null;
+    return;
+  }
+
+  selectedInspectorTable = node.name;
+  inspector.style.display = 'block';
+
+  const nameEl = document.getElementById('inspector-table-name');
+  if (nameEl) nameEl.textContent = node.name;
+
+  const countEl = document.getElementById('inspector-record-count');
+  if (countEl) countEl.textContent = `${node.recordCount} rows`;
+
+  const pkEl = document.getElementById('inspector-pk');
+  if (pkEl) pkEl.textContent = node.primaryKey || 'None';
+
+  const fkEl = document.getElementById('inspector-fks');
+  if (fkEl) {
+    if (node.foreignKeys && node.foreignKeys.length > 0) {
+      fkEl.textContent = node.foreignKeys.map(fk => `${fk.column} -> ${fk.referenced_table}`).join(', ');
+    } else {
+      fkEl.textContent = 'None';
+    }
+  }
+
+  const relsContainer = document.getElementById('inspector-rels');
+  if (relsContainer) {
+    const relTables = node.relatedTables || [];
+    if (relTables.length > 0) {
+      relsContainer.innerHTML = relTables.map(t => `<span class="inspector-rel-tag">${escapeHtml(t)}</span>`).join('');
+    } else {
+      relsContainer.innerHTML = '<span style="color: var(--text-muted); font-size: 11px;">Standalone entity</span>';
+    }
+  }
+}
+
+function handleVisualizerNodeHovered(node) {
+  // Optional hover feedback
+}
+
+function closeNodeInspector() {
+  const inspector = document.getElementById('hud-node-inspector');
+  if (inspector) inspector.style.display = 'none';
+  if (dbVisualizerInstance) {
+    dbVisualizerInstance.selectNode(null);
+  }
+  selectedInspectorTable = null;
+}
+window.closeNodeInspector = closeNodeInspector;
+
+function inspectNodeViewRecords() {
+  if (!selectedInspectorTable) return;
+  const tableMapping = {
+    'tickets': 'tickets',
+    'incidents': 'incidents',
+    'service_requests': 'service-requests',
+    'assets': 'assets',
+    'users': 'users',
+    'support_staff': 'staff',
+    'departments': 'departments',
+    'maintenance': 'maintenance',
+    'warranties': 'assets',
+    'categories': 'tickets',
+    'priorities': 'tickets',
+    'resolutions': 'tickets',
+    'assignments': 'tickets',
+    'status_histories': 'sql-verify'
+  };
+  const targetView = tableMapping[selectedInspectorTable] || 'tickets';
+  switchView(targetView);
+}
+window.inspectNodeViewRecords = inspectNodeViewRecords;
+
 async function loadDashboard() {
   try {
     const res = await fetch('/api/stats');
@@ -339,13 +453,22 @@ async function loadDashboard() {
       return;
     }
 
-    // Update Metric Cards
+    // Update Metric Cards / Editorial Rail
     document.getElementById('stat-total-tickets').textContent = data.total_tickets || 0;
     document.getElementById('stat-open-tickets').textContent = data.open_tickets || 0;
     document.getElementById('stat-resolved-tickets').textContent = data.resolved_tickets || 0;
     document.getElementById('stat-total-assets').textContent = data.total_assets || 0;
     document.getElementById('stat-total-users').textContent = data.total_users || 0;
     document.getElementById('stat-total-maint').textContent = '$' + (data.total_maintenance_cost || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+    // Update HUD metrics in Hero visualizer
+    const hudTables = document.getElementById('hud-metric-tables');
+    if (hudTables && data.total_tables) hudTables.textContent = data.total_tables;
+    const hudRecords = document.getElementById('hud-metric-records');
+    if (hudRecords && data.total_records) hudRecords.textContent = data.total_records;
+
+    // Refresh 3D visualizer data
+    refreshDatabaseVisualizer();
 
     // Update Sidebar Badges
     const badgeOpen = document.getElementById('badge-open-tickets');

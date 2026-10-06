@@ -156,6 +156,147 @@ def api_stats():
 
 
 # -----------------------------------------------------------------------------
+# API: 3D Database Graph & Architecture Metadata (Derived from information_schema)
+# -----------------------------------------------------------------------------
+@app.route("/api/database/graph", methods=["GET"])
+def api_database_graph():
+    """
+    Dynamically introspect MySQL information_schema and return real-time schema topology,
+    table definitions, columns, primary keys, foreign-key relationships, and exact record counts.
+    """
+    import time
+    start_time = time.perf_counter()
+    conn, err = get_connection()
+    if not conn:
+        return jsonify({"error": err, "connected": False}), 503
+
+    try:
+        cursor = conn.cursor(dictionary=True)
+        config = get_db_config()
+        db_name = config["database"]
+
+        # 1. Fetch tables list
+        cursor.execute("SHOW TABLES")
+        tables_raw = [list(r.values())[0] for r in cursor.fetchall()]
+
+        # 2. Fetch all column definitions
+        cursor.execute("""
+            SELECT TABLE_NAME, COLUMN_NAME, COLUMN_KEY, DATA_TYPE, IS_NULLABLE
+            FROM information_schema.COLUMNS
+            WHERE TABLE_SCHEMA = %s
+            ORDER BY TABLE_NAME, ORDINAL_POSITION
+        """, (db_name,))
+        all_cols = cursor.fetchall()
+
+        # 3. Fetch foreign key constraints
+        cursor.execute("""
+            SELECT 
+                TABLE_NAME AS source,
+                COLUMN_NAME AS foreign_key,
+                REFERENCED_TABLE_NAME AS target,
+                REFERENCED_COLUMN_NAME AS target_pk,
+                CONSTRAINT_NAME AS constraint_name
+            FROM information_schema.KEY_COLUMN_USAGE
+            WHERE TABLE_SCHEMA = %s AND REFERENCED_TABLE_NAME IS NOT NULL
+        """, (db_name,))
+        all_fks = cursor.fetchall()
+
+        # 4. Domain classification and color definitions for architectural visualization
+        domain_styles = {
+            "tickets": {"domain": "Operations", "color": "#d97706", "importance": 10},
+            "incidents": {"domain": "Operations", "color": "#dc2626", "importance": 8},
+            "service_requests": {"domain": "Operations", "color": "#2563eb", "importance": 8},
+            "resolutions": {"domain": "Operations", "color": "#10b981", "importance": 7},
+            "assignments": {"domain": "Operations", "color": "#f59e0b", "importance": 7},
+            "status_histories": {"domain": "Audit", "color": "#8b5cf6", "importance": 9},
+            "assets": {"domain": "Inventory", "color": "#475569", "importance": 9},
+            "warranties": {"domain": "Inventory", "color": "#0284c7", "importance": 6},
+            "maintenance": {"domain": "Inventory", "color": "#c2410c", "importance": 7},
+            "users": {"domain": "Organization", "color": "#94a3b8", "importance": 9},
+            "departments": {"domain": "Organization", "color": "#059669", "importance": 7},
+            "support_staff": {"domain": "Organization", "color": "#6366f1", "importance": 8},
+            "categories": {"domain": "Classification", "color": "#64748b", "importance": 6},
+            "priorities": {"domain": "Classification", "color": "#ea580c", "importance": 6},
+        }
+
+        # 5. Build nodes dictionary and compute exact row counts
+        tables_dict = {}
+        total_records = 0
+
+        for t in tables_raw:
+            cursor.execute(f"SELECT COUNT(*) AS cnt FROM `{t}`")
+            cnt = cursor.fetchone()["cnt"]
+            total_records += cnt
+
+            meta = domain_styles.get(t, {"domain": "System", "color": "#64748b", "importance": 5})
+
+            tables_dict[t] = {
+                "name": t,
+                "record_count": cnt,
+                "primary_key": None,
+                "columns": [],
+                "foreign_keys": [],
+                "domain": meta["domain"],
+                "color": meta["color"],
+                "importance": meta["importance"],
+                "inbound_count": 0,
+                "outbound_count": 0
+            }
+
+        # Populate columns and PKs
+        for c in all_cols:
+            t = c["TABLE_NAME"]
+            if t in tables_dict:
+                is_pk = (c["COLUMN_KEY"] == "PRI")
+                if is_pk and not tables_dict[t]["primary_key"]:
+                    tables_dict[t]["primary_key"] = c["COLUMN_NAME"]
+                tables_dict[t]["columns"].append({
+                    "name": c["COLUMN_NAME"],
+                    "type": c["DATA_TYPE"],
+                    "is_pk": is_pk,
+                    "is_nullable": c["IS_NULLABLE"] == "YES"
+                })
+
+        # Populate relationships and count in/out degrees
+        relationships = []
+        for fk in all_fks:
+            src = fk["source"]
+            tgt = fk["target"]
+            if src in tables_dict and tgt in tables_dict:
+                tables_dict[src]["foreign_keys"].append(fk)
+                tables_dict[src]["outbound_count"] += 1
+                tables_dict[tgt]["inbound_count"] += 1
+                relationships.append({
+                    "source": src,
+                    "target": tgt,
+                    "foreign_key": fk["foreign_key"],
+                    "target_pk": fk["target_pk"],
+                    "constraint_name": fk["constraint_name"]
+                })
+
+        cursor.close()
+        conn.close()
+
+        latency_ms = round((time.perf_counter() - start_time) * 1000, 2)
+
+        return jsonify({
+            "database": db_name,
+            "connected": True,
+            "total_tables": len(tables_dict),
+            "total_records": total_records,
+            "total_relationships": len(relationships),
+            "latency_ms": latency_ms,
+            "tables": list(tables_dict.values()),
+            "relationships": relationships
+        })
+    except Exception as e:
+        if conn and conn.is_connected():
+            conn.close()
+        return jsonify({"error": str(e), "connected": False}), 500
+
+
+
+# -----------------------------------------------------------------------------
 # API: Tickets (VIEW, INSERT, DELETE, DETAILS, STATUS UPDATE)
 # -----------------------------------------------------------------------------
 @app.route("/api/tickets", methods=["GET"])

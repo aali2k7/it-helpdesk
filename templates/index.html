@@ -121,84 +121,126 @@
     <div class="view-viewport">
 
       <!-- ====================================================
-           VIEW 1: DASHBOARD
+           VIEW 1: DASHBOARD (CINEMATIC 3D DATABASE COMMAND CENTER)
            ==================================================== -->
       <section id="view-dashboard" class="view-panel active">
-        <div class="panel-header">
-          <div class="panel-header-left">
-            <h3>Operations Dashboard</h3>
-            <p>Real-time analytics and quick operations directly against MySQL.</p>
+        <!-- 3D HERO DATABASE VISUALIZATION COMMAND CENTER -->
+        <div class="hero-visualization-container">
+          <!-- 3D Canvas Mount Point -->
+          <div id="dbVisualizerContainer" class="visualizer-canvas-viewport"></div>
+
+          <!-- TOP LEFT HUD: Architectural Schema Metadata -->
+          <div class="hud-box hud-top-left">
+            <div class="hud-eyebrow">DATABASE ARCHITECTURE // LIVE TOPOLOGY</div>
+            <div class="hud-title">RELATIONAL SCHEMA VISUALIZER</div>
+            <div class="hud-meta">
+              <span>SCHEMA: <strong class="mono-text" id="hud-schema-name">IT_HELPDESK</strong></span>
+              <span class="hud-dot"></span>
+              <span>ENGINE: <strong class="mono-text">INNODB</strong></span>
+              <span class="hud-dot"></span>
+              <span>NORMALIZATION: <strong class="mono-text">3NF</strong></span>
+            </div>
           </div>
-          <div class="panel-actions">
-            <button class="btn btn-primary" onclick="openTicketModal()">
-              <span>+</span> New Ticket
-            </button>
-            <button class="btn btn-secondary" onclick="loadDashboard()">
-              <span>🔄</span> Refresh
-            </button>
+
+          <!-- TOP RIGHT HUD: Live MySQL Status & Volume Counters -->
+          <div class="hud-box hud-top-right">
+            <div class="hud-status-badge">
+              <span class="status-pulse-dot"></span>
+              <span id="hud-db-status">MYSQL 9.7.1 // CONNECTED</span>
+            </div>
+            <div class="hud-metrics-row">
+              <div class="hud-metric"><span class="hud-lbl">TABLES</span><strong id="hud-tables-count" class="mono-text">14</strong></div>
+              <div class="hud-metric"><span class="hud-lbl">RELATIONS</span><strong id="hud-fks-count" class="mono-text">14</strong></div>
+              <div class="hud-metric"><span class="hud-lbl">RECORDS</span><strong id="hud-records-count" class="mono-text">55</strong></div>
+              <div class="hud-metric"><span class="hud-lbl">LATENCY</span><strong id="hud-latency" class="mono-text">1.2ms</strong></div>
+            </div>
+          </div>
+
+          <!-- BOTTOM LEFT HUD: Interaction Guide -->
+          <div class="hud-box hud-bottom-left">
+            <div class="hud-controls-help">
+              <span>DRAG TO ROTATE</span> • <span>SCROLL TO ZOOM</span> • <span>CLICK TABLE NODE TO INSPECT</span>
+            </div>
+          </div>
+
+          <!-- BOTTOM RIGHT HUD: Interactive Table Inspector Drawer -->
+          <div class="hud-box hud-bottom-right" id="hud-node-inspector" style="display: none;">
+            <div class="inspector-header">
+              <div class="inspector-table-name mono-text" id="insp-table-name">TICKETS</div>
+              <div class="inspector-badge" id="insp-domain">OPERATIONS</div>
+            </div>
+            <div class="inspector-body">
+              <div class="insp-stat"><span class="insp-lbl">RECORDS</span><strong id="insp-records" class="mono-text">5</strong></div>
+              <div class="insp-stat"><span class="insp-lbl">PRIMARY KEY</span><strong id="insp-pk" class="mono-text">ticket_id</strong></div>
+              <div class="insp-stat"><span class="insp-lbl">FOREIGN KEYS</span><strong id="insp-fks" class="mono-text">3 FKs</strong></div>
+              <div class="insp-stat"><span class="insp-lbl">COLUMNS</span><strong id="insp-cols" class="mono-text">8 columns</strong></div>
+            </div>
+            <div class="inspector-footer">
+              <button class="btn btn-primary btn-sm" id="btn-insp-view" onclick="inspectNodeViewRecords()">
+                [ VIEW RECORDS IN TABLE ]
+              </button>
+              <button class="btn btn-secondary btn-sm" onclick="dbVisualizer.deselect()">
+                ✕ Close
+              </button>
+            </div>
+          </div>
+
+          <!-- Viewport Floating Utility Bar -->
+          <div class="hud-viewport-toolbar">
+            <button class="hud-tool-btn" onclick="dbVisualizer && dbVisualizer.resetCamera()" title="Reset Camera Perspective">⟲ Reset Camera</button>
+            <button class="hud-tool-btn" onclick="refreshDatabaseGraph(true)" title="Ping & Sync Schema Topology">⚡ Sync Graph</button>
+            <button class="hud-tool-btn" onclick="switchView('sql')" title="Inspect Live SQL">🔍 Live SQL</button>
           </div>
         </div>
 
-        <!-- Metric Cards -->
-        <div class="metrics-grid">
-          <div class="metric-card">
-            <div class="metric-icon-box metric-icon-blue">🎫</div>
-            <div class="metric-info">
-              <h4>Total Tickets</h4>
-              <div class="metric-value" id="stat-total-tickets">0</div>
-            </div>
+        <!-- EDITORIAL STATISTICS RAIL (Precision Horizontal Instrumentation) -->
+        <div class="editorial-stats-rail">
+          <div class="rail-item">
+            <span class="rail-label">TOTAL TICKETS</span>
+            <span class="rail-val mono-text" id="stat-total-tickets">5</span>
           </div>
-          <div class="metric-card">
-            <div class="metric-icon-box metric-icon-amber">⏳</div>
-            <div class="metric-info">
-              <h4>Active / Open</h4>
-              <div class="metric-value" id="stat-open-tickets">0</div>
-            </div>
+          <div class="rail-divider"></div>
+          <div class="rail-item">
+            <span class="rail-label">ACTIVE / OPEN</span>
+            <span class="rail-val mono-text accent-amber" id="stat-open-tickets">4</span>
           </div>
-          <div class="metric-card">
-            <div class="metric-icon-box metric-icon-green">✅</div>
-            <div class="metric-info">
-              <h4>Resolved</h4>
-              <div class="metric-value" id="stat-resolved-tickets">0</div>
-            </div>
+          <div class="rail-divider"></div>
+          <div class="rail-item">
+            <span class="rail-label">RESOLVED</span>
+            <span class="rail-val mono-text accent-green" id="stat-resolved-tickets">1</span>
           </div>
-          <div class="metric-card">
-            <div class="metric-icon-box metric-icon-cyan">💻</div>
-            <div class="metric-info">
-              <h4>Total Assets</h4>
-              <div class="metric-value" id="stat-total-assets">0</div>
-            </div>
+          <div class="rail-divider"></div>
+          <div class="rail-item">
+            <span class="rail-label">TOTAL ASSETS</span>
+            <span class="rail-val mono-text accent-steel" id="stat-total-assets">5</span>
           </div>
-          <div class="metric-card">
-            <div class="metric-icon-box metric-icon-purple">👥</div>
-            <div class="metric-info">
-              <h4>Registered Users</h4>
-              <div class="metric-value" id="stat-total-users">0</div>
-            </div>
+          <div class="rail-divider"></div>
+          <div class="rail-item">
+            <span class="rail-label">REGISTERED USERS</span>
+            <span class="rail-val mono-text accent-ivory" id="stat-total-users">5</span>
           </div>
-          <div class="metric-card">
-            <div class="metric-icon-box metric-icon-red">💰</div>
-            <div class="metric-info">
-              <h4>Maintenance Cost</h4>
-              <div class="metric-value" id="stat-total-maint">$0.00</div>
-            </div>
+          <div class="rail-divider"></div>
+          <div class="rail-item">
+            <span class="rail-label">MAINTENANCE COST</span>
+            <span class="rail-val mono-text accent-copper" id="stat-total-maint">$2,400.00</span>
           </div>
         </div>
 
-        <!-- Quick Actions Bar -->
+        <!-- Quick Actions Bar (Technical Precision Styling) -->
         <div class="quick-actions-bar">
           <div class="quick-actions-title">
-            <span>⚡ Quick Actions</span>
+            <span>⚡ QUICK DATABASE OPERATIONS</span>
           </div>
           <div class="quick-actions-btns">
             <button class="btn btn-primary btn-sm" onclick="openTicketModal()">+ Add Ticket</button>
             <button class="btn btn-secondary btn-sm" onclick="openUserModal()">+ Add User</button>
             <button class="btn btn-secondary btn-sm" onclick="openAssetModal()">+ Register Asset</button>
-            <button class="btn btn-secondary btn-sm" onclick="switchView('tickets')">View All Tickets</button>
+            <button class="btn btn-secondary btn-sm" onclick="switchView('tickets')">View Tickets</button>
             <button class="btn btn-secondary btn-sm" onclick="switchView('assets')">View Assets</button>
             <button class="btn btn-secondary btn-sm" onclick="switchView('sql')">Live SQL Queries</button>
           </div>
         </div>
+
 
         <!-- Recent Tickets Table -->
         <div class="table-card">
@@ -966,6 +1008,9 @@
 <!-- TOAST NOTIFICATION CONTAINER -->
 <div id="toastContainer" class="toast-container"></div>
 
+<script src="/static/vendor/three.min.js"></script>
+<script src="/static/vendor/OrbitControls.js"></script>
+<script src="/static/js/db-visualizer.js"></script>
 <script src="/static/js/app.js"></script>
 </body>
 </html>
