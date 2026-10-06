@@ -5,18 +5,18 @@
    ========================================================== */
 
 :root {
-  /* Color Palette - Premium Off-White & Slate Gray */
-  --bg-primary: #f8f9fa;          /* Refined off-white / light slate canvas */
+  /* Color Palette - Soothing Premium Off-White & Slate */
+  --bg-primary: #f7f8fa;          /* Soothing off-white canvas with gentle neutral tone */
   --bg-secondary: #ffffff;        /* Pure crisp white for surfaces and cards */
   --bg-surface: #ffffff;
-  --bg-surface-hover: #f1f5f9;
+  --bg-surface-hover: #f1f3f7;
   --bg-card: #ffffff;
-  --bg-subtle: #f8fafc;
+  --bg-subtle: #f4f5f8;
 
-  --border-subtle: #f1f5f9;
-  --border-default: #e2e8f0;      /* Crisp slate border */
-  --border-hover: #cbd5e1;
-  --border-focus: #2563eb;
+  --border-subtle: #edf0f4;
+  --border-default: #e2e6ec;      /* Crisp, refined slate border */
+  --border-hover: #cbd2dc;
+  --border-focus: #0071e3;
 
   /* Typography - Sharp, authoritative slate scale */
   --text-primary: #0f172a;        /* Deep slate-900 */
@@ -362,17 +362,18 @@ html, body {
 }
 
 /* ==========================================================
-   HERO 3D DATABASE VISUALIZER (DARK GRAPHITE STAGE)
+   HERO 3D DATABASE VISUALIZER (LIGHT ARCHITECTURAL STUDIO STAGE)
    ========================================================== */
 .hero-visualization-container {
   position: relative;
   width: 100%;
   height: 480px;
-  background-color: #0a0e17;
-  border: 1px solid #1e293b;
+  background: radial-gradient(ellipse at 50% 25%, #ffffff 0%, #f6f8fc 65%, #eef2f7 100%);
+  border: 1px solid var(--border-default);
   border-radius: var(--radius-md);
   margin-bottom: 16px;
   overflow: hidden;
+  box-shadow: 0 8px 30px -6px rgba(15, 23, 42, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
 .visualizer-canvas-viewport {
@@ -406,7 +407,7 @@ html, body {
 .hud-title {
   font-size: 13px;
   font-weight: 600;
-  color: #f8fafc;
+  color: #0f172a;
   letter-spacing: -0.2px;
 }
 
@@ -424,11 +425,14 @@ html, body {
 
 .hud-controls-help {
   font-size: 11px;
-  color: #64748b;
-  background: rgba(15, 23, 42, 0.7);
-  padding: 4px 10px;
+  color: #475569;
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 5px 12px;
   border-radius: var(--radius-sm);
-  border: 1px solid #1e293b;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 /* Bottom Right Viewport Toolbar */
@@ -443,21 +447,25 @@ html, body {
 }
 
 .hud-tool-btn {
-  background: rgba(15, 23, 42, 0.8);
-  border: 1px solid #334155;
-  color: #94a3b8;
-  padding: 4.5px 11px;
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  color: #334155;
+  padding: 5px 12px;
   border-radius: var(--radius-sm);
   font-size: 11.5px;
   font-weight: 500;
   cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
   transition: all var(--transition-fast);
 }
 
 .hud-tool-btn:hover {
-  background: #1e293b;
-  color: #ffffff;
-  border-color: #475569;
+  background: #ffffff;
+  color: #0071e3;
+  border-color: #0071e3;
+  box-shadow: 0 2px 8px rgba(0, 113, 227, 0.15);
 }
 
 /* Table Inspector Card (Right Drawer) */
@@ -465,20 +473,20 @@ html, body {
   top: 16px;
   right: 18px;
   width: 300px;
-  background: rgba(15, 23, 42, 0.95);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid #334155;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(15, 23, 42, 0.1);
   border-radius: var(--radius-md);
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 20px 40px -8px rgba(15, 23, 42, 0.12), 0 1px 3px rgba(15, 23, 42, 0.05);
   z-index: 15;
   overflow: hidden;
-  color: #f8fafc;
+  color: #0f172a;
 }
 
 .inspector-header {
   padding: 12px 14px;
-  border-bottom: 1px solid #1e293b;
+  border-bottom: 1px solid #f1f5f9;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -493,7 +501,7 @@ html, body {
 .inspector-table-name {
   font-size: 13.5px;
   font-weight: 700;
-  color: #f8fafc;
+  color: #0f172a;
 }
 
 .inspector-badge {
@@ -501,23 +509,24 @@ html, body {
   font-weight: 600;
   padding: 1.5px 6px;
   border-radius: var(--radius-xs);
-  background: rgba(37, 99, 235, 0.15);
-  color: #60a5fa;
-  border: 1px solid rgba(37, 99, 235, 0.3);
+  background: #eff6ff;
+  color: #2563eb;
+  border: 1px solid #bfdbfe;
 }
 
 .inspector-close-btn {
   background: none;
   border: none;
   font-size: 13px;
-  color: #94a3b8;
+  color: #64748b;
   cursor: pointer;
   padding: 2px 6px;
   border-radius: var(--radius-xs);
 }
 
 .inspector-close-btn:hover {
-  color: #ffffff;
+  color: #0f172a;
+  background: #f1f5f9;
 }
 
 .inspector-body {
@@ -537,22 +546,22 @@ html, body {
   display: flex;
   flex-direction: column;
   gap: 2px;
-  background: #111827;
+  background: #f8fafc;
   padding: 7px 9px;
   border-radius: var(--radius-xs);
-  border: 1px solid #1e293b;
+  border: 1px solid #e2e8f0;
 }
 
 .insp-lbl {
   font-size: 9px;
   font-weight: 600;
-  color: #94a3b8;
+  color: #64748b;
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }
 
 .insp-stat strong {
-  color: #f8fafc;
+  color: #0f172a;
   font-weight: 600;
   font-size: 12px;
 }
@@ -573,11 +582,11 @@ html, body {
   font-family: var(--font-mono);
   font-size: 10px;
   font-weight: 500;
-  background: #1e293b;
-  color: #93c5fd;
+  background: #eff6ff;
+  color: #1d4ed8;
   padding: 2px 7px;
   border-radius: var(--radius-xs);
-  border: 1px solid #334155;
+  border: 1px solid #dbeafe;
   cursor: pointer;
   transition: all var(--transition-fast);
 }
@@ -592,8 +601,8 @@ html, body {
   padding: 10px 14px;
   display: flex;
   gap: 8px;
-  border-top: 1px solid #1e293b;
-  background: #0b0f19;
+  border-top: 1px solid #f1f5f9;
+  background: #f8fafc;
 }
 
 .inspector-footer .btn {
