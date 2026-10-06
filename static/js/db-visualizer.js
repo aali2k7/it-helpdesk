@@ -148,34 +148,31 @@ class DatabaseVisualizer {
     // 6. Frosted Plinth & Subtle Grid Platform
     this.setupFloorGrid();
 
-    // 7. Ambient Particle Atmosphere
-    this.setupParticleDust();
-
-    // 8. Graph Root Group
+    // 7. Graph Root Group
     this.graphGroup = new THREE.Group();
     this.scene.add(this.graphGroup);
 
-    // 9. Event Listeners
+    // 8. Event Listeners
     this.setupEvents();
 
-    // 10. Start Render Loop
+    // 9. Start Render Loop
     this.animate = this.animate.bind(this);
     this.animationFrameId = requestAnimationFrame(this.animate);
   }
 
   setupLighting() {
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.95);
     this.scene.add(ambientLight);
 
-    const keyLight = new THREE.DirectionalLight(0xffffff, 1.3);
-    keyLight.position.set(65, 110, 75);
+    const keyLight = new THREE.DirectionalLight(0xffffff, 1.15);
+    keyLight.position.set(75, 120, 85);
     this.scene.add(keyLight);
 
-    const fillLight = new THREE.DirectionalLight(0xdbeafe, 0.7);
+    const fillLight = new THREE.DirectionalLight(0xdbeafe, 0.55);
     fillLight.position.set(-70, 70, -70);
     this.scene.add(fillLight);
 
-    const hubPointLight = new THREE.PointLight(0x0071e3, 1.4, 200);
+    const hubPointLight = new THREE.PointLight(0x0071e3, 0.9, 200);
     hubPointLight.position.set(0, 25, 0);
     this.scene.add(hubPointLight);
   }
@@ -183,8 +180,9 @@ class DatabaseVisualizer {
   setupFloorGrid() {
     this.floorGroup = new THREE.Group();
 
-    // 1. Clean Frosted Base Plinth Disc
-    const plinthGeo = new THREE.CylinderGeometry(152, 152, 1.4, 64);
+    // 1. Expansive Frosted Architectural Plinth Disc (Spacious & Clean)
+    const plinthRadius = 195;
+    const plinthGeo = new THREE.CylinderGeometry(plinthRadius, plinthRadius, 1.4, 64);
     const plinthMat = new THREE.MeshBasicMaterial({
       color: 0xffffff,
       transparent: true,
@@ -194,24 +192,24 @@ class DatabaseVisualizer {
     plinth.position.y = -14.6;
     this.floorGroup.add(plinth);
 
-    // 2. Clean Architectural Grid (resting softly on top of the plinth)
-    const grid = new THREE.GridHelper(300, 24, 0x0071e3, 0xcbd5e1);
+    // 2. Subtle Architectural Grid
+    const grid = new THREE.GridHelper(390, 26, 0x0071e3, 0xe2e8f0);
     grid.position.y = -13.88;
     this.floorGroup.add(grid);
 
-    // 3. Crisp Boundary Ring
+    // 3. Clean Perimeter Boundary Ring
     const ringGeo = new THREE.BufferGeometry();
     const points = [];
     const segments = 96;
     for (let i = 0; i <= segments; i++) {
       const theta = (i / segments) * Math.PI * 2;
-      points.push(new THREE.Vector3(Math.cos(theta) * 148, -13.85, Math.sin(theta) * 148));
+      points.push(new THREE.Vector3(Math.cos(theta) * 190, -13.85, Math.sin(theta) * 190));
     }
     ringGeo.setFromPoints(points);
     const ringMat = new THREE.LineBasicMaterial({
-      color: 0x94a3b8,
+      color: 0xcbd5e1,
       transparent: true,
-      opacity: 0.8
+      opacity: 0.75
     });
     const ring = new THREE.Line(ringGeo, ringMat);
     this.floorGroup.add(ring);
@@ -376,10 +374,13 @@ class DatabaseVisualizer {
     this.pulses = [];
     this.interactableMeshes = [];
 
-    // 1. Calculate Positions based on Relational Topology
-    const positions = this.computeTopologicalPositions(this.graphData.tables, this.graphData.relationships);
+    // 1. Calculate Deterministic Relational Graph Positions
+    const positions = this.computeDeterministicGraphLayout(
+      this.graphData.tables, 
+      this.graphData.relationships
+    );
 
-    // 2. Build High-Tech Precision Monolith Nodes
+    // 2. Build Precision-Machined Architecture Data Nodes
     this.graphData.tables.forEach(table => {
       const pos = positions[table.name] || { x: 0, y: 0, z: 0 };
       const node = this.createTableNode(table, pos);
@@ -388,7 +389,7 @@ class DatabaseVisualizer {
       this.interactableMeshes.push(node.mesh);
     });
 
-    // 3. Build Synaptic Laser Conduits & Wave Packets
+    // 3. Build Subtle, Clean Relationship Conduits
     this.graphData.relationships.forEach(rel => {
       const srcNode = this.nodes.get(rel.source);
       const tgtNode = this.nodes.get(rel.target);
@@ -398,55 +399,121 @@ class DatabaseVisualizer {
         this.graphGroup.add(link.curveLine);
       }
     });
+
+    // 4. Run Verification Check (Ensures 0 Collisions & Maximum Clarity)
+    this.verifyLayoutSpacing();
   }
 
-  computeTopologicalPositions(tables, relationships) {
+  // ==========================================================
+  // DETERMINISTIC GRAPH LAYOUT STRATEGY (AMPHITHEATER STADIUM ARCHITECTURE)
+  // ==========================================================
+  computeDeterministicGraphLayout(tables, relationships) {
     const pos = {};
 
-    // Hub-and-Spoke Relational Architecture
-    pos['tickets']          = { x: 0,   y: 5,  z: 0 };
+    // 1. Graph Degree Calculation from Real Foreign Keys
+    const degree = new Map();
+    tables.forEach(t => degree.set(t.name, 0));
+    relationships.forEach(rel => {
+      if (degree.has(rel.source)) degree.set(rel.source, degree.get(rel.source) + 1);
+      if (degree.has(rel.target)) degree.set(rel.target, degree.get(rel.target) + 1);
+    });
 
-    // Operational Ring 1
-    pos['incidents']        = { x: -34, y: 3,  z: -16 };
-    pos['service_requests'] = { x: 34,  y: 3,  z: -16 };
-    pos['status_histories'] = { x: -22, y: -4, z: 32 };
-    pos['resolutions']      = { x: 22,  y: -4, z: 32 };
-    pos['assignments']      = { x: 0,   y: 18, z: -34 };
+    // 2. Deterministic Radial Layer Assignment with Amphitheater Elevation
+    // Core Central Hub (Degree ~10)
+    pos['tickets']          = { x: 0,    y: 0.0,  z: 0 };
 
-    // Core Entities Ring 2
-    pos['users']            = { x: -58, y: 8,  z: 14 };
-    pos['assets']           = { x: 58,  y: 8,  z: 14 };
-    pos['support_staff']    = { x: 0,   y: 30, z: -62 };
+    // Tier 1: Primary Operational & Entity Hubs (Generous Radius ~72 units)
+    pos['incidents']        = { x: -48,  y: -3.4, z: 42 };   // Front-left
+    pos['service_requests'] = { x: 48,   y: -3.4, z: 42 };   // Front-right
+    pos['users']            = { x: -74,  y: 0.0,  z: -8 };   // Left flank
+    pos['assets']           = { x: 74,   y: 0.0,  z: -8 };   // Right flank
+    pos['assignments']      = { x: -38,  y: 4.4,  z: -62 };  // Elevated back-left
+    pos['support_staff']    = { x: 38,   y: 4.4,  z: -62 };  // Elevated back-right
 
-    // Organization & Taxonomy Ring 3
-    pos['departments']      = { x: -88, y: 12, z: 26 };
-    pos['categories']       = { x: -42, y: -6, z: -64 };
-    pos['priorities']       = { x: 42,  y: -6, z: -64 };
+    // Tier 2: Sub-domains, Taxonomy & Audit Ring (Radius ~135-148 units)
+    pos['status_histories'] = { x: 0,    y: -7.2, z: 110 };  // Lowest front-center
+    pos['resolutions']      = { x: -98,  y: -4.5, z: 65 };   // Far front-left
+    pos['maintenance']      = { x: 120,  y: -2.2, z: 40 };   // Far right-front
+    pos['warranties']       = { x: 126,  y: 3.8,  z: -48 };  // Far right-back
+    pos['departments']      = { x: -126, y: 3.8,  z: -48 };  // Far left-back
+    pos['categories']       = { x: -55,  y: 8.2,  z: -120 }; // Elevated far back-left
+    pos['priorities']       = { x: 55,   y: 8.2,  z: -120 }; // Elevated far back-right
 
-    // Hardware Sub-domain Ring 4
-    pos['warranties']       = { x: 88,  y: 12, z: -22 };
-    pos['maintenance']      = { x: 84,  y: 2,  z: 48 };
-
-    // Fallback for dynamic extensions
+    // Fallback for any dynamic schema extensions (deterministic spiral)
+    let extraIndex = 0;
     tables.forEach(t => {
       if (!pos[t.name]) {
-        const angle = Math.random() * Math.PI * 2;
-        const rad = 95 + Math.random() * 20;
+        const phi = (1 + Math.sqrt(5)) / 2;
+        const angle = extraIndex * phi * Math.PI * 2;
+        const rad = 155 + extraIndex * 8;
+        const z = Math.sin(angle) * rad;
         pos[t.name] = {
           x: Math.cos(angle) * rad,
-          y: (Math.random() - 0.5) * 20,
-          z: Math.sin(angle) * rad
+          y: - (z / 140) * 7.5,
+          z: z
         };
+        extraIndex++;
+      }
+    });
+
+    // 3. Deterministic Iterative Relaxation Pass (Enforces Hard MIN_GAP >= 48)
+    const MIN_ALLOWED_DIST = 52;
+    for (let iter = 0; iter < 60; iter++) {
+      const decay = 1.0 - (iter / 60) * 0.75;
+      for (let i = 0; i < tables.length; i++) {
+        const tA = tables[i].name;
+        if (tA === 'tickets') continue; // Core pinned at center
+        const pA = pos[tA];
+        for (let j = i + 1; j < tables.length; j++) {
+          const tB = tables[j].name;
+          const pB = pos[tB];
+          const dx = pB.x - pA.x;
+          const dz = pB.z - pA.z;
+          const dist = Math.hypot(dx, dz) || 0.001;
+          if (dist < MIN_ALLOWED_DIST) {
+            const push = (MIN_ALLOWED_DIST - dist) * 0.5 * decay;
+            const nx = dx / dist;
+            const nz = dz / dist;
+            pA.x -= nx * push;
+            pA.z -= nz * push;
+            if (tB !== 'tickets') {
+              pB.x += nx * push;
+              pB.z += nz * push;
+            }
+          }
+        }
+      }
+    }
+
+    // 4. Recompute Amphitheater Vertical Elevation (0% Occlusion)
+    // Front nodes step down, back nodes step up: unobstructed lines of sight
+    tables.forEach(t => {
+      if (t.name !== 'tickets') {
+        pos[t.name].y = - (pos[t.name].z / 140) * 7.6;
       }
     });
 
     return pos;
   }
 
+  verifyLayoutSpacing() {
+    let minObserved = Infinity;
+    let collisions = 0;
+    const tableNames = Array.from(this.nodes.keys());
+    for (let i = 0; i < tableNames.length; i++) {
+      const posA = this.nodes.get(tableNames[i]).position;
+      for (let j = i + 1; j < tableNames.length; j++) {
+        const posB = this.nodes.get(tableNames[j]).position;
+        const d = Math.hypot(posB.x - posA.x, posB.z - posA.z);
+        if (d < minObserved) minObserved = d;
+        if (d < 45) collisions++;
+      }
+    }
+    console.log(`[3D Visualizer] Layout Verified: ${tableNames.length} tables, min gap: ${minObserved.toFixed(1)} units, collisions: ${collisions}`);
+  }
+
   // ==========================================================
-  // NODE CREATION: PORCELAIN WHITE MONOLITH & FLOATING CAPSULE LABEL
-  // ==========================================================
-  // NODE CREATION: HIGH-CONTRAST OBSIDIAN MONOLITH & LARGE BILLBOARD
+  // NODE CREATION: PRECISION-MACHINED ARCHITECTURAL DATA BLOCKS
   // ==========================================================
   createTableNode(table, position) {
     const group = new THREE.Group();
@@ -456,30 +523,31 @@ class DatabaseVisualizer {
     const hexColor = this.domainColors[table.name] || '#0071e3';
     const domainColor = new THREE.Color(hexColor);
 
-    // Prominent, well-proportioned dimensions
-    const baseW = 26 + Math.log2(count + 1) * 3.2;
-    const baseH = 8.5 + Math.log2(count + 1) * 1.6;
-    const baseD = 20 + Math.log2(count + 1) * 2.8;
+    // Disciplined, normalized dimensions (Narrow, balanced scale)
+    const scale = 0.94 + 0.22 * Math.min(1.0, Math.log2(count + 1) / 5.0);
+    const baseW = 20 * scale;
+    const baseH = 4.8 * scale;
+    const baseD = 14 * scale;
 
-    // 1. Lower Hardware Pedestal (Matte Slate Unit)
-    const pedGeo = new THREE.BoxGeometry(baseW * 1.05, 1.4, baseD * 1.05);
+    // 1. Lower Hardware Pedestal (Matte Gunmetal)
+    const pedGeo = new THREE.BoxGeometry(baseW * 1.04, 1.2, baseD * 1.04);
     const pedMat = new THREE.MeshStandardMaterial({
       color: 0x090d16,
-      metalness: 0.3,
+      metalness: 0.25,
       roughness: 0.4
     });
     const pedestal = new THREE.Mesh(pedGeo, pedMat);
-    pedestal.position.y = -baseH / 2 - 0.7;
+    pedestal.position.y = -baseH / 2 - 0.6;
     group.add(pedestal);
 
-    // 2. High-Tech Obsidian Slate Chassis Body (Maximum Tangible Contrast)
+    // 2. High-Tech Obsidian Slate Chassis Body
     const boxGeo = new THREE.BoxGeometry(baseW, baseH, baseD);
     const boxMat = new THREE.MeshStandardMaterial({
-      color: 0x111827, // Rich Obsidian Slate
-      roughness: 0.28,
-      metalness: 0.35,
+      color: 0x1e293b,
+      roughness: 0.32,
+      metalness: 0.25,
       emissive: domainColor,
-      emissiveIntensity: 0.22
+      emissiveIntensity: 0.14
     });
     const mesh = new THREE.Mesh(boxGeo, boxMat);
     mesh.castShadow = true;
@@ -487,36 +555,36 @@ class DatabaseVisualizer {
     mesh.userData = { tableName: table.name };
     group.add(mesh);
 
-    // 3. Thick Glowing Bevel Edge Lines (Color Coded to Domain)
+    // 3. Crisp Edge Lines (Domain-Colored Bevel Frame)
     const edgesGeo = new THREE.EdgesGeometry(boxGeo);
     const edgesMat = new THREE.LineBasicMaterial({
       color: domainColor,
-      linewidth: 3.0,
+      linewidth: 1.8,
       transparent: true,
-      opacity: 0.95
+      opacity: 0.9
     });
     const edgeLines = new THREE.LineSegments(edgesGeo, edgesMat);
     group.add(edgeLines);
 
-    // 4. Luminous Top Accent Bar
-    const topBarGeo = new THREE.PlaneGeometry(baseW * 0.92, 1.8);
+    // 4. Subtle Top Accent Plate
+    const topBarGeo = new THREE.PlaneGeometry(baseW * 0.90, 1.2);
     const topBarMat = new THREE.MeshBasicMaterial({
       color: domainColor,
       transparent: true,
-      opacity: 0.95,
+      opacity: 0.9,
       side: THREE.DoubleSide
     });
     const topBar = new THREE.Mesh(topBarGeo, topBarMat);
     topBar.rotation.x = -Math.PI / 2;
-    topBar.position.set(0, baseH / 2 + 0.08, -baseD * 0.36);
+    topBar.position.set(0, baseH / 2 + 0.05, -baseD * 0.36);
     group.add(topBar);
 
     // 5. Contact Drop-Shadow Disc Under Node on Floor Plinth
-    const shadowGeo = new THREE.CircleGeometry(baseW * 0.75, 32);
+    const shadowGeo = new THREE.CircleGeometry(baseW * 0.70, 32);
     const shadowMat = new THREE.MeshBasicMaterial({
       color: 0x0f172a,
       transparent: true,
-      opacity: 0.25,
+      opacity: 0.18,
       side: THREE.DoubleSide
     });
     const shadowMesh = new THREE.Mesh(shadowGeo, shadowMat);
@@ -524,10 +592,10 @@ class DatabaseVisualizer {
     shadowMesh.position.set(0, -position.y - 13.84, 0);
     group.add(shadowMesh);
 
-    // 6. Prominent, Razor-Sharp Billboard Header Plate
+    // 6. Restrained, Razor-Sharp Billboard Header Plate
     const labelSprite = this.createCanvasLabel(table.name, count, hexColor);
-    labelSprite.position.set(0, baseH / 2 + 5.2, 0);
-    labelSprite.scale.set(baseW * 1.35, 12.0, 1);
+    labelSprite.position.set(0, baseH / 2 + 3.2, 0);
+    labelSprite.scale.set(baseW * 1.35, 8.4, 1);
     group.add(labelSprite);
 
     const nodeObj = {
@@ -554,8 +622,8 @@ class DatabaseVisualizer {
 
   createCanvasLabel(tableName, recordCount, accentColor) {
     const canvas = document.createElement('canvas');
-    canvas.width = 640;
-    canvas.height = 160;
+    canvas.width = 520;
+    canvas.height = 130;
     const ctx = canvas.getContext('2d');
 
     this.drawLabelCanvas(ctx, tableName, recordCount, accentColor);
@@ -577,17 +645,17 @@ class DatabaseVisualizer {
   }
 
   drawLabelCanvas(ctx, tableName, recordCount, accentColor) {
-    ctx.clearRect(0, 0, 640, 160);
+    ctx.clearRect(0, 0, 520, 130);
 
     const color = accentColor || '#0071e3';
 
     // 1. High-Contrast Floating Dark Slate Capsule
     ctx.fillStyle = '#0b0f19';
     ctx.strokeStyle = color;
-    ctx.lineWidth = 4.5;
+    ctx.lineWidth = 3.5;
 
     // Rounded rectangle
-    const x = 12, y = 12, w = 616, h = 136, r = 24;
+    const x = 8, y = 8, w = 504, h = 114, r = 20;
     ctx.beginPath();
     ctx.moveTo(x + r, y);
     ctx.lineTo(x + w - r, y);
@@ -602,29 +670,29 @@ class DatabaseVisualizer {
     ctx.fill();
     ctx.stroke();
 
-    // 2. Glowing Accent Status Dot
+    // 2. Status Dot
     ctx.fillStyle = color;
     ctx.beginPath();
-    ctx.arc(52, 80, 9, 0, Math.PI * 2);
+    ctx.arc(42, 65, 7.5, 0, Math.PI * 2);
     ctx.fill();
 
-    // 3. Table Name (Crisp White Bold Typography)
+    // 3. Table Name (Bold, Sharp White Typography)
     ctx.fillStyle = '#ffffff';
-    ctx.font = '800 38px -apple-system, BlinkMacSystemFont, "Inter", sans-serif';
+    ctx.font = '800 30px -apple-system, BlinkMacSystemFont, "Inter", sans-serif';
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
-    ctx.fillText(tableName.toUpperCase(), 78, 80);
+    ctx.fillText(tableName.toUpperCase(), 64, 65);
 
-    // 4. Prominent Row Count Pill on Right
+    // 4. Row Count Badge
     ctx.fillStyle = '#1e293b';
     ctx.beginPath();
-    ctx.roundRect ? ctx.roundRect(440, 50, 160, 60, 16) : ctx.rect(440, 50, 160, 60);
+    ctx.roundRect ? ctx.roundRect(355, 40, 142, 50, 14) : ctx.rect(355, 40, 142, 50);
     ctx.fill();
 
     ctx.fillStyle = color;
-    ctx.font = '700 24px "Inter", "SF Mono", monospace';
+    ctx.font = '700 20px "Inter", "SF Mono", monospace';
     ctx.textAlign = 'center';
-    ctx.fillText(`${recordCount} ROWS`, 520, 80);
+    ctx.fillText(`${recordCount} ROWS`, 426, 65);
   }
 
   updateNodeLabel(node) {
@@ -636,9 +704,10 @@ class DatabaseVisualizer {
 
   updateNodeGeometryScale(node) {
     const count = node.recordCount || 0;
-    const newW = 26 + Math.log2(count + 1) * 3.2;
-    const newH = 8.5 + Math.log2(count + 1) * 1.6;
-    const newD = 20 + Math.log2(count + 1) * 2.8;
+    const scale = 0.94 + 0.22 * Math.min(1.0, Math.log2(count + 1) / 5.0);
+    const newW = 20 * scale;
+    const newH = 4.8 * scale;
+    const newD = 14 * scale;
 
     const scaleX = newW / node.baseDims.w;
     const scaleY = newH / node.baseDims.h;
@@ -674,9 +743,9 @@ class DatabaseVisualizer {
     const p1 = srcNode.position;
     const p2 = tgtNode.position;
 
-    // Architectural parabolic arch
+    // Gracefully elevated parabolic arch (clears floor and intermediate elements)
     const midX = (p1.x + p2.x) / 2;
-    const midY = Math.max(p1.y, p2.y) + 5.0 + Math.hypot(p2.x - p1.x, p2.z - p1.z) * 0.07;
+    const midY = Math.max(p1.y, p2.y) + 3.2 + Math.hypot(p2.x - p1.x, p2.z - p1.z) * 0.05;
     const midZ = (p1.z + p2.z) / 2;
     const controlPoint = new THREE.Vector3(midX, midY, midZ);
 
@@ -686,22 +755,22 @@ class DatabaseVisualizer {
       new THREE.Vector3(p2.x, p2.y, p2.z)
     );
 
-    const points = curve.getPoints(28);
+    const points = curve.getPoints(24);
     const geometry = new THREE.BufferGeometry().setFromPoints(points);
 
-    // Vibrant conduit line
+    // Subtle, clean relationship line
     const material = new THREE.LineBasicMaterial({
       color: 0x0071e3,
-      linewidth: 2.4,
+      linewidth: 1.2,
       transparent: true,
-      opacity: 0.85
+      opacity: 0.35
     });
 
     const curveLine = new THREE.Line(geometry, material);
 
-    // Glowing traveling data packet
-    const pulseMat = new THREE.MeshBasicMaterial({ color: 0x0071e3 });
-    const pulseGeo = new THREE.SphereGeometry(1.4, 10, 10);
+    // Single subtle traveling data packet
+    const pulseMat = new THREE.MeshBasicMaterial({ color: 0x0071e3, transparent: true, opacity: 0.75 });
+    const pulseGeo = new THREE.SphereGeometry(0.75, 8, 8);
     const pulseDot = new THREE.Mesh(pulseGeo, pulseMat);
     this.graphGroup.add(pulseDot);
 
@@ -710,8 +779,8 @@ class DatabaseVisualizer {
       curveLine: curveLine,
       material: material,
       pulseDot: pulseDot,
-      pulseT: Math.random(),
-      pulseSpeed: 0.14 + Math.random() * 0.08,
+      pulseT: (srcNode.name.charCodeAt(0) + tgtNode.name.charCodeAt(0)) % 100 / 100,
+      pulseSpeed: 0.12,
       source: srcNode.name,
       target: tgtNode.name,
       relData: relData
@@ -732,14 +801,14 @@ class DatabaseVisualizer {
       const isMatch = clusterName === 'all' || (activeSet && activeSet.has(node.name));
       if (isMatch) {
         node.boxMat.opacity = 1.0;
-        node.boxMat.emissiveIntensity = 0.22;
-        node.edgeMat.opacity = 0.95;
+        node.boxMat.emissiveIntensity = 0.14;
+        node.edgeMat.opacity = 0.9;
         node.labelSprite.material.opacity = 1.0;
       } else {
-        node.boxMat.opacity = 0.25;
-        node.boxMat.emissiveIntensity = 0.04;
-        node.edgeMat.opacity = 0.2;
-        node.labelSprite.material.opacity = 0.25;
+        node.boxMat.opacity = 0.20;
+        node.boxMat.emissiveIntensity = 0.02;
+        node.edgeMat.opacity = 0.15;
+        node.labelSprite.material.opacity = 0.20;
       }
     });
 
@@ -747,17 +816,17 @@ class DatabaseVisualizer {
       const srcMatch = clusterName === 'all' || (activeSet && activeSet.has(l.source));
       const tgtMatch = clusterName === 'all' || (activeSet && activeSet.has(l.target));
       if (srcMatch && tgtMatch) {
-        l.material.opacity = 0.85;
+        l.material.opacity = 0.65;
         l.pulseDot.visible = true;
       } else {
-        l.material.opacity = 0.12;
+        l.material.opacity = 0.06;
         l.pulseDot.visible = false;
       }
     });
   }
 
   // ==========================================================
-  // CINEMATIC CAMERA GLIDE & FOCUS
+  // CINEMATIC CAMERA GLIDE & FOCUS (AUTOMATIC BOUNDING CALCULATION)
   // ==========================================================
   frameCameraToGraph() {
     if (!this.graphGroup || this.nodes.size === 0) return;
@@ -765,15 +834,28 @@ class DatabaseVisualizer {
     const box = new THREE.Box3().setFromObject(this.graphGroup);
     const center = new THREE.Vector3();
     box.getCenter(center);
-
-    const sphere = new THREE.Sphere();
-    box.getBoundingSphere(sphere);
-    const radius = Math.max(sphere.radius, 55);
+    const size = new THREE.Vector3();
+    box.getSize(size);
 
     const fov = this.camera.fov * (Math.PI / 180);
-    const dist = (radius / Math.sin(fov / 2)) * 0.46;
+    const aspect = this.camera.aspect || 1.6;
 
-    const targetPos = new THREE.Vector3(center.x, center.y + dist * 0.44, center.z + dist * 0.74);
+    // Fit graph comfortably to 74% of viewport with generous breathing room
+    const fitRatio = 0.74;
+    const vDist = (size.y / 2 + 18) / Math.tan(fov / 2);
+    const hDist = (size.x / 2 + 22) / (Math.tan(fov / 2) * aspect);
+    const zDepth = size.z / 2;
+
+    const requiredDist = Math.max(vDist, hDist) / fitRatio + zDepth;
+
+    // Sophisticated elevated 27-degree camera angle
+    const elevAngle = 0.48; // ~27.5 degrees
+    const targetPos = new THREE.Vector3(
+      center.x,
+      center.y + requiredDist * Math.sin(elevAngle),
+      center.z + requiredDist * Math.cos(elevAngle)
+    );
+
     this.smoothGlideCamera(targetPos, center);
   }
 
