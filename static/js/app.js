@@ -132,6 +132,16 @@ document.addEventListener('DOMContentLoaded', () => {
   } else if (targetModal === 'delete') {
     setTimeout(() => confirmDeleteTicket(ticketId ? parseInt(ticketId) : 5, 'TKT-005', 'Request second monitor for software engineering'), 200);
   }
+
+  const selectTable = urlParams.get('select_table');
+  if (selectTable) {
+    setTimeout(() => {
+      if (window.dbVisualizer && window.dbVisualizer.nodes) {
+        const node = window.dbVisualizer.nodes.get(selectTable);
+        if (node) window.dbVisualizer.selectNode(node);
+      }
+    }, 600);
+  }
 });
 
 
@@ -453,6 +463,57 @@ function closeNodeInspector() {
   selectedInspectorTable = null;
 }
 window.closeNodeInspector = closeNodeInspector;
+
+let currentCameraMode = 'perspective';
+
+function setVisualizerCluster(clusterName, btnEl) {
+  if (btnEl && btnEl.parentElement) {
+    btnEl.parentElement.querySelectorAll('.cluster-btn').forEach(b => b.classList.remove('active'));
+    btnEl.classList.add('active');
+  }
+  if (window.dbVisualizer) {
+    window.dbVisualizer.setCluster(clusterName);
+  }
+}
+window.setVisualizerCluster = setVisualizerCluster;
+
+function triggerVisualizerPulse() {
+  if (window.dbVisualizer) {
+    window.dbVisualizer.triggerPulseBurst();
+    showToast('Synaptic Pulse', 'Live relational signals propagated through foreign keys.', 'info', 2200);
+  }
+}
+window.triggerVisualizerPulse = triggerVisualizerPulse;
+
+function toggleCameraView(btnEl) {
+  if (!window.dbVisualizer) return;
+  if (currentCameraMode === 'perspective') {
+    currentCameraMode = 'top';
+    window.dbVisualizer.setCameraView('top');
+    if (btnEl) btnEl.textContent = 'Spatial 3D';
+  } else {
+    currentCameraMode = 'perspective';
+    window.dbVisualizer.setCameraView('perspective');
+    if (btnEl) btnEl.textContent = '⤢ Top Plan';
+  }
+}
+window.toggleCameraView = toggleCameraView;
+
+function resetVisualizerCamera() {
+  currentCameraMode = 'perspective';
+  const planBtn = document.getElementById('btn-toggle-camera-plan');
+  if (planBtn) planBtn.textContent = '⤢ Top Plan';
+
+  document.querySelectorAll('.cluster-btn').forEach(b => {
+    if (b.textContent.includes('All')) b.classList.add('active');
+    else b.classList.remove('active');
+  });
+
+  if (window.dbVisualizer) {
+    window.dbVisualizer.resetCamera();
+  }
+}
+window.resetVisualizerCamera = resetVisualizerCamera;
 
 function inspectNodeViewRecords() {
   if (!selectedInspectorTable) return;

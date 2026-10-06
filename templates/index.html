@@ -129,10 +129,10 @@
           <!-- 3D Canvas Mount Point -->
           <div id="dbVisualizerContainer" class="visualizer-canvas-viewport"></div>
 
-          <!-- TOP LEFT HUD: Architectural Schema Metadata -->
+          <!-- TOP LEFT HUD: Apple Spatial Studio Metadata -->
           <div class="hud-box hud-top-left">
-            <div class="hud-eyebrow">DATABASE ARCHITECTURE // LIVE TOPOLOGY</div>
-            <div class="hud-title">RELATIONAL SCHEMA VISUALIZER</div>
+            <div class="hud-eyebrow">SPATIAL DATABASE STUDIO // LIVE TELEMETRY</div>
+            <div class="hud-title">RELATIONAL SCHEMA ARCHITECTURE</div>
             <div class="hud-meta">
               <span>SCHEMA: <strong class="mono-text" id="hud-schema-name">IT_HELPDESK</strong></span>
               <span class="hud-dot"></span>
@@ -146,50 +146,56 @@
           <div class="hud-box hud-top-right">
             <div class="hud-status-badge">
               <span class="status-pulse-dot"></span>
-              <span id="hud-db-status">MYSQL 9.7.1 // CONNECTED</span>
+              <span id="hud-db-status">MYSQL 9.7.1 · CONNECTED</span>
             </div>
             <div class="hud-metrics-row">
-              <div class="hud-metric"><span class="hud-lbl">TABLES</span><strong id="hud-tables-count" class="mono-text">14</strong></div>
+              <div class="hud-metric"><span class="hud-lbl">ENTITIES</span><strong id="hud-tables-count" class="mono-text">14</strong></div>
               <div class="hud-metric"><span class="hud-lbl">RELATIONS</span><strong id="hud-fks-count" class="mono-text">14</strong></div>
               <div class="hud-metric"><span class="hud-lbl">RECORDS</span><strong id="hud-records-count" class="mono-text">55</strong></div>
-              <div class="hud-metric"><span class="hud-lbl">LATENCY</span><strong id="hud-latency" class="mono-text">1.2ms</strong></div>
+              <div class="hud-metric"><span class="hud-lbl">LATENCY</span><strong id="hud-latency" class="mono-text">1.1ms</strong></div>
             </div>
           </div>
 
           <!-- BOTTOM LEFT HUD: Interaction Guide -->
           <div class="hud-box hud-bottom-left">
             <div class="hud-controls-help">
-              <span>DRAG TO ROTATE</span> • <span>SCROLL TO ZOOM</span> • <span>CLICK TABLE NODE TO INSPECT</span>
+              <span>DRAG TO ORBIT</span> • <span>SCROLL TO ZOOM</span> • <span>CLICK ANY ENTITY TO INSPECT</span>
             </div>
           </div>
 
-          <!-- BOTTOM RIGHT HUD: Interactive Table Inspector Drawer -->
-          <div class="hud-box hud-bottom-right" id="hud-node-inspector" style="display: none;">
+          <!-- BOTTOM RIGHT HUD: visionOS Floating Table Inspector Card -->
+          <div class="hud-box hud-node-inspector" id="hud-node-inspector" style="display: none;">
             <div class="inspector-header">
               <div class="inspector-table-name mono-text" id="insp-table-name">TICKETS</div>
               <div class="inspector-badge" id="insp-domain">OPERATIONS</div>
             </div>
             <div class="inspector-body">
-              <div class="insp-stat"><span class="insp-lbl">RECORDS</span><strong id="insp-records" class="mono-text">5</strong></div>
+              <div class="insp-stat"><span class="insp-lbl">RECORDS IN MYSQL</span><strong id="insp-records" class="mono-text">5 rows</strong></div>
               <div class="insp-stat"><span class="insp-lbl">PRIMARY KEY</span><strong id="insp-pk" class="mono-text">ticket_id</strong></div>
               <div class="insp-stat"><span class="insp-lbl">FOREIGN KEYS</span><strong id="insp-fks" class="mono-text">3 FKs</strong></div>
-              <div class="insp-stat"><span class="insp-lbl">COLUMNS</span><strong id="insp-cols" class="mono-text">8 columns</strong></div>
+              <div class="insp-stat"><span class="insp-lbl">SCHEMA COLUMNS</span><strong id="insp-cols" class="mono-text">8 columns</strong></div>
             </div>
             <div class="inspector-footer">
               <button class="btn btn-primary btn-sm" id="btn-insp-view" onclick="inspectNodeViewRecords()">
-                [ VIEW RECORDS IN TABLE ]
+                Inspect Live Records →
               </button>
-              <button class="btn btn-secondary btn-sm" onclick="dbVisualizer.deselect()">
-                ✕ Close
+              <button class="btn btn-secondary btn-sm" onclick="dbVisualizer && dbVisualizer.deselect()">
+                ✕ Dismiss
               </button>
             </div>
           </div>
 
-          <!-- Viewport Floating Utility Bar -->
+          <!-- Viewport Floating Utility Bar (Segmented Controls & Gen Z Pulse) -->
           <div class="hud-viewport-toolbar">
-            <button class="hud-tool-btn" onclick="dbVisualizer && dbVisualizer.resetCamera()" title="Reset Camera Perspective">⟲ Reset Camera</button>
-            <button class="hud-tool-btn" onclick="refreshDatabaseGraph(true)" title="Ping & Sync Schema Topology">⚡ Sync Graph</button>
-            <button class="hud-tool-btn" onclick="switchView('sql')" title="Inspect Live SQL">🔍 Live SQL</button>
+            <div class="cluster-segmented">
+              <button class="cluster-btn active" onclick="setVisualizerCluster('all', this)">All (14)</button>
+              <button class="cluster-btn" onclick="setVisualizerCluster('operations', this)">Operations</button>
+              <button class="cluster-btn" onclick="setVisualizerCluster('entities', this)">Entities</button>
+              <button class="cluster-btn" onclick="setVisualizerCluster('infrastructure', this)">Infrastructure</button>
+            </div>
+            <button class="hud-tool-btn" onclick="triggerVisualizerPulse()" title="Send synaptic data pulses through relationships">⚡ Pulse Signals</button>
+            <button class="hud-tool-btn" id="btn-toggle-camera-plan" onclick="toggleCameraView(this)" title="Toggle Top Blueprint / Spatial 3D">⤢ Top Plan</button>
+            <button class="hud-tool-btn" onclick="resetVisualizerCamera()" title="Reset Camera Perspective">⟲ Reset</button>
           </div>
         </div>
 
